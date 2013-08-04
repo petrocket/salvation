@@ -67,6 +67,8 @@
 
 #include <SdkTrays.h>
 
+#include "Game.h"
+
 //|||||||||||||||||||||||||||||||||||||||||||||||
 
 #ifdef OGRE_IS_IOS
@@ -120,6 +122,8 @@ public:
 	OIS::Mouse*					m_pMouse;
 #endif
 
+    Game *mGame;
+
 protected:
    // Added for Mac compatibility
    Ogre::String                 m_ResourcePath;
@@ -142,6 +146,7 @@ private:
 #ifdef OGRE_STATIC_LIB
     Ogre::StaticPluginLoader    m_StaticPluginLoader;
 #endif
+    
 };
 
 //|||||||||||||||||||||||||||||||||||||||||||||||

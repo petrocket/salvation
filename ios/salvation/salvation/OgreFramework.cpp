@@ -10,6 +10,8 @@ namespace Ogre
 
 OgreFramework::OgreFramework()
 {
+    mGame = 0;
+    
 	m_MoveSpeed			= 0.1f;
 	m_RotateSpeed       = 0.3f;
     
@@ -149,6 +151,8 @@ bool OgreFramework::initOgre(Ogre::String wndTitle, OIS::KeyListener *pKeyListen
     m_pTrayMgr->hideCursor();
     */
 	m_pRenderWnd->setActive(true);
+    
+    mGame = new Game(m_pSceneMgr);
     
 	return true;
 }

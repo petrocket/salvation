@@ -1,7 +1,15 @@
 #ifndef __Game_h_
 #define __Game_h_
 
+#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
+// using pch
 #include "stdafx.h"
+
+#else
+
+#include "Ogre.h"
+
+#endif
 
 class Game
 {
