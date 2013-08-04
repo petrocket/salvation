@@ -1,0 +1,17 @@
+material Spacescape1024
+{
+   technique
+   {
+      pass
+      {
+         lighting off
+         depth_write off
+
+         texture_unit
+         {
+            cubic_texture spacescape1024_front5.png spacescape1024_back6.png spacescape1024_left2.png spacescape1024_right1.png spacescape1024_top3.png spacescape1024_bottom4.png separateUV
+            tex_address_mode clamp
+         }
+      }
+   }
+}
