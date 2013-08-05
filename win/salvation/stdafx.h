@@ -21,6 +21,9 @@
 #include "windows.h"
 #endif
 
+#include "MyGUI.h"
+#include "MyGUI_OgrePlatform.h"
+
 #include "TutorialApplication.h"
 #include "BaseApplication.h"
 #include "Game.h"

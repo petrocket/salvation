@@ -2,3 +2,5 @@
 /win/salvation/Release
 /win/salvation/ipch
 /win/salvation/*.sdf
+
+/win/salvation/*.opensdf
