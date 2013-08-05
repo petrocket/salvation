@@ -19,6 +19,7 @@
 		FAB9ECA617AD425800A6BEB8 /* ogre.cfg in Resources */ = {isa = PBXBuildFile; fileRef = FAB9ECA517AD425800A6BEB8 /* ogre.cfg */; };
 		FAB9ECA817AD425800A6BEB8 /* plugins.cfg in Resources */ = {isa = PBXBuildFile; fileRef = FAB9ECA717AD425800A6BEB8 /* plugins.cfg */; };
 		FAB9ECAA17AD425800A6BEB8 /* resources.cfg in Resources */ = {isa = PBXBuildFile; fileRef = FAB9ECA917AD425800A6BEB8 /* resources.cfg */; };
+		FAB9ECB217ADFFD100A6BEB8 /* Game.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAB9ECB117ADFFD100A6BEB8 /* Game.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -101,6 +102,8 @@
 		FAB9ECA517AD425800A6BEB8 /* ogre.cfg */ = {isa = PBXFileReference; lastKnownFileType = text; path = ogre.cfg; sourceTree = "<group>"; };
 		FAB9ECA717AD425800A6BEB8 /* plugins.cfg */ = {isa = PBXFileReference; lastKnownFileType = text; path = plugins.cfg; sourceTree = "<group>"; };
 		FAB9ECA917AD425800A6BEB8 /* resources.cfg */ = {isa = PBXFileReference; lastKnownFileType = text; path = resources.cfg; sourceTree = "<group>"; };
+		FAB9ECB017ADFFCB00A6BEB8 /* Game.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Game.h; path = ../../../include/Game.h; sourceTree = "<group>"; };
+		FAB9ECB117ADFFD100A6BEB8 /* Game.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Game.cpp; path = ../../../src/Game.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -153,6 +156,8 @@
 			children = (
 				FAB9EC5217AD425700A6BEB8 /* InfoPlist.strings */,
 				FAB9EC5517AD425700A6BEB8 /* main.mm */,
+				FAB9ECB017ADFFCB00A6BEB8 /* Game.h */,
+				FAB9ECB117ADFFD100A6BEB8 /* Game.cpp */,
 				FAB9EC5717AD425700A6BEB8 /* Basic Ogre Framework */,
 				FAB9EC6017AD425800A6BEB8 /* Resources */,
 				FAB9EC4F17AD425700A6BEB8 /* Supporting Files */,
@@ -388,7 +393,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
-			shellScript = "# This shell script simply copies resources into their respective locations\nditto \"$PROJECT_DIR/$PROJECT_NAME/media/\" \"$BUILT_PRODUCTS_DIR/salvation.app/media/\"\nditto $PROJECT_DIR/$PROJECT_NAME/*.cfg \"$BUILT_PRODUCTS_DIR/salvation.app/\"\n";
+			shellScript = "# This shell script simply copies resources into their respective locations\nditto \"$PROJECT_DIR/$PROJECT_NAME/media/\" \"$BUILT_PRODUCTS_DIR/salvation.app/media/\"\nditto \"$PROJECT_DIR/../../media/\" \"$BUILT_PRODUCTS_DIR/salvation.app/media/\"\nditto $PROJECT_DIR/$PROJECT_NAME/*.cfg \"$BUILT_PRODUCTS_DIR/salvation.app/\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -400,6 +405,7 @@
 				FAB9EC5617AD425700A6BEB8 /* main.mm in Sources */,
 				FAB9EC5A17AD425700A6BEB8 /* OgreDemoApp.cpp in Sources */,
 				FAB9EC5D17AD425700A6BEB8 /* OgreFramework.cpp in Sources */,
+				FAB9ECB217ADFFD100A6BEB8 /* Game.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

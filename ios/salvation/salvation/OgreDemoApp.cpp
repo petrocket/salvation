@@ -1,4 +1,5 @@
 #include "OgreDemoApp.h"
+#include "Game.h"
 
 DemoApp::DemoApp()
 {
@@ -152,6 +153,9 @@ void DemoApp::startDemo()
 
 void DemoApp::setupDemoScene()
 {
+    OgreFramework::getSingletonPtr()->mGame->createScene();
+    
+    /*
 	OgreFramework::getSingletonPtr()->m_pSceneMgr->setSkyBox(true, "Examples/SpaceSkyBox");
     
 	OgreFramework::getSingletonPtr()->m_pSceneMgr->createLight("Light")->setPosition(75,75,75);
@@ -159,6 +163,7 @@ void DemoApp::setupDemoScene()
 	m_pCubeEntity = OgreFramework::getSingletonPtr()->m_pSceneMgr->createEntity("Cube", "ogrehead.mesh");
 	m_pCubeNode = OgreFramework::getSingletonPtr()->m_pSceneMgr->getRootSceneNode()->createChildSceneNode("CubeNode");
 	m_pCubeNode->attachObject(m_pCubeEntity);
+     */
 }
 
 //|||||||||||||||||||||||||||||||||||||||||||||||
