@@ -7,6 +7,7 @@
 #include <OgreSceneManager.h>
 #include <OgreRenderWindow.h>
 #include <OgreConfigFile.h>
+#include <OgreSingleton.h>
 
 #include <OISEvents.h>
 #include <OISInputManager.h>
@@ -23,7 +24,10 @@
 
 #include "MyGUI.h"
 #include "MyGUI_OgrePlatform.h"
+#include "BaseLayout/BaseLayout.h"
 
 #include "TutorialApplication.h"
 #include "BaseApplication.h"
 #include "Game.h"
+#include "MainMenu.h"
+#include "InGameMenu.h"

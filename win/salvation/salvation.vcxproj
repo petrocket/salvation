@@ -49,7 +49,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(OGRE_HOME)\include;$(OGRE_HOME)\include\OIS;$(OGRE_HOME)\include\OGRE;$(OGRE_HOME)\Samples\Common\include;$(OGRE_HOME)\boost;$(SolutionDir)\..\..\include;$(ProjectDir);C:\Users\alex\Downloads\MyGUI_3.2.0 %281%29\MyGUI_3.2.0\MyGUIEngine\include;C:\Users\alex\Downloads\MyGUI_3.2.0 %281%29\MyGUI_3.2.0\Platforms\Ogre\OgrePlatform\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(OGRE_HOME)\include;$(OGRE_HOME)\include\OIS;$(OGRE_HOME)\include\OGRE;$(OGRE_HOME)\Samples\Common\include;$(OGRE_HOME)\boost;$(SolutionDir)\..\..\include;$(ProjectDir);C:\Users\alex\Downloads\MyGUI_3.2.0 %281%29\MyGUI_3.2.0\MyGUIEngine\include;C:\Users\alex\Downloads\MyGUI_3.2.0 %281%29\MyGUI_3.2.0\Platforms\Ogre\OgrePlatform\include;C:\Users\alex\Downloads\MyGUI_3.2.0 %281%29\MyGUI_3.2.0\Common</AdditionalIncludeDirectories>
       <ForcedIncludeFiles>stdafx.h</ForcedIncludeFiles>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <AdditionalOptions>/Zm500 %(AdditionalOptions)</AdditionalOptions>
@@ -77,7 +77,7 @@ xcopy "$(SolutionDir)..\..\media" "$(OGRE_HOME)\media" /e /y /i /r</Command>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(OGRE_HOME)\include;$(OGRE_HOME)\include\OIS;$(OGRE_HOME)\include\OGRE;$(OGRE_HOME)\Samples\Common\include;$(OGRE_HOME)\boost;$(SolutionDir)\..\..\include;$(ProjectDir);C:\Users\alex\Downloads\MyGUI_3.2.0 %281%29\MyGUI_3.2.0\MyGUIEngine\include;C:\Users\alex\Downloads\MyGUI_3.2.0 %281%29\MyGUI_3.2.0\Platforms\Ogre\OgrePlatform\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(OGRE_HOME)\include;$(OGRE_HOME)\include\OIS;$(OGRE_HOME)\include\OGRE;$(OGRE_HOME)\Samples\Common\include;$(OGRE_HOME)\boost;$(SolutionDir)\..\..\include;$(ProjectDir);C:\Users\alex\Downloads\MyGUI_3.2.0 %281%29\MyGUI_3.2.0\MyGUIEngine\include;C:\Users\alex\Downloads\MyGUI_3.2.0 %281%29\MyGUI_3.2.0\Platforms\Ogre\OgrePlatform\include;C:\Users\alex\Downloads\MyGUI_3.2.0 %281%29\MyGUI_3.2.0\Common</AdditionalIncludeDirectories>
       <ForcedIncludeFiles>stdafx.h</ForcedIncludeFiles>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <DisableSpecificWarnings>4251;4661;4275;4193</DisableSpecificWarnings>
@@ -101,12 +101,16 @@ xcopy "$(SolutionDir)..\..\media" "$(OGRE_HOME)\media" /e /y /i /r</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\Game.h" />
+    <ClInclude Include="..\..\include\InGameMenu.h" />
+    <ClInclude Include="..\..\include\MainMenu.h" />
     <ClInclude Include="BaseApplication.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="TutorialApplication.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Game.cpp" />
+    <ClCompile Include="..\..\src\InGameMenu.cpp" />
+    <ClCompile Include="..\..\src\MainMenu.cpp" />
     <ClCompile Include="BaseApplication.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

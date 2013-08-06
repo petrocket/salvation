@@ -37,6 +37,9 @@ public:
 protected:
     virtual void createScene(void);
 
+	// Ogre::FrameListener
+    virtual bool frameRenderingQueued(const Ogre::FrameEvent& evt);
+
 private:
 	Game *mGame;
 };

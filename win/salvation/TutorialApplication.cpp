@@ -24,6 +24,7 @@ TutorialApplication::TutorialApplication(void) :
 //-------------------------------------------------------------------------------------
 TutorialApplication::~TutorialApplication(void)
 {
+	delete mGame;
 }
 
 //-------------------------------------------------------------------------------------
@@ -31,10 +32,22 @@ void TutorialApplication::createScene(void)
 {
     // create your scene here :)
 	if(!mGame) {
-		mGame = new Game(mSceneMgr,mWindow);
+		mGame = new Game(mSceneMgr,mWindow, mCamera);
 	}
 
 	mGame->createScene();
+}
+
+//-------------------------------------------------------------------------------------
+bool TutorialApplication::frameRenderingQueued(const Ogre::FrameEvent& evt)
+{
+	bool result = BaseApplication::frameRenderingQueued(evt);
+
+	if(mGame) {
+		mGame->update(evt.timeSinceLastFrame);
+	}
+
+	return result;
 }
 
 //-------------------------------------------------------------------------------------
