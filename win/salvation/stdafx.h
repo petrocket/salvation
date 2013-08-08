@@ -22,12 +22,17 @@
 #include "windows.h"
 #endif
 
+#include <SFML/Audio.hpp>
+
 #include "MyGUI.h"
 #include "MyGUI_OgrePlatform.h"
 #include "BaseLayout/BaseLayout.h"
 
+
+#include "GameAudioInterface.h"
 #include "TutorialApplication.h"
 #include "BaseApplication.h"
 #include "Game.h"
 #include "MainMenu.h"
 #include "InGameMenu.h"
+#include "GameButton.h"

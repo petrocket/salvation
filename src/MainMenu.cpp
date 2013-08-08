@@ -17,8 +17,16 @@ namespace Salvation
 	{
 		initialiseByAttributes(this, _parent);
 
+		mHelpButtonButton->eventMouseSetFocus += MyGUI::newDelegate(playButtonOver);
+		mHelpButtonButton->eventMouseButtonClick += MyGUI::newDelegate(playButtonClick);
+
 		mQuitButtonButton->eventMouseButtonClick += MyGUI::newDelegate(this, &Salvation::MainMenu::exit);
+		mQuitButtonButton->eventMouseSetFocus += MyGUI::newDelegate(playButtonOver);
+		mQuitButtonButton->eventMouseButtonClick += MyGUI::newDelegate(playButtonClick);
+
 		mPlayButtonButton->eventMouseButtonClick += MyGUI::newDelegate(this, &Salvation::MainMenu::play);
+		mPlayButtonButton->eventMouseSetFocus += MyGUI::newDelegate(playButtonOver);
+		mPlayButtonButton->eventMouseButtonClick += MyGUI::newDelegate(playButtonClick);
 	}
 
 	MainMenu::~MainMenu()

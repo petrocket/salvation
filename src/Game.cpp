@@ -53,6 +53,36 @@ void Game::createScene(void)
 	mInGameMenu = new Salvation::InGameMenu();
 
 	mSceneManager->setSkyBox(true, "Spacescape1024");
+
+	playBackgroundMusic("music.ogg");
+
+	/*
+	// get relative path to file
+	Ogre::ResourceGroupManager *mgr = Ogre::ResourceGroupManager::getSingletonPtr();
+	Ogre::String foundPath = "music.ogg";
+	Ogre::FileInfoListPtr fi = mgr->findResourceFileInfo("General", foundPath);
+	Ogre::FileInfoList::iterator it = fi->begin();
+	if(it != fi->end()) {
+		foundPath = it->archive->getName() + "/" + foundPath;
+	}
+
+	if (mMusic.openFromFile(foundPath)) {
+		mMusic.play();
+		mMusic.setVolume(100);
+		mMusic.setLoop(true);
+	}
+	*/
+	/*
+    sf::SoundBuffer buffer;
+    if (buffer.loadFromFile("sound.wav")) {
+		sf::Sound sound;
+		sound.setBuffer(buffer);
+		sound.play();
+	}
+	else {
+		// oops!
+	}
+	*/
 }
 
 void Game::exit()
@@ -104,7 +134,7 @@ void Game::play()
 
 		Ogre::Entity *ent = mSceneManager->createEntity(n->title,
 			Ogre::SceneManager::PT_SPHERE);
-		n->scenenode->setScale(0.1,0.1,0.1);
+		n->scenenode->setScale(0.1f,0.1f,0.1f);
 		n->scenenode->attachObject(ent);
 		n->scenenode->showBoundingBox(true);
 

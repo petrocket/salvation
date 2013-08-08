@@ -9,8 +9,12 @@ namespace Salvation
 
 
 		mQuitButton->eventMouseButtonClick += MyGUI::newDelegate(this, &Salvation::InGameMenu::quit);
+		mQuitButton->eventMouseSetFocus += MyGUI::newDelegate(playButtonOver);
+		mQuitButton->eventMouseButtonClick += MyGUI::newDelegate(playButtonClick);
 
 
+		mSettingsButton->eventMouseSetFocus += MyGUI::newDelegate(playButtonOver);
+		mSettingsButton->eventMouseButtonClick += MyGUI::newDelegate(playButtonClick);
 
 		setVisible(false);
 	}
@@ -34,19 +38,6 @@ namespace Salvation
 	   if(!node->isInSceneGraph())
 		  return false;
  
-	   //const Ogre::AxisAlignedBox &AABB = node->_getWorldAABB();
- 
-	   /**
-	   * If you need the point above the object instead of the center point:
-	   * This snippet derives the average point between the top-most corners of the bounding box
-	   * Ogre::Vector3 point = (AABB.getCorner(AxisAlignedBox::FAR_LEFT_TOP)
-	   *    + AABB.getCorner(AxisAlignedBox::FAR_RIGHT_TOP)
-	   *    + AABB.getCorner(AxisAlignedBox::NEAR_LEFT_TOP)
-	   *    + AABB.getCorner(AxisAlignedBox::NEAR_RIGHT_TOP)) / 4;
-	   */
- 
-	   // Get the center point of the object's bounding box
-	   //Ogre::Vector3 point = AABB.getCenter();
 	   Ogre::Vector3 point = node->getPosition();
 	
 	   // Is the camera facing that point? If not, return false
@@ -66,6 +57,7 @@ namespace Salvation
 
 	void InGameMenu::quit(MyGUI::WidgetPtr _sender)
 	{
+		playEffect("click4.ogg");
 		Game::getSingleton().quit();
 	}
 
@@ -118,6 +110,9 @@ namespace Salvation
 					MyGUI::Align::Default, 
 					node->title + "Button");
 				button->setCaption(node->title);
+				button->eventMouseSetFocus += MyGUI::newDelegate(playButtonOver);
+				button->eventMouseButtonClick += MyGUI::newDelegate(playButtonClick);
+
 			}
 		}
 	}

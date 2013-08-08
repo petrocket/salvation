@@ -71,6 +71,7 @@ public:
 
 	std::vector<GameNode *>mGameNodes;
 
+	sf::Music mMusic;
 private:
 	GameState mGameState;
 	GameState mPrevGameState;
