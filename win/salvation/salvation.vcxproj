@@ -49,17 +49,18 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(OGRE_HOME)\include;$(OGRE_HOME)\include\OIS;$(OGRE_HOME)\include\OGRE;$(OGRE_HOME)\Samples\Common\include;$(OGRE_HOME)\boost;$(SolutionDir)\..\..\include;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(OGRE_HOME)\include;$(OGRE_HOME)\include\OIS;$(OGRE_HOME)\include\OGRE;$(OGRE_HOME)\Samples\Common\include;$(OGRE_HOME)\boost;$(SolutionDir)\..\..\include;$(ProjectDir);C:\Users\alex\Downloads\MyGUI_3.2.0 %281%29\MyGUI_3.2.0\MyGUIEngine\include;C:\Users\alex\Downloads\MyGUI_3.2.0 %281%29\MyGUI_3.2.0\Platforms\Ogre\OgrePlatform\include;C:\Users\alex\Downloads\MyGUI_3.2.0 %281%29\MyGUI_3.2.0\Common;C:\Program Files (x86)\FMOD SoundSystem\FMOD Programmers API Windows\api\inc;C:\Users\alex\Downloads\SFML-2.1-windows-vc10-32bits\SFML-2.1\include</AdditionalIncludeDirectories>
       <ForcedIncludeFiles>stdafx.h</ForcedIncludeFiles>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <AdditionalOptions>/Zm500 %(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings>4251;4661;4275;4193</DisableSpecificWarnings>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(OGRE_HOME)\lib\$(Configuration);$(OGRE_HOME)\boost\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>OgreMain_d.lib;OIS_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(OGRE_HOME)\lib\$(Configuration);$(OGRE_HOME)\boost\lib;C:\Users\alex\Downloads\MyGUI_3.2.0 %281%29\MyGUI_3.2.0\Build\lib\Debug;%(AdditionalLibraryDirectories);C:\Program Files %28x86%29\FMOD SoundSystem\FMOD Programmers API Windows\api\lib;C:\Program Files %28x86%29\DJKaty.com\SimpleFMOD\lib;C:\Users\alex\Downloads\SFML-2.1-windows-vc10-32bits\SFML-2.1\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>OgreMain_d.lib;OIS_d.lib;MyGUIEngine_d.lib;MyGUI.OgrePlatform_d.lib;sfml-audio-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy "$(OutDir)\$(TargetFileName)" "$(OGRE_HOME)\Bin\$(Configuration)"
@@ -77,19 +78,20 @@ xcopy "$(SolutionDir)..\..\media" "$(OGRE_HOME)\media" /e /y /i /r</Command>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(OGRE_HOME)\include;$(OGRE_HOME)\include\OIS;$(OGRE_HOME)\include\OGRE;$(OGRE_HOME)\Samples\Common\include;$(OGRE_HOME)\boost;$(SolutionDir)\..\..\include;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(OGRE_HOME)\include;$(OGRE_HOME)\include\OIS;$(OGRE_HOME)\include\OGRE;$(OGRE_HOME)\Samples\Common\include;$(OGRE_HOME)\boost;$(SolutionDir)\..\..\include;$(ProjectDir);C:\Users\alex\Downloads\MyGUI_3.2.0 %281%29\MyGUI_3.2.0\MyGUIEngine\include;C:\Users\alex\Downloads\MyGUI_3.2.0 %281%29\MyGUI_3.2.0\Platforms\Ogre\OgrePlatform\include;C:\Users\alex\Downloads\MyGUI_3.2.0 %281%29\MyGUI_3.2.0\Common;C:\Program Files (x86)\FMOD SoundSystem\FMOD Programmers API Windows\api\inc;C:\Users\alex\Downloads\SFML-2.1-windows-vc10-32bits\SFML-2.1\include</AdditionalIncludeDirectories>
       <ForcedIncludeFiles>stdafx.h</ForcedIncludeFiles>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <DisableSpecificWarnings>4251;4661;4275;4193</DisableSpecificWarnings>
       <AdditionalOptions>/Zm500 %(AdditionalOptions)</AdditionalOptions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(OGRE_HOME)\lib\$(Configuration);$(OGRE_HOME)\boost\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>OgreMain.lib;OIS.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(OGRE_HOME)\lib\$(Configuration);$(OGRE_HOME)\boost\lib;C:\Users\alex\Downloads\MyGUI_3.2.0 (1)\MyGUI_3.2.0\Build\lib\Release;%(AdditionalLibraryDirectories);C:\Program Files %28x86%29\FMOD SoundSystem\FMOD Programmers API Windows\api\lib;C:\Program Files (x86)\DJKaty.com\SimpleFMOD\lib;C:\Users\alex\Downloads\SFML-2.1-windows-vc10-32bits\SFML-2.1\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>OgreMain.lib;OIS.lib;MyGUIEngine.lib;MyGUI.OgrePlatform.lib;sfml-audio.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy "$(OutDir)\$(TargetFileName)" "$(OGRE_HOME)\Bin\$(Configuration)"
@@ -100,14 +102,21 @@ xcopy "$(SolutionDir)..\..\media" "$(OGRE_HOME)\media" /e /y /i /r</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\include\Game.h" />
+    <ClInclude Include="..\..\include\GameAudioInterface.h" />
+    <ClInclude Include="..\..\include\InGameMenu.h" />
+    <ClInclude Include="..\..\include\MainMenu.h" />
     <ClInclude Include="BaseApplication.h" />
+    <ClInclude Include="GameButton.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="TutorialApplication.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Game.cpp" />
+    <ClCompile Include="..\..\src\InGameMenu.cpp" />
+    <ClCompile Include="..\..\src\MainMenu.cpp" />
     <ClCompile Include="BaseApplication.cpp" />
+    <ClCompile Include="GameAudio.cpp" />
+    <ClCompile Include="GameButton.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>

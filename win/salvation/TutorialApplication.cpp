@@ -24,6 +24,7 @@ TutorialApplication::TutorialApplication(void) :
 //-------------------------------------------------------------------------------------
 TutorialApplication::~TutorialApplication(void)
 {
+	delete mGame;
 }
 
 //-------------------------------------------------------------------------------------
@@ -31,13 +32,54 @@ void TutorialApplication::createScene(void)
 {
     // create your scene here :)
 	if(!mGame) {
-		mGame = new Game(mSceneMgr);
+		mGame = new Game(mSceneMgr,mWindow, mCamera);
 	}
 
 	mGame->createScene();
 }
 
+//-------------------------------------------------------------------------------------
+bool TutorialApplication::frameRenderingQueued(const Ogre::FrameEvent& evt)
+{
+	bool result = BaseApplication::frameRenderingQueued(evt);
 
+	if(mGame) {
+		mGame->update(evt.timeSinceLastFrame);
+	}
+
+	return result;
+}
+
+//-------------------------------------------------------------------------------------
+bool TutorialApplication::keyPressed( const OIS::KeyEvent &arg )
+{
+	//BaseApplication::keyPressed(arg);
+	return mGame->keyPressed(arg);
+}
+
+bool TutorialApplication::keyReleased( const OIS::KeyEvent &arg )
+{
+	//BaseApplication::keyReleased(arg);
+	return mGame->keyReleased(arg);
+}
+
+bool TutorialApplication::mouseMoved( const OIS::MouseEvent &arg )
+{
+	//BaseApplication::mouseMoved(arg);
+	return mGame->mouseMoved(arg);
+}
+
+bool TutorialApplication::mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
+{
+	//BaseApplication::mousePressed(arg,id);
+	return mGame->mousePressed(arg,id);
+}
+
+bool TutorialApplication::mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
+{
+	//BaseApplication::mouseReleased(arg,id);
+	return mGame->mouseReleased(arg,id);
+}
 
 
 

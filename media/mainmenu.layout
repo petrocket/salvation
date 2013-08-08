@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<MyGUI type="Layout" version="3.2.0">
+    <Widget type="Widget" skin="PanelEmpty" position="0 0 375 720" layer="Main" name="_Main">
+        <Widget type="Button" skin="Button" position="25 635 210 60" layer="Main" name="QuitButton">
+            <Property key="Caption" value="QUIT"/>
+        </Widget>
+        <Widget type="Button" skin="Button" position="25 560 210 60" layer="Main" name="HelpButton">
+            <Property key="Caption" value="HELP"/>
+        </Widget>
+        <Widget type="Button" skin="Button" position="25 485 210 60" layer="Main" name="PlayButton">
+            <Property key="Caption" value="PLAY"/>
+        </Widget>
+        <Widget type="TextBox" skin="TextBox" position="20 50 335 25">
+            <Property key="Caption" value="Christian Game Dev SpeedGame 2013"/>
+            <Property key="TextShadow" value="true"/>
+        </Widget>
+        <Widget type="TextBox" skin="TextBox" position="15 15 300 40">
+            <Property key="Caption" value="SALVATION"/>
+            <Property key="FontHeight" value="30"/>
+            <Property key="FontName" value="Default"/>
+            <Property key="TextShadow" value="true"/>
+        </Widget>
+    </Widget>
+    <CodeGeneratorSettings>
+        <Property key="IncludeDirectory" value="C:\Users\alex\Documents\Visual Studio 2010\Projects\PETROCKET_CGDC_2013\salvation-dev\include"/>
+        <Property key="PanelName" value="MainMenu"/>
+        <Property key="PanelNamespace" value="Salvation"/>
+        <Property key="SourceDirectory" value="C:\Users\alex\Documents\Visual Studio 2010\Projects\PETROCKET_CGDC_2013\salvation-dev\src"/>
+    </CodeGeneratorSettings>
+</MyGUI>
