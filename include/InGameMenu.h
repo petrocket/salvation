@@ -27,13 +27,14 @@ namespace Salvation
 		void update();
 
 		void quit(MyGUI::WidgetPtr _sender);
-
+		void navButtonPressed(MyGUI::WidgetPtr _sender);
 	private:
 		std::vector<MyGUI::WidgetPtr> mNavButtons;
 
 		bool getScreenspaceCoords(Ogre::SceneNode* node, Ogre::Camera* camera, Ogre::Vector2& result);
 		void createNavButtons();
 		void setNavButtonsVisible(bool visible);
+
 
 	//%LE Widget_Declaration list start
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mDialogWindowWindow, "DialogWindow");

@@ -102,15 +102,19 @@ xcopy "$(SolutionDir)..\..\media" "$(OGRE_HOME)\media" /e /y /i /r</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\include\Game.h" />
     <ClInclude Include="..\..\include\GameAudioInterface.h" />
     <ClInclude Include="..\..\include\InGameMenu.h" />
     <ClInclude Include="..\..\include\MainMenu.h" />
+    <ClInclude Include="..\..\include\OgreUtil.h" />
+    <ClInclude Include="..\..\include\Ship.h" />
     <ClInclude Include="BaseApplication.h" />
     <ClInclude Include="GameButton.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="TutorialApplication.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Ship.cpp" />
     <ClCompile Include="..\..\src\Game.cpp" />
     <ClCompile Include="..\..\src\InGameMenu.cpp" />
     <ClCompile Include="..\..\src\MainMenu.cpp" />

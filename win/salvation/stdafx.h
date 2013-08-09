@@ -21,6 +21,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include "windows.h"
 #endif
+#include <math.h>
 
 #include <SFML/Audio.hpp>
 
@@ -28,11 +29,12 @@
 #include "MyGUI_OgrePlatform.h"
 #include "BaseLayout/BaseLayout.h"
 
-
-#include "GameAudioInterface.h"
 #include "TutorialApplication.h"
 #include "BaseApplication.h"
 #include "Game.h"
-#include "MainMenu.h"
-#include "InGameMenu.h"
+#include "GameAudioInterface.h"
 #include "GameButton.h"
+#include "InGameMenu.h"
+#include "MainMenu.h"
+#include "Ship.h"
+#include "OgreUtil.h"
