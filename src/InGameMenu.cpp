@@ -78,12 +78,28 @@ namespace Salvation
 
 	void InGameMenu::update()
 	{
+		setNavButtonsVisible(false);
+
 		switch(Game::getSingleton().getGameState()) {
 			case GameStateNav:
 				if(!mNavButtons.size()) {
 					createNavButtons();
 				}
+				setNavButtonsVisible(true);
+				break;
+			case GameStateMainMenu:
+				if(mNavButtons.size()) {
+					for(unsigned int i = 0; i < mNavButtons.size(); i++) {
+						Game::getSingleton().mGUI->destroyWidget(mNavButtons[i]);
+					}
 
+					mNavButtons.clear();
+				}
+			case GameStateSpace:
+			case GameStateCity:
+			case GameStateAsteroid:
+			case GameStateBattle:
+			default:
 				break;
 		}
 	}
@@ -92,7 +108,7 @@ namespace Salvation
 	{
 		float height = Game::getSingleton().mRenderWindow->getHeight();
 		float width = Game::getSingleton().mRenderWindow->getWidth();
-
+		
 		for(unsigned int i =0; i < Game::getSingleton().mGameNodes.size(); i++) {
 			GameNode *node = Game::getSingleton().mGameNodes[i];
 			Ogre::Vector2 result;
@@ -102,7 +118,9 @@ namespace Salvation
 
 				float x = result.x * width;
 				float y = result.y * height;
-				MyGUI::IntCoord coord(x,y,100,100);
+				float buttonSize = 50.0;
+				float halfButtonSize = buttonSize * 0.5f;
+				MyGUI::IntCoord coord(x - halfButtonSize,y - halfButtonSize,buttonSize,buttonSize);
 
 				MyGUI::ButtonPtr button = mMainWidget->createWidget<MyGUI::Button>(
 					"Button", 
@@ -110,16 +128,45 @@ namespace Salvation
 					MyGUI::Align::Default, 
 					node->title + "Button");
 				button->setCaption(node->title);
+				button->setAlpha(0.0);
+				button->setUserData(i);
+				button->setVisible(node->visible);
 				button->eventMouseSetFocus += MyGUI::newDelegate(playButtonOver);
-				button->eventMouseButtonClick += MyGUI::newDelegate(playButtonClick);
+				button->eventMouseButtonClick += MyGUI::newDelegate(this,&InGameMenu::navButtonPressed);
 
+				mNavButtons.push_back(button);
 			}
+		}
+	}
+
+	void InGameMenu::navButtonPressed(MyGUI::WidgetPtr _sender)
+	{
+		unsigned int i = *(_sender->getUserData<unsigned int>());
+		if(Game::getSingleton().travelToNodeWithIndex(i)) {
+			playButtonClick(_sender);
+		}
+		else {
+			playEffect("error.ogg");
 		}
 	}
 
 	void InGameMenu::setNavButtonsVisible(bool visible)
 	{
-
+		for(unsigned int i = 0; i < mNavButtons.size(); i++) {
+			if(!visible) {
+				mNavButtons[i]->setVisible(false);
+			}
+			else {
+				// only show nav buttons whose nodes are visible
+				if(i < Game::getSingleton().mGameNodes.size()) {
+					GameNode *node = Game::getSingleton().mGameNodes[i];
+					mNavButtons[i]->setVisible(node->visible);
+				}
+				else {
+					mNavButtons[i]->setVisible(true);
+				}
+			}
+		}
 	}
 
 } // Salvation
