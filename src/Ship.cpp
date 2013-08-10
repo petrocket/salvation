@@ -12,6 +12,16 @@
 Ship::Ship(void)
 {
 	reset();
+	mRangeBillboardSet = Game::getSingleton().mSceneManager->createBillboardSet();
+	mRangeBillboardSet->setAutoUpdate(true);
+	mRangeBillboardSet->setDefaultDimensions(mMaxJumpRange * 2.0,mMaxJumpRange * 2.0);
+
+	Ogre::MaterialPtr mat = Ogre::MaterialManager::getSingleton().getByName("RangeMaterial");
+	mRangeBillboardSet->setMaterial(mat);
+	Ogre::SceneNode *n = Game::getSingleton().mSceneManager->getRootSceneNode()->createChildSceneNode();
+	n->attachObject(mRangeBillboardSet);
+
+	mRangeBillboard = mRangeBillboardSet->createBillboard(Ogre::Vector3::ZERO);
 }
 
 

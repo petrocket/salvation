@@ -15,3 +15,25 @@ material Spacescape1024
       }
    }
 }
+
+material RangeMaterial
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+			diffuse 1.0 1.0 1.0 0.8
+			scene_blend alpha_blend
+			depth_write off
+			fog_override on
+
+			texture_unit
+			{
+				tex_address_mode clamp
+				texture white-circle.png
+			}
+
+		}
+	}
+}

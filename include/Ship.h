@@ -34,6 +34,9 @@ public:
 
 	int mWeaponsLevel; // weapons level (strength & recharge)
 	float mWeaponsDamage; // damage to weapons system
+
+	Ogre::BillboardSet *mRangeBillboardSet;
+	Ogre::Billboard *mRangeBillboard;
 };
 
 #endif

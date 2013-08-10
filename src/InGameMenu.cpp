@@ -19,6 +19,13 @@ namespace Salvation
 		mSettingsButton->eventMouseButtonClick += MyGUI::newDelegate(playButtonClick);
 
 		setVisible(false);
+
+		/*
+		const MyGUI::IntSize size(200, 200);
+		mJumpRange = MyGUI::Gui::getInstance().createWidget<MyGUI::ImageBox>("ImageBox",MyGUI::IntCoord(0,0, size.width, size.height), MyGUI::Align::Default, "Back");
+//		mJumpRange = mMainWidget->createWidget<MyGUI::ImageBox>("ImageBox", MyGUI::IntCoord(0,0, size.width, size.height), MyGUI::Align::Default);
+		mJumpRange->setImageTexture("white-circle.png");
+		*/
 	}
 
 	InGameMenu::~InGameMenu()
@@ -120,17 +127,16 @@ namespace Salvation
 
 				float x = result.x * width;
 				float y = result.y * height;
-				float buttonSize = 50.0;
+				float buttonSize = 26.0;
 				float halfButtonSize = buttonSize * 0.5f;
 				MyGUI::IntCoord coord(x - halfButtonSize,y - halfButtonSize,buttonSize,buttonSize);
 
 				MyGUI::ButtonPtr button = mMainWidget->createWidget<MyGUI::Button>(
-					"Button", 
+					"ButtonNavSkin", 
 					coord, 
 					MyGUI::Align::Default, 
 					node->title + "Button");
 				button->setCaption(node->title);
-				button->setAlpha(0.0);
 				button->setUserData(i);
 				button->setVisible(node->visible);
 				button->eventMouseSetFocus += MyGUI::newDelegate(playButtonOver);
@@ -155,6 +161,24 @@ namespace Salvation
 	void InGameMenu::setNavButtonsVisible(bool visible)
 	{
 		for(unsigned int i = 0; i < mNavButtons.size(); i++) {
+			MyGUI::ButtonPtr btn = mNavButtons[i];
+			if(i == Game::getSingleton().mCurrentNodeIdx) {
+				/*
+				MyGUI::IntPoint center = btn->getAbsolutePosition();
+				center.left += btn->getSize().width * 0.5;
+				center.top += btn->getSize().height * 0.5;
+
+				MyGUI::IntPoint pos = center;
+				pos.left -= mJumpRange->getSize().width * 0.5;
+				pos.top -= mJumpRange->getSize().height * 0.5;
+
+				mJumpRange->setPosition(pos);
+				*/
+				btn->setStateSelected(true);
+			}
+			else {
+				btn->setStateSelected(false);
+			}
 			if(!visible) {
 				mNavButtons[i]->setVisible(false);
 			}

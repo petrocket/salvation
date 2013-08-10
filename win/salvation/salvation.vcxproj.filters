@@ -71,7 +71,7 @@
     <ClCompile Include="..\..\src\Game.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Ship.cpp">
+    <ClCompile Include="..\..\src\Ship.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

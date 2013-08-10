@@ -22,6 +22,7 @@
 #include "windows.h"
 #endif
 #include <math.h>
+#include <time.h>
 
 #include <SFML/Audio.hpp>
 

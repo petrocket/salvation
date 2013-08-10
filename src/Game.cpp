@@ -93,7 +93,7 @@ void Game::createGameNodes(int numSectors, int nodesPerSector)
 
 	mGameNodesSceneNode =  mSceneManager->getRootSceneNode()->createChildSceneNode();
 
-	//srand(1);
+	srand(time(NULL));
 	
 	int numColumns = 0;
 	int sector = 0;
@@ -144,11 +144,13 @@ void Game::createGameNodes(int numSectors, int nodesPerSector)
 			}
 			n->scenenode = mGameNodesSceneNode->createChildSceneNode(Ogre::Vector3(pos.x,0,pos.y));
 
+			/*
 			Ogre::Entity *ent = mSceneManager->createEntity(n->title,
 				Ogre::SceneManager::PT_SPHERE);
 			n->scenenode->setScale(0.4f,0.4f,0.4f);
 			n->scenenode->attachObject(ent);
 			//n->scenenode->showBoundingBox(true);
+			*/
 			n->scenenode->setVisible(n->visible);
 			mGameNodes.push_back(n);
 			numNodes++;
@@ -213,6 +215,12 @@ void Game::play()
 	mPlayerShip->reset();
 
 	createGameNodes(3,4);
+
+	mPlayerShip->mRangeBillboard->setPosition(
+		mGameNodes[mCurrentNodeIdx]->scenenode->getPosition());
+	mPlayerShip->mRangeBillboardSet->setDefaultDimensions(
+		mPlayerShip->mMaxJumpRange * 2.0,
+		mPlayerShip->mMaxJumpRange * 2.0);
 
 	updateVisibleNodes();
 
@@ -304,6 +312,11 @@ bool Game::travelToNodeWithIndex(unsigned int i, bool force)
 
 	mCurrentNodeIdx = i;
 	
+	mPlayerShip->mRangeBillboard->setPosition(
+		mGameNodes[mCurrentNodeIdx]->scenenode->getPosition());
+	mPlayerShip->mRangeBillboardSet->setDefaultDimensions(
+		mPlayerShip->mMaxJumpRange * 2.0,
+		mPlayerShip->mMaxJumpRange * 2.0);
 	updateVisibleNodes();
 	
 	mInGameMenu->update();
