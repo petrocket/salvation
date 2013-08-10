@@ -7,6 +7,18 @@
 #else
 
 #include "Ogre.h"
+#include "MyGUI.h"
+#include "MyGUI_OgrePlatform.h"
+
+#include <OIS.h>
+
+#ifdef OGRE_IS_IOS
+#   include <OISMultiTouch.h>
+#endif
+
+#include "Ship.h"
+#include "InGameMenu.h"
+#include "MainMenu.h"
 
 #endif
 
@@ -77,7 +89,9 @@ public:
 	int mCurrentNodeIdx;
 	std::vector<GameNode *>mGameNodes;
 
+#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
 	sf::Music mMusic;
+#endif
 private:
 	GameState mGameState;
 	GameState mPrevGameState;

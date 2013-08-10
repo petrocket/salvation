@@ -152,7 +152,7 @@ bool OgreFramework::initOgre(Ogre::String wndTitle, OIS::KeyListener *pKeyListen
     */
 	m_pRenderWnd->setActive(true);
     
-    mGame = new Game(m_pSceneMgr);
+    mGame = new Game(m_pSceneMgr, m_pRenderWnd, m_pCamera);
     
 	return true;
 }

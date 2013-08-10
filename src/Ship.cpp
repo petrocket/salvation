@@ -1,4 +1,12 @@
+#include "OgrePlatform.h"
+
+#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
+// using pch
 #include "stdafx.h"
+#else
+
+#include "Ship.h"
+#endif
 
 
 Ship::Ship(void)

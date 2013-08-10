@@ -7,6 +7,8 @@
 #else
 
 #include "Game.h"
+#include "OgreUtil.h"
+#include "GameAudioInterface.h"
 
 #endif
 

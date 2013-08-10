@@ -7,6 +7,8 @@
 #else
 
 #include "MainMenu.h"
+#include "GameAudioInterface.h"
+#include "Game.h"
 
 #endif
 

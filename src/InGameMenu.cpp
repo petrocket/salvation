@@ -1,4 +1,6 @@
 #include "InGameMenu.h"
+#include "GameAudioInterface.h"
+#include "Game.h"
 
 namespace Salvation
 {

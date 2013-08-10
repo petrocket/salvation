@@ -6,6 +6,7 @@
 	#include "stdafx.h"
 #else
 
+#include "MyGUI.h"
 #include "BaseLayout/BaseLayout.h"
 
 #endif

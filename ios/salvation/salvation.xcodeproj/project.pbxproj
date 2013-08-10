@@ -7,6 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FA403DF917B5C82500ED7628 /* Ship.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA403DF817B5C82500ED7628 /* Ship.cpp */; };
+		FA403DFC17B5C93700ED7628 /* GameAudio.mm in Sources */ = {isa = PBXBuildFile; fileRef = FA403DFB17B5C93700ED7628 /* GameAudio.mm */; };
+		FA403E0017B5C9A700ED7628 /* libCommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA403DFD17B5C9A600ED7628 /* libCommon.a */; };
+		FA403E0117B5C9A700ED7628 /* libMyGUI.OgrePlatform.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA403DFE17B5C9A600ED7628 /* libMyGUI.OgrePlatform.a */; };
+		FA403E0217B5C9A700ED7628 /* libMyGUIEngineStatic.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA403DFF17B5C9A700ED7628 /* libMyGUIEngineStatic.a */; };
+		FA403E0317B5CAEC00ED7628 /* InGameMenu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA5B829C17B5B15200153BB2 /* InGameMenu.cpp */; };
+		FA403E0417B5CAEE00ED7628 /* MainMenu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA5B829D17B5B15200153BB2 /* MainMenu.cpp */; };
 		FAB9EC4517AD425700A6BEB8 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAB9EC4417AD425700A6BEB8 /* CoreGraphics.framework */; };
 		FAB9EC4717AD425700A6BEB8 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAB9EC4617AD425700A6BEB8 /* Foundation.framework */; };
 		FAB9EC4917AD425700A6BEB8 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAB9EC4817AD425700A6BEB8 /* OpenGLES.framework */; };
@@ -23,6 +30,21 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		FA403DF817B5C82500ED7628 /* Ship.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Ship.cpp; path = ../../../src/Ship.cpp; sourceTree = "<group>"; };
+		FA403DFA17B5C93700ED7628 /* GameAudio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameAudio.h; sourceTree = "<group>"; };
+		FA403DFB17B5C93700ED7628 /* GameAudio.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GameAudio.mm; sourceTree = "<group>"; };
+		FA403DFD17B5C9A600ED7628 /* libCommon.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libCommon.a; path = ../../../../mygui/MyGUI_3.2.0/BuildiOS/lib/Debug/libCommon.a; sourceTree = "<group>"; };
+		FA403DFE17B5C9A600ED7628 /* libMyGUI.OgrePlatform.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libMyGUI.OgrePlatform.a; path = ../../../../mygui/MyGUI_3.2.0/BuildiOS/lib/Debug/libMyGUI.OgrePlatform.a; sourceTree = "<group>"; };
+		FA403DFF17B5C9A700ED7628 /* libMyGUIEngineStatic.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libMyGUIEngineStatic.a; path = ../../../../mygui/MyGUI_3.2.0/BuildiOS/lib/Debug/libMyGUIEngineStatic.a; sourceTree = "<group>"; };
+		FA5B829517B5B14500153BB2 /* GameAudioInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GameAudioInterface.h; path = ../../../include/GameAudioInterface.h; sourceTree = "<group>"; };
+		FA5B829617B5B14500153BB2 /* GameButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GameButton.h; path = ../../../include/GameButton.h; sourceTree = "<group>"; };
+		FA5B829717B5B14500153BB2 /* InGameMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InGameMenu.h; path = ../../../include/InGameMenu.h; sourceTree = "<group>"; };
+		FA5B829817B5B14500153BB2 /* MainMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MainMenu.h; path = ../../../include/MainMenu.h; sourceTree = "<group>"; };
+		FA5B829917B5B14500153BB2 /* OgreUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OgreUtil.h; path = ../../../include/OgreUtil.h; sourceTree = "<group>"; };
+		FA5B829A17B5B14500153BB2 /* Ship.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Ship.h; path = ../../../include/Ship.h; sourceTree = "<group>"; };
+		FA5B829B17B5B15200153BB2 /* GameButton.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = GameButton.cpp; path = ../../../src/GameButton.cpp; sourceTree = "<group>"; };
+		FA5B829C17B5B15200153BB2 /* InGameMenu.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = InGameMenu.cpp; path = ../../../src/InGameMenu.cpp; sourceTree = "<group>"; };
+		FA5B829D17B5B15200153BB2 /* MainMenu.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = MainMenu.cpp; path = ../../../src/MainMenu.cpp; sourceTree = "<group>"; };
 		FAB9EC4117AD425700A6BEB8 /* salvation.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = salvation.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FAB9EC4417AD425700A6BEB8 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		FAB9EC4617AD425700A6BEB8 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -111,6 +133,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FA403E0017B5C9A700ED7628 /* libCommon.a in Frameworks */,
+				FA403E0117B5C9A700ED7628 /* libMyGUI.OgrePlatform.a in Frameworks */,
+				FA403E0217B5C9A700ED7628 /* libMyGUIEngineStatic.a in Frameworks */,
 				FAB9EC4517AD425700A6BEB8 /* CoreGraphics.framework in Frameworks */,
 				FAB9EC4717AD425700A6BEB8 /* Foundation.framework in Frameworks */,
 				FAB9EC4917AD425700A6BEB8 /* OpenGLES.framework in Frameworks */,
@@ -125,6 +150,9 @@
 		FAB9EC3717AD425700A6BEB8 = {
 			isa = PBXGroup;
 			children = (
+				FA403DFD17B5C9A600ED7628 /* libCommon.a */,
+				FA403DFE17B5C9A600ED7628 /* libMyGUI.OgrePlatform.a */,
+				FA403DFF17B5C9A700ED7628 /* libMyGUIEngineStatic.a */,
 				FAB9EC4E17AD425700A6BEB8 /* salvation */,
 				FAB9EC4317AD425700A6BEB8 /* Frameworks */,
 				FAB9EC4217AD425700A6BEB8 /* Products */,
@@ -154,12 +182,24 @@
 		FAB9EC4E17AD425700A6BEB8 /* salvation */ = {
 			isa = PBXGroup;
 			children = (
-				FAB9EC5217AD425700A6BEB8 /* InfoPlist.strings */,
-				FAB9EC5517AD425700A6BEB8 /* main.mm */,
-				FAB9ECB017ADFFCB00A6BEB8 /* Game.h */,
-				FAB9ECB117ADFFD100A6BEB8 /* Game.cpp */,
+				FA403DFA17B5C93700ED7628 /* GameAudio.h */,
+				FA403DFB17B5C93700ED7628 /* GameAudio.mm */,
 				FAB9EC5717AD425700A6BEB8 /* Basic Ogre Framework */,
+				FAB9ECB117ADFFD100A6BEB8 /* Game.cpp */,
+				FAB9ECB017ADFFCB00A6BEB8 /* Game.h */,
+				FA5B829517B5B14500153BB2 /* GameAudioInterface.h */,
+				FA5B829B17B5B15200153BB2 /* GameButton.cpp */,
+				FA5B829617B5B14500153BB2 /* GameButton.h */,
+				FAB9EC5217AD425700A6BEB8 /* InfoPlist.strings */,
+				FA5B829C17B5B15200153BB2 /* InGameMenu.cpp */,
+				FA5B829717B5B14500153BB2 /* InGameMenu.h */,
+				FAB9EC5517AD425700A6BEB8 /* main.mm */,
+				FA5B829D17B5B15200153BB2 /* MainMenu.cpp */,
+				FA5B829817B5B14500153BB2 /* MainMenu.h */,
+				FA5B829917B5B14500153BB2 /* OgreUtil.h */,
 				FAB9EC6017AD425800A6BEB8 /* Resources */,
+				FA403DF817B5C82500ED7628 /* Ship.cpp */,
+				FA5B829A17B5B14500153BB2 /* Ship.h */,
 				FAB9EC4F17AD425700A6BEB8 /* Supporting Files */,
 			);
 			path = salvation;
@@ -406,6 +446,10 @@
 				FAB9EC5A17AD425700A6BEB8 /* OgreDemoApp.cpp in Sources */,
 				FAB9EC5D17AD425700A6BEB8 /* OgreFramework.cpp in Sources */,
 				FAB9ECB217ADFFD100A6BEB8 /* Game.cpp in Sources */,
+				FA403E0317B5CAEC00ED7628 /* InGameMenu.cpp in Sources */,
+				FA403E0417B5CAEE00ED7628 /* MainMenu.cpp in Sources */,
+				FA403DF917B5C82500ED7628 /* Ship.cpp in Sources */,
+				FA403DFC17B5C93700ED7628 /* GameAudio.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -486,6 +530,13 @@
 					"\"$(OGRE_SDK_ROOT)/include/OIS\"",
 					"\"$(OGRE_SDK_ROOT)/iOSDependencies/include\"",
 					"\"$(OGRE_SDK_ROOT)/include/OGRE/Overlay\"",
+					/Users/alex/Documents/workspace/mygui/MyGUI_3.2.0/MyGUIEngine/include,
+					/Users/alex/Documents/workspace/mygui/MyGUI_3.2.0/Platforms/Ogre/OgrePlatform/include,
+					/Users/alex/Documents/workspace/mygui/MyGUI_3.2.0/Common,
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../../../mygui/MyGUI_3.2.0/BuildiOS/lib/Debug\"",
 				);
 				OGRE_SDK_ROOT = "/Users/alex/Documents/workspace/ogre/1.8.x/1.8.1-ios-sdk";
 				OTHER_CFLAGS = "-DOGRE_USE_GLES2=1";
@@ -519,6 +570,13 @@
 					"\"$(OGRE_SDK_ROOT)/include/OIS\"",
 					"\"$(OGRE_SDK_ROOT)/iOSDependencies/include\"",
 					"\"$(OGRE_SDK_ROOT)/include/OGRE/Overlay\"",
+					/Users/alex/Documents/workspace/mygui/MyGUI_3.2.0/MyGUIEngine/include,
+					/Users/alex/Documents/workspace/mygui/MyGUI_3.2.0/Platforms/Ogre/OgrePlatform/include,
+					/Users/alex/Documents/workspace/mygui/MyGUI_3.2.0/Common,
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../../../mygui/MyGUI_3.2.0/BuildiOS/lib/Debug\"",
 				);
 				OGRE_SDK_ROOT = "/Users/alex/Documents/workspace/ogre/1.8.x/1.8.1-ios-sdk";
 				OTHER_CFLAGS = "-DOGRE_USE_GLES2=1";

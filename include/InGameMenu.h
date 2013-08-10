@@ -1,3 +1,5 @@
+#include "OgrePlatform.h"
+
 #ifndef _IN_GAME_MENU_H_
 #define _IN_GAME_MENU_H_
 
@@ -6,6 +8,7 @@
 	#include "stdafx.h"
 #else
 
+#include "Ogre.h"
 #include "BaseLayout/BaseLayout.h"
 
 #endif

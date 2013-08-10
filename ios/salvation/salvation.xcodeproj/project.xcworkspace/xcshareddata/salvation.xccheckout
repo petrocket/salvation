@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>6870717A-82C9-4305-BD6A-00E47DA15135</string>
+	<key>IDESourceControlProjectName</key>
+	<string>salvation</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>4487F4B9-57F9-4F24-8166-E29114DED36F</key>
+		<string>ssh://inthepines.co:20999/salvation-dev</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>ios/salvation/salvation.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>4487F4B9-57F9-4F24-8166-E29114DED36F</key>
+		<string>../../../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>ssh://inthepines.co:20999/salvation-dev</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>4487F4B9-57F9-4F24-8166-E29114DED36F</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>4487F4B9-57F9-4F24-8166-E29114DED36F</string>
+			<key>IDESourceControlWCCName</key>
+			<string>salvation-dev</string>
+		</dict>
+	</array>
+</dict>
+</plist>

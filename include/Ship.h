@@ -1,7 +1,12 @@
 #ifndef __SHIP_H_
 #define __SHIP_H_
 
+#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
+// using pch
 #include "stdafx.h"
+#else
+
+#endif
 
 class Ship
 {
