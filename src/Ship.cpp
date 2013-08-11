@@ -52,7 +52,7 @@ void Ship::reset()
 float Ship::maxJumpRangeForEngineLevel(int level)
 {
 	if(level <= 1) {
-		return 300.0;
+		return 600.0;
 	}
 	else if(level <= 2) {
 		return 600.0;

@@ -17,16 +17,29 @@ template<> Game* Ogre::Singleton<Game>::msSingleton = 0;
 //-------------------------------------------------------------------------------------
 Game::Game(Ogre::SceneManager *mgr, Ogre::RenderWindow *win, Ogre::Camera* cam) :
 	mCamera(cam),
+	mConfig(0),
 	mCurrentNodeIdx(0),
 	mGameNodesSceneNode(0),
 	mGUI(0),
 	mMainMenuLayout(0),
+	mNavGridNode(0),
+	mNavOpen(false),
+	mGameTimeRemaining(0.0),
 	mPlatform(0),
 	mPlayerShip(0),
+	mPaused(false),
 	mShutdown(false),
 	mSceneManager(mgr),
 	mRenderWindow(win)
 {
+	mConfig = new Ogre::GameConfig();
+	mConfig->load("Game.cfg","=:\t", false);
+	mShowGrid = Ogre::StringConverter::parseBool(
+		mConfig->getSetting("showGrid","","false"));
+
+	mMaxGameTime = Ogre::StringConverter::parseReal(
+		mConfig->getSetting("maxGameTime","","180"));
+
 }
 
 //-------------------------------------------------------------------------------------
@@ -49,7 +62,39 @@ Game::~Game(void)
 		mPlayerShip = 0;
 	}
 
+	mConfig->save();
+
 	mGameNodes.clear();
+}
+
+bool Game::canTravelToNodeWithIndex(unsigned int i)
+{
+	if(mGameState != GameStateSpace) {
+		return false;
+	}
+
+	if(i >= mGameNodes.size()) {
+		return false;
+	}
+
+	if(mCurrentNodeIdx == i) {
+		return false;
+	}
+
+	GameNode *curNode = mGameNodes[mCurrentNodeIdx];
+	GameNode *destNode = mGameNodes[i];
+
+	Ogre::Vector3 curPos = curNode->scenenode->getPosition();
+	Ogre::Vector3 destPos = destNode->scenenode->getPosition();
+
+	// check range
+	float rangeSquared = mPlayerShip->mMaxJumpRange * mPlayerShip->mMaxJumpRange;
+
+	if(curPos.squaredDistance(destPos) > rangeSquared) {
+		return false;
+	}
+	
+	return true;
 }
 
 void randomPointInCircle(float radius, float &x, float &y)
@@ -78,6 +123,12 @@ bool isWithinMinRadius(Ogre::Vector2 pos, float radius, std::vector<GameNode *> 
 		}
 	}
 	return false;
+}
+
+//-------------------------------------------------------------------------------------
+void Game::closeEndGameDialogPressed(MyGUI::WidgetPtr _sender)
+{
+	setGameState(GameStateMainMenu);
 }
 
 //-------------------------------------------------------------------------------------
@@ -134,14 +185,50 @@ void Game::createGameNodes(int numSectors, int nodesPerSector)
 			n->currentNode = false;
 			n->visible = false;
 			if(sector == 0 && i == 0) {
+				// first node has planet and station
 				pos.x = 0;
 				n->currentNode = true;
 				n->visible = true;
 				startPos = Ogre::Vector2(pos.x,pos.y);
+				n->hasCity = true;
+				n->hasStation = true;
+				n->type = GameNodeTypePlanet;
 			}
 			else if(sector == numSectors - 1 && i == nodesPerSector - 1) {
-				pos.x = sectorCenter.x + sectorRadius;
+				// last node is planet
+				pos.x = (float)mRenderWindow->getWidth();
+				n->hasCity = true;
+				n->hasStation = Ogre::Math::UnitRandom() > 0.5;
+				n->type = GameNodeTypePlanet;
 			}
+			else if(i == 0) {
+				// first node in sector is always a planet
+				n->hasCity = true;
+				n->hasStation = Ogre::Math::UnitRandom() > 0.5;
+				n->type = GameNodeTypePlanet;
+			}
+			else {
+				float r = Ogre::Math::UnitRandom();
+				if(r < 0.25) {
+					n->type = GameNodeTypeAsteroids;
+					n->hasStation = true;
+				}
+				else if(r < 0.5) {
+					n->type = GameNodeTypeSpace;
+					n->hasStation = true;
+				}
+				else {
+					n->type = GameNodeTypePlanet;
+					n->hasCity = Ogre::Math::UnitRandom() > 0.5;
+					if(!n->hasCity) {
+						n->hasStation = true;
+					}
+					else {
+						n->hasStation = Ogre::Math::UnitRandom() > 0.5;
+					}
+				}
+			}
+
 			n->scenenode = mGameNodesSceneNode->createChildSceneNode(Ogre::Vector3(pos.x,0,pos.y));
 
 			/*
@@ -176,6 +263,58 @@ void Game::createScene(void)
 	mSceneManager->setSkyBox(true, "Spacescape1024");
 
 	playBackgroundMusic("music.ogg");
+
+	mDangerZones = mSceneManager->createBillboardSet();
+	mDangerZones->setAutoUpdate(true);
+
+	float offset = 800.0f;
+	Ogre::MaterialPtr mat = Ogre::MaterialManager::getSingleton().getByName("RangeMaterial");
+	mDangerZones->setMaterial(mat);
+	mDangerZoneNode =  mSceneManager->getRootSceneNode()->createChildSceneNode();
+	mDangerZoneNode->setPosition(-offset * 0.5, 0, mRenderWindow->getHeight() * 0.5f);
+	mDangerZoneNode->attachObject(mDangerZones);
+	
+	mDangerZoneStart = offset;
+	mWarningZoneSize = 200.0;
+	mDangerZoneEnd = mDangerZoneStart + (float)mRenderWindow->getWidth() - mWarningZoneSize;
+
+	mWarningZone = mDangerZones->createBillboard(Ogre::Vector3::ZERO);
+	mWarningZone->setColour(Ogre::ColourValue(1.0,1.0,0.5,1.0));
+	mWarningZone->setDimensions(mDangerZoneStart + mWarningZoneSize,
+				(mDangerZoneStart * 2.0) + mWarningZoneSize);
+
+	mDangerZone = mDangerZones->createBillboard(Ogre::Vector3::ZERO);
+	mDangerZone->setColour(Ogre::ColourValue(1.0,0,0,1.0));
+	mDangerZone->setDimensions(mDangerZoneStart,mDangerZoneStart * 2.0);
+
+	setShowNavGrid(mShowGrid);
+
+	/*
+	mSafeZones = mSceneManager->createBillboardSet();
+	mSafeZones->setAutoextend(true);
+	mSafeZones->setDefaultDimensions(offset + 200, offset + 200);
+	*/
+}
+
+void Game::depart()
+{
+	if(mGameState == GameStateCity || mGameState == GameStateStation) {
+		setGameState(GameStateSpace);
+	}
+}
+
+void Game::dock()
+{
+	if(mGameState != GameStateStation) {
+		setGameState(GameStateStation);
+	}
+}
+
+void Game::land()
+{
+	if(mGameState != GameStateCity) {
+		setGameState(GameStateCity);
+	}
 }
 
 void Game::exit()
@@ -214,7 +353,12 @@ void Game::play()
 
 	mPlayerShip->reset();
 
-	createGameNodes(3,4);
+	int numSectors = Ogre::StringConverter::parseInt(
+		mConfig->getSetting("numSectors","","3"));
+	int numNodesPerSector = Ogre::StringConverter::parseInt(
+		mConfig->getSetting("numNodesPerSector","","4"));
+
+	createGameNodes(numSectors,numNodesPerSector);
 
 	mPlayerShip->mRangeBillboard->setPosition(
 		mGameNodes[mCurrentNodeIdx]->scenenode->getPosition());
@@ -237,7 +381,11 @@ void Game::play()
 	mCamera->setPosition(camPos);
 	mCamera->lookAt(Ogre::Vector3(camPos.x,0,camPos.z));
 
-	setGameState(GameStateNav);
+	setGameState(GameStateCity);
+	
+	mNavOpen = false;
+
+	mGameTimeRemaining = mMaxGameTime;
 }
 
 void Game::quit()
@@ -256,15 +404,64 @@ void Game::setGameState(GameState state)
 		case GameStateMainMenu:
 			mMainMenu->setVisible(true);
 			mInGameMenu->setVisible(false);
+			if(mPlayerShip->mRangeBillboardSet) {
+				mPlayerShip->mRangeBillboardSet->setVisible(false);
+			}
+			if(mDangerZoneNode) {
+				mDangerZoneNode->setVisible(false);
+			}
 			break;
+		case GameStateEnd:
+			{
+				GameNode *node = mGameNodes[mCurrentNodeIdx];
+				bool survive = false;
+				float x = node->scenenode->getPosition().x;
+				if( x > mRenderWindow->getWidth() - 100) {
+					survive = true;
+				}
+				else if(x > mRenderWindow->getWidth() - mWarningZoneSize) {
+					survive = Ogre::Math::UnitRandom() > 0.5;
+				}
+				if(survive) {
+					mInGameMenu->displayDialog("Game Over","You Survived!","win.png",
+						"",
+						NULL,
+						"CLOSE",
+						MyGUI::newDelegate(this,&Game::closeEndGameDialogPressed));
+				}
+				else {
+					mInGameMenu->displayDialog("Game Over","Your didn't make it","lose.png", 
+						"",
+						NULL,
+						"CLOSE",
+						MyGUI::newDelegate(this,&Game::closeEndGameDialogPressed));
+				}
+
+				break;
+			}
 		default:
-		case GameStateNav:
+			if(mNavOpen) {
+				if(mDangerZoneNode) {
+					mDangerZoneNode->setVisible(true);
+				}
+				if(mPlayerShip->mRangeBillboardSet) {
+					mPlayerShip->mRangeBillboardSet->setVisible(true);
+				}
+			}
 			mMainMenu->setVisible(false);
 			mInGameMenu->setVisible(true);
 			break;
 	};
 
 	mInGameMenu->update();
+}
+
+void Game::setMaxGameTime(double time)
+{
+	mMaxGameTime = time;
+	mConfig->setSetting(Ogre::String("maxGameTime"),
+		Ogre::StringConverter::toString((float)mMaxGameTime));
+	mConfig->save();
 }
 
 bool Game::keyPressed( const OIS::KeyEvent &arg )
@@ -285,30 +482,37 @@ bool Game::keyReleased( const OIS::KeyEvent &arg )
 	return true;
 }
 
-bool Game::travelToNodeWithIndex(unsigned int i, bool force)
+void Game::setShowNavGrid(bool show)
 {
-	if(i >= mGameNodes.size()) {
-		return false;
-	}
+	mShowGrid = show;
 
-	if(mCurrentNodeIdx == i) {
-		return false;
-	}
-
-	if(!force) {
-		GameNode *curNode = mGameNodes[mCurrentNodeIdx];
-		GameNode *destNode = mGameNodes[i];
-
-		Ogre::Vector3 curPos = curNode->scenenode->getPosition();
-		Ogre::Vector3 destPos = destNode->scenenode->getPosition();
-
-		// check range
-		float rangeSquared = mPlayerShip->mMaxJumpRange * mPlayerShip->mMaxJumpRange;
-
-		if(curPos.squaredDistance(destPos) > rangeSquared) {
-			return false;
+	if(mShowGrid) {
+		if(!mNavGridNode) {
+			Ogre::Entity *p = mSceneManager->createEntity(Ogre::SceneManager::PT_PLANE);
+			mNavGridNode = mSceneManager->getRootSceneNode()->createChildSceneNode();
+			mNavGridNode->attachObject(p);
+			mNavGridNode->lookAt( Ogre::Vector3::UNIT_Y, Ogre::Node::TS_WORLD,Ogre::Vector3::UNIT_Z );
+			mNavGridNode->setPosition((float)mRenderWindow->getWidth() * 0.5,
+				0,
+				(float)mRenderWindow->getHeight() * 0.5);
+			mNavGridNode->setScale(Ogre::Vector3(
+				(float)mRenderWindow->getWidth() * 0.01 * 0.5,
+				(float)mRenderWindow->getHeight() * 0.01 * 0.5,
+				(float)mRenderWindow->getHeight() * 0.01 * 0.5));
 		}
 	}
+
+	if(mNavGridNode) {
+		mNavGridNode->setVisible(mShowGrid);
+	}
+
+	mConfig->setSetting(Ogre::String("showGrid"),Ogre::StringConverter::toString(mShowGrid));
+	mConfig->save();
+}
+
+bool Game::travelToNodeWithIndex(unsigned int i, bool force)
+{
+	if(!force && !canTravelToNodeWithIndex(i)) return false;
 
 	mCurrentNodeIdx = i;
 	
@@ -319,6 +523,10 @@ bool Game::travelToNodeWithIndex(unsigned int i, bool force)
 		mPlayerShip->mMaxJumpRange * 2.0);
 	updateVisibleNodes();
 	
+	setGameState(GameStateSpace);
+
+	mNavOpen = false;
+
 	mInGameMenu->update();
 
 	playEffect("warp.ogg");
@@ -335,7 +543,40 @@ void Game::update(float dt)
 
 		Ogre::Root::getSingleton().queueEndRendering();
 		Ogre::Root::getSingleton().shutdown();
+		return;
 	}
+
+	if(mPaused) {
+		return;
+	}
+
+	if(mGameState <= GameStateMainMenu) {
+		return;
+	}
+
+	mGameTimeRemaining -= dt;
+	if(mGameTimeRemaining <= 0.0) {
+		mGameTimeRemaining = 0.0;
+		setGameState(GameStateEnd);
+	}
+
+	mInGameMenu->updateTimeLeft(mGameTimeRemaining);
+
+	float timeLeft = mGameTimeRemaining / mMaxGameTime;
+	float delta = (mDangerZoneEnd - mDangerZoneStart) * 2.0;
+	float dangerZoneSize = mDangerZoneStart + (delta * (1.0 - timeLeft));
+
+	mDangerZone->setDimensions(dangerZoneSize,dangerZoneSize * 2.0);
+	mWarningZone->setDimensions(dangerZoneSize + mWarningZoneSize * 2.0,
+			(dangerZoneSize * 2.0) + mWarningZoneSize * 2.0);
+
+	/*
+	mDangerZoneChildNode->setScale(
+		dangerZoneSize * 0.01,
+		1.0,
+		dangerZoneSize * 2.0 * 0.01
+		);
+		*/
 }
 
 void Game::updateVisibleNodes()
@@ -346,7 +587,7 @@ void Game::updateVisibleNodes()
 
 	Ogre::Vector3 curPos = curNode->scenenode->getPosition();
 
-	for(int i = 0; i < mGameNodes.size(); i++) {
+	for(unsigned int i = 0; i < mGameNodes.size(); i++) {
 		GameNode *n = mGameNodes[i];
 		if(n->scenenode->getPosition().squaredDistance(curPos) <= squaredRange) {
 			n->visible = true;

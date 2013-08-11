@@ -25,20 +25,40 @@ namespace Salvation
 		InGameMenu(MyGUI::Widget* _parent = nullptr);
 		virtual ~InGameMenu();
 
+		void displayDialog(Ogre::String title, 
+			Ogre::String message, 
+			Ogre::String imageName,
+			Ogre::String action1Name,
+			MyGUI::delegates::CDelegate1<MyGUI::WidgetPtr>::IDelegate *action1Delegate,
+			Ogre::String action2Name,
+			MyGUI::delegates::CDelegate1<MyGUI::WidgetPtr>::IDelegate *action2Delegate
+			);
 		void setVisible(bool visible);
+		
+		void closeDialog(MyGUI::WidgetPtr _sender);
+		void closeNav(MyGUI::WidgetPtr _sender);
+		void closeSettings(MyGUI::Window* _sender, const std::string& _name);
+		void depart(MyGUI::WidgetPtr _sender);
+		void dock(MyGUI::WidgetPtr _sender);
+		void land(MyGUI::WidgetPtr _sender);
+		void openNav(MyGUI::WidgetPtr _sender);
+		void openSettings(MyGUI::WidgetPtr _sender);
 
 		void update();
+		void updateTimeLeft(double secLeft);
 
 		void quit(MyGUI::WidgetPtr _sender);
 		void navButtonPressed(MyGUI::WidgetPtr _sender);
+		void toggleShowNavGrid(MyGUI::WidgetPtr _sender);
+		void travelToNode(MyGUI::WidgetPtr _sender);
+		void updateMaxGameTime(MyGUI::EditBox* _sender);
+
 	private:
 		std::vector<MyGUI::ButtonPtr> mNavButtons;
 
 		bool getScreenspaceCoords(Ogre::SceneNode* node, Ogre::Camera* camera, Ogre::Vector2& result);
 		void createNavButtons();
 		void setNavButtonsVisible(bool visible);
-
-		MyGUI::ImageBox *mJumpRange;
 
 	//%LE Widget_Declaration list start
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mDialogWindowWindow, "DialogWindow");
@@ -51,6 +71,8 @@ namespace Salvation
 		MyGUI::Button* mAction1Button;
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mDialogImageImageBox, "DialogImage");
 		MyGUI::ImageBox* mDialogImageImageBox;
+
+
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mNavLocationWidget, "NavLocation");
 		MyGUI::Widget* mNavLocationWidget;
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mNavButton, "Nav");
@@ -59,6 +81,9 @@ namespace Salvation
 		MyGUI::TextBox* mLocationDescriptionTextBox;
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mLandButton, "Land");
 		MyGUI::Button* mLandButton;
+		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mDockButton, "Dock");
+		MyGUI::Button* mDockButton;
+
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mShipWidget, "Ship");
 		MyGUI::Widget* mShipWidget;
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mStatsTextBox, "Stats");
@@ -73,6 +98,7 @@ namespace Salvation
 		MyGUI::TextBox* mMoneyTextBoxTextBox;
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mTimerTextBoxTextBox, "TimerTextBox");
 		MyGUI::TextBox* mTimerTextBoxTextBox;
+
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mLandedWidget, "Landed");
 		MyGUI::Widget* mLandedWidget;
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mLandedDescriptionTextBox, "LandedDescription");
@@ -81,6 +107,9 @@ namespace Salvation
 		MyGUI::Button* mDepartButton;
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mStoreButton, "Store");
 		MyGUI::Button* mStoreButton;
+		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mLandedNavMapButton, "landedNavMap");
+		MyGUI::Button* mLandedNavMapButton;
+
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mStoreWindowWindow, "StoreWindow");
 		MyGUI::Window* mStoreWindowWindow;
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mRepairButton, "Repair");
@@ -117,6 +146,21 @@ namespace Salvation
 		MyGUI::Button* mContactsButton1Button;
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mContactsButton2Button, "ContactsButton2");
 		MyGUI::Button* mContactsButton2Button;
+
+
+		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mSettingsWindow, "SettingsDialog");
+		MyGUI::Window* mSettingsWindow;
+		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mShowNavNodes, "showNavNodes");
+		MyGUI::Button* mShowNavNodes;
+		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mShowNavGrid, "showNavGrid");
+		MyGUI::Button* mShowNavGrid;
+		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mMaxGameTime, "maxGameTime");
+		MyGUI::EditBox* mMaxGameTime;
+
+		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mCloseNavButton, "closeNav");
+		MyGUI::Button* mCloseNavButton;
+
+
 	//%LE Widget_Declaration list end
 	};
 

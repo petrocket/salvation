@@ -35,6 +35,7 @@
 #include "Game.h"
 #include "GameAudioInterface.h"
 #include "GameButton.h"
+#include "GameConfig.h"
 #include "InGameMenu.h"
 #include "MainMenu.h"
 #include "Ship.h"

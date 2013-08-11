@@ -9,7 +9,6 @@ namespace Salvation
 	{
 		initialiseByAttributes(this, _parent);
 
-
 		mQuitButton->eventMouseButtonClick += MyGUI::newDelegate(this, &Salvation::InGameMenu::quit);
 		mQuitButton->eventMouseSetFocus += MyGUI::newDelegate(playButtonOver);
 		mQuitButton->eventMouseButtonClick += MyGUI::newDelegate(playButtonClick);
@@ -17,8 +16,27 @@ namespace Salvation
 
 		mSettingsButton->eventMouseSetFocus += MyGUI::newDelegate(playButtonOver);
 		mSettingsButton->eventMouseButtonClick += MyGUI::newDelegate(playButtonClick);
+		mSettingsButton->eventMouseButtonClick += MyGUI::newDelegate(this, &Salvation::InGameMenu::openSettings);
 
 		setVisible(false);
+
+		mSettingsWindow->setVisible(false);
+		mSettingsWindow->eventWindowButtonPressed += MyGUI::newDelegate(this, &Salvation::InGameMenu::closeSettings);
+
+		mShowNavGrid->eventMouseButtonClick += MyGUI::newDelegate(this, &Salvation::InGameMenu::toggleShowNavGrid);
+		mShowNavGrid->setStateSelected(Game::getSingleton().mShowGrid);
+
+		mMaxGameTime->eventEditTextChange += MyGUI::newDelegate(this, &Salvation::InGameMenu::updateMaxGameTime);
+		mMaxGameTime->setCaption(Ogre::StringConverter::toString((float)Game::getSingleton().mMaxGameTime));
+
+		mCloseNavButton->eventMouseButtonClick += MyGUI::newDelegate(this, &Salvation::InGameMenu::closeNav);
+		mDepartButton->eventMouseButtonClick += MyGUI::newDelegate(this, &Salvation::InGameMenu::depart);
+
+		mLandedNavMapButton->eventMouseButtonClick += MyGUI::newDelegate(this, &Salvation::InGameMenu::openNav);
+		mNavButton->eventMouseButtonClick  += MyGUI::newDelegate(this, &Salvation::InGameMenu::openNav);
+
+		mLandButton->eventMouseButtonClick  += MyGUI::newDelegate(this, &Salvation::InGameMenu::land);
+		mDockButton->eventMouseButtonClick  += MyGUI::newDelegate(this, &Salvation::InGameMenu::dock);
 
 		/*
 		const MyGUI::IntSize size(200, 200);
@@ -31,6 +49,64 @@ namespace Salvation
 	InGameMenu::~InGameMenu()
 	{
 	}
+
+	void InGameMenu::closeDialog(MyGUI::WidgetPtr _sender)
+	{
+		mDialogWindowWindow->setVisibleSmooth(false);
+	}
+
+	void InGameMenu::closeNav(MyGUI::WidgetPtr _sender)
+	{
+		Game::getSingleton().mNavOpen = false;
+		update();
+	}
+
+	void InGameMenu::displayDialog(Ogre::String title, 
+			Ogre::String message, 
+			Ogre::String imageName,
+			Ogre::String action1Name,
+			MyGUI::delegates::CDelegate1<MyGUI::WidgetPtr>::IDelegate *action1Delegate,
+			Ogre::String action2Name,
+			MyGUI::delegates::CDelegate1<MyGUI::WidgetPtr>::IDelegate *action2Delegate
+			)
+	{
+		mDialogTextBox->setCaption(title + "\n" + message);
+		if(action1Delegate) {
+			mAction1Button->setCaption(action1Name);
+			mAction1Button->eventMouseButtonClick.clear();
+			mAction1Button->eventMouseButtonClick += action1Delegate;
+			mAction1Button->setVisible(true);
+		}
+		else {
+			mAction1Button->setVisible(false);
+		}
+
+		if(action2Delegate) {
+			mOkButton->setCaption(action2Name);
+			mOkButton->eventMouseButtonClick.clear();
+			mOkButton->eventMouseButtonClick += action2Delegate;
+			mOkButton->setVisible(true);
+		}
+		else {
+			mOkButton->setVisible(false);
+		}
+
+		if(imageName.size()) {
+			mDialogImageImageBox->setImageTexture(imageName);
+			mDialogImageImageBox->setVisible(true);
+		}
+		else {
+			mDialogImageImageBox->setVisible(false);
+		}
+
+		mDialogWindowWindow->setVisibleSmooth(true);
+	}
+
+	void InGameMenu::dock(MyGUI::WidgetPtr _sender)
+	{
+		Game::getSingleton().dock();
+	}
+
 
 	/**
 	* This little snippet gets the screenspace coordinates for a MovableObject
@@ -70,6 +146,26 @@ namespace Salvation
 		Game::getSingleton().quit();
 	}
 
+	void InGameMenu::closeSettings(MyGUI::Window* _sender, const std::string& _name)
+	{
+		if(mSettingsWindow->getVisible()) {
+			mSettingsWindow->setVisibleSmooth(false);
+		}
+	}
+
+	void InGameMenu::openNav(MyGUI::WidgetPtr _sender)
+	{
+		Game::getSingleton().mNavOpen = true;
+		update();
+	}
+
+	void InGameMenu::openSettings(MyGUI::WidgetPtr _sender)
+	{
+		if(!mSettingsWindow->getVisible()) {
+			mSettingsWindow->setVisibleSmooth(true);
+		}
+	}
+
 	void InGameMenu::setVisible(bool visible)
 	{
 		mMainWidget->setVisible(visible);
@@ -85,17 +181,22 @@ namespace Salvation
 		}
 	}
 
+	void InGameMenu::toggleShowNavGrid(MyGUI::WidgetPtr _sender)
+	{
+		bool mNewState = !(Game::getSingleton().mShowGrid);
+
+		Game::getSingleton().setShowNavGrid(mNewState);
+		mShowNavGrid->setStateSelected(mNewState);
+	}
+
 	void InGameMenu::update()
 	{
 		setNavButtonsVisible(false);
 
+		mNavLocationWidget->setVisible(false);
+		mLandedWidget->setVisible(false);
+
 		switch(Game::getSingleton().getGameState()) {
-			case GameStateNav:
-				if(!mNavButtons.size()) {
-					createNavButtons();
-				}
-				setNavButtonsVisible(true);
-				break;
 			case GameStateMainMenu:
 				if(mNavButtons.size()) {
 					for(unsigned int i = 0; i < mNavButtons.size(); i++) {
@@ -104,13 +205,71 @@ namespace Salvation
 
 					mNavButtons.clear();
 				}
+				mCloseNavButton->setVisible(false);
+				break;
 			case GameStateSpace:
+				if(!Game::getSingleton().mNavOpen) {
+					mNavLocationWidget->setVisible(true);
+				}
+				break;
 			case GameStateCity:
-			case GameStateAsteroid:
+			case GameStateStation:
+				if(!Game::getSingleton().mNavOpen) {
+					mLandedWidget->setVisible(true);
+				}
+				break;
 			case GameStateBattle:
 			default:
 				break;
 		}
+
+		if(Game::getSingleton().mNavOpen) {
+			if(!mNavButtons.size()) {
+				createNavButtons();
+			}
+			setNavButtonsVisible(true);
+			mCloseNavButton->setVisible(true);
+		}
+		else {
+			setNavButtonsVisible(false);
+			mCloseNavButton->setVisible(false);
+		}
+	}
+
+	void InGameMenu::updateMaxGameTime(MyGUI::EditBox* _sender)
+	{
+		double time = Ogre::StringConverter::parseReal(_sender->getCaption());
+		Game::getSingleton().setMaxGameTime(time);
+	}
+
+	void InGameMenu::updateTimeLeft(double secLeft)
+	{
+		double time = secLeft;
+		int mins = floor(time / (60.0));
+		time -= mins * 60.0;
+
+		int sec = floor(time);
+		time -= sec;
+
+		int ms = time * 1000.0;
+
+		Ogre::String sMin = Ogre::StringConverter::toString(mins);
+		if(sMin.size() == 1) {
+			sMin = "0" + sMin;
+		}
+		Ogre::String sSec = Ogre::StringConverter::toString(sec);
+		if(sSec.size() == 1) {
+			sSec = "0" + sSec;
+		}
+		Ogre::String sMs = Ogre::StringConverter::toString(ms);
+		if(sMs.size() == 1) {
+			sMs = "00" + sMs;
+		}
+		else if(sMs.size() == 2) {
+			sMs = "0" + sMs;
+		}
+
+		mTimerTextBoxTextBox->setCaption("Time Left " + sMin + ":" + sSec + ":" + sMs);
 	}
 
 	void InGameMenu::createNavButtons()
@@ -147,9 +306,47 @@ namespace Salvation
 		}
 	}
 
+	void InGameMenu::depart(MyGUI::WidgetPtr _sender)
+	{
+		Game::getSingleton().depart();
+	}
+
+	void InGameMenu::land(MyGUI::WidgetPtr _sender)
+	{
+		Game::getSingleton().land();
+	}
+
 	void InGameMenu::navButtonPressed(MyGUI::WidgetPtr _sender)
 	{
 		unsigned int i = *(_sender->getUserData<unsigned int>());
+
+		playButtonClick(_sender);
+
+		if(Game::getSingleton().canTravelToNodeWithIndex(i)) {
+			mDialogWindowWindow->setUserData(i);
+			displayDialog("NAV NODE NAME","DESCRIPTION\n\nFuel Needed: 3\n\nDistance: 1","",
+				"CLOSE",
+				MyGUI::newDelegate(this,&InGameMenu::closeDialog),
+				"TRAVEL",
+				MyGUI::newDelegate(this,&InGameMenu::travelToNode)
+				);
+		}
+		else {
+			displayDialog("NAV NODE NAME","DESCRIPTION\n\nFuel Needed: 3\n\nDistance: 1","",
+				"",
+				NULL,
+				"CLOSE",
+				MyGUI::newDelegate(this,&InGameMenu::closeDialog)
+				);
+		}
+
+
+	}
+
+	void InGameMenu::travelToNode(MyGUI::WidgetPtr _sender)
+	{
+		closeDialog(NULL);
+		unsigned int i = *(mDialogWindowWindow->getUserData<unsigned int>());
 		if(Game::getSingleton().travelToNodeWithIndex(i)) {
 			playButtonClick(_sender);
 		}
@@ -163,17 +360,6 @@ namespace Salvation
 		for(unsigned int i = 0; i < mNavButtons.size(); i++) {
 			MyGUI::ButtonPtr btn = mNavButtons[i];
 			if(i == Game::getSingleton().mCurrentNodeIdx) {
-				/*
-				MyGUI::IntPoint center = btn->getAbsolutePosition();
-				center.left += btn->getSize().width * 0.5;
-				center.top += btn->getSize().height * 0.5;
-
-				MyGUI::IntPoint pos = center;
-				pos.left -= mJumpRange->getSize().width * 0.5;
-				pos.top -= mJumpRange->getSize().height * 0.5;
-
-				mJumpRange->setPosition(pos);
-				*/
 				btn->setStateSelected(true);
 			}
 			else {
@@ -192,6 +378,7 @@ namespace Salvation
 					mNavButtons[i]->setVisible(true);
 				}
 			}
+			//mNavButtons[i]->setVisible(true);
 		}
 	}
 

@@ -104,6 +104,7 @@ xcopy "$(SolutionDir)..\..\media" "$(OGRE_HOME)\media" /e /y /i /r</Command>
   <ItemGroup>
     <ClInclude Include="..\..\include\Game.h" />
     <ClInclude Include="..\..\include\GameAudioInterface.h" />
+    <ClInclude Include="..\..\include\GameConfig.h" />
     <ClInclude Include="..\..\include\InGameMenu.h" />
     <ClInclude Include="..\..\include\MainMenu.h" />
     <ClInclude Include="..\..\include\OgreUtil.h" />
