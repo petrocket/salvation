@@ -50,7 +50,55 @@
                 <Property key="Caption" value="NAV MAP"/>
             </Widget>
         </Widget>
-        <Widget type="Window" skin="WindowCX" position="520 55 575 355" layer="Modal" name="StoreWindow">
+        <Widget type="Widget" skin="PanelSkin" position="15 565 190 140" name="Contacts">
+            <Widget type="TextBox" skin="TextBox" position="5 5 175 25" name="ContactsTitle">
+                <Property key="Caption" value="CONTACTS"/>
+                <Property key="TextAlign" value="Center"/>
+            </Widget>
+            <Widget type="Button" skin="ButtonImage" position="5 40 175 35" name="ContactsButton1">
+                <Property key="Caption" value="Alex"/>
+            </Widget>
+            <Widget type="Button" skin="ButtonImage" position="10 75 170 40" name="ContactsButton2">
+                <Property key="Caption" value="Sarah"/>
+            </Widget>
+        </Widget>
+        <Widget type="Button" skin="Button" position="15 45 175 50" name="closeNav">
+            <Property key="Caption" value="CLOSE NAV"/>
+        </Widget>
+    </Widget>
+    <Widget type="Window" skin="WindowCX" position="505 45 335 180" layer="Popup" name="SettingsDialog">
+        <Property key="Caption" value="SETTINGS"/>
+        <Widget type="Button" skin="CheckBox" position="30 15 180 30" name="showNavNodes">
+            <Property key="Caption" value="Show All Nav Nodes"/>
+        </Widget>
+        <Widget type="Button" skin="CheckBox" position="30 50 185 25" name="showNavGrid">
+            <Property key="Caption" value="Show Nav Grid"/>
+        </Widget>
+        <Widget type="EditBox" skin="EditBox" position="150 85 45 30" name="maxGameTime">
+            <Property key="Caption" value="180"/>
+        </Widget>
+        <Widget type="TextBox" skin="TextBox" position="30 90 115 20">
+            <Property key="Caption" value="Max Game Time"/>
+        </Widget>
+        <Widget type="TextBox" skin="TextBox" position="200 90 100 25">
+            <Property key="Caption" value="(seconds)"/>
+            <Property key="TextColour" value="0.584795 0.584795 0.584795"/>
+        </Widget>
+    </Widget>
+    <Widget type="Window" skin="WindowC" position="460 210 525 315" layer="Info" name="DialogWindow">
+        <Property key="Visible" value="true"/>
+        <Widget type="TextBox" skin="TextBox" position="165 25 330 180" name="Dialog">
+            <Property key="Caption" value="DIALOG TEXT"/>
+        </Widget>
+        <Widget type="Button" skin="Button" position="390 225 105 35" name="Ok">
+            <Property key="Caption" value="OK"/>
+        </Widget>
+        <Widget type="Button" skin="Button" position="265 225 115 35" name="Action1">
+            <Property key="Caption" value="ACTION"/>
+        </Widget>
+        <Widget type="ImageBox" skin="ImageBox" position="15 25 145 180" name="DialogImage"/>
+    </Widget>
+        <Widget type="Window" skin="WindowCX" position="520 55 575 355" layer="Info" name="StoreWindow">
             <Property key="Caption" value="STORE"/>
             <Widget type="Button" skin="Button" position="35 255 190 45" name="Repair">
                 <Property key="Caption" value="REPAIR"/>
@@ -93,54 +141,7 @@
                 <Property key="TextColour" value="0.725146 0.720906 0.720906"/>
             </Widget>
         </Widget>
-        <Widget type="Widget" skin="PanelSkin" position="15 565 190 140" name="Contacts">
-            <Widget type="TextBox" skin="TextBox" position="5 5 175 25" name="ContactsTitle">
-                <Property key="Caption" value="CONTACTS"/>
-                <Property key="TextAlign" value="Center"/>
-            </Widget>
-            <Widget type="Button" skin="ButtonImage" position="5 40 175 35" name="ContactsButton1">
-                <Property key="Caption" value="Alex"/>
-            </Widget>
-            <Widget type="Button" skin="ButtonImage" position="10 75 170 40" name="ContactsButton2">
-                <Property key="Caption" value="Sarah"/>
-            </Widget>
-        </Widget>
-        <Widget type="Button" skin="Button" position="15 45 175 50" name="closeNav">
-            <Property key="Caption" value="CLOSE NAV"/>
-        </Widget>
-    </Widget>
-    <Widget type="Window" skin="WindowCX" position="505 45 335 180" layer="Popup" name="SettingsDialog">
-        <Property key="Caption" value="SETTINGS"/>
-        <Widget type="Button" skin="CheckBox" position="30 15 180 30" name="showNavNodes">
-            <Property key="Caption" value="Show All Nav Nodes"/>
-        </Widget>
-        <Widget type="Button" skin="CheckBox" position="30 50 185 25" name="showNavGrid">
-            <Property key="Caption" value="Show Nav Grid"/>
-        </Widget>
-        <Widget type="EditBox" skin="EditBox" position="150 85 45 30" name="maxGameTime">
-            <Property key="Caption" value="180"/>
-        </Widget>
-        <Widget type="TextBox" skin="TextBox" position="30 90 115 20">
-            <Property key="Caption" value="Max Game Time"/>
-        </Widget>
-        <Widget type="TextBox" skin="TextBox" position="200 90 100 25">
-            <Property key="Caption" value="(seconds)"/>
-            <Property key="TextColour" value="0.584795 0.584795 0.584795"/>
-        </Widget>
-    </Widget>
-    <Widget type="Window" skin="WindowC" position="460 210 525 315" layer="Popup" name="DialogWindow">
-        <Property key="Visible" value="true"/>
-        <Widget type="TextBox" skin="TextBox" position="165 25 330 180" name="Dialog">
-            <Property key="Caption" value="DIALOG TEXT"/>
-        </Widget>
-        <Widget type="Button" skin="Button" position="390 225 105 35" name="Ok">
-            <Property key="Caption" value="OK"/>
-        </Widget>
-        <Widget type="Button" skin="Button" position="265 225 115 35" name="Action1">
-            <Property key="Caption" value="ACTION"/>
-        </Widget>
-        <Widget type="ImageBox" skin="ImageBox" position="15 25 145 180" name="DialogImage"/>
-    </Widget>
+    <Widget type="Widget" skin="PanelEmpty" position="0 0 1280 720" align="Stretch" layer="Popup" name="PopupPanel"/>
     <CodeGeneratorSettings>
         <Property key="IncludeDirectory" value="C:\Users\alex\Documents\Visual Studio 2010\Projects\PETROCKET_CGDC_2013\salvation-dev\include"/>
         <Property key="PanelName" value="InGameMenu"/>

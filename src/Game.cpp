@@ -12,6 +12,89 @@
 
 #endif
 
+
+#define kNumContactNames 30
+static const Ogre::String gContactNames[kNumContactNames] = {
+	"Keithua Jonand",
+	"Denne Ramas",
+	"Cotter Jones",
+	"Rice Whomorr",
+	"Damy Barnez",
+	"Phomy Bramart",
+	"Peter Tiner",
+	"Johnny Ancher",
+	"Jamy Foste",
+	"Grusse Morray",
+	"Jane Warders",
+	"Kimby Patte",
+	"Katha Sonand",
+	"Michy Bakell",
+	"Dora Cookins",
+	"Mara Kere",
+	"Herie Homas",
+	"Cara Pera",
+	"Cara Halley",
+	"Juda Bailey",
+	"Dralbe Voga",
+	"Meni",
+	"Xani",
+	"A'Borga",
+	"Foama M'Akler",
+	"Troni",
+	"Mara",
+	"Q'Shalni",
+	"Krulle",
+	"E'Feri",
+};
+
+#define kNumPlanetNames 12
+static const Ogre::String gPlanetNames[kNumPlanetNames] = {
+	"Caeli Prime",
+	"Vorta",
+	"New Triton",
+	"Rani",
+	"A'Vilgi",
+	"Andan IV",
+	"Aman Prime",
+	"Hrist",
+	"Zeta V",
+	"Arda",
+	"Phae",
+	"Cerberi"
+};
+
+#define kNumCityNames 12
+static const Ogre::String gCityNames[kNumCityNames] = {
+	"Forme",
+	"Dievs",
+	"Bren",
+	"Octanus",
+	"Varda",
+	"Eldon III",
+	"New Tetra",
+	"Vely",
+	"Fron Colony",
+	"Gornan",
+	"Oran",
+	"Nienna",
+};
+
+#define kNumStationNames 12
+static const Ogre::String gStationNames[kNumStationNames] = {
+	"Alpha Prime",
+	"New Vini",
+	"Solitude",
+	"Prosperus IV",
+	"Truma 344",
+	"Ve",
+	"Antini",
+	"Zalda 7",
+	"Boto VI",
+	"Station 891",
+	"Station 37",
+	"Meni",
+};
+
 template<> Game* Ogre::Singleton<Game>::msSingleton = 0;
 
 //-------------------------------------------------------------------------------------
@@ -21,6 +104,7 @@ Game::Game(Ogre::SceneManager *mgr, Ogre::RenderWindow *win, Ogre::Camera* cam) 
 	mCurrentNodeIdx(0),
 	mGameNodesSceneNode(0),
 	mGUI(0),
+	mInBattle(false),
 	mMainMenuLayout(0),
 	mNavGridNode(0),
 	mNavOpen(false),
@@ -134,18 +218,43 @@ void Game::closeEndGameDialogPressed(MyGUI::WidgetPtr _sender)
 //-------------------------------------------------------------------------------------
 void Game::createGameNodes(int numSectors, int nodesPerSector)
 {
+	srand(time(NULL));
+	
 	if(mGameNodesSceneNode) {
 		OgreUtil::destroySceneNode(mGameNodesSceneNode);
 		mGameNodesSceneNode = NULL;
 	}
 	
+	std::vector<Ogre::String> planetNames;
+	for(int i = 0; i < kNumPlanetNames; i++) {
+		planetNames.push_back(gPlanetNames[i]);
+	}
+	std::random_shuffle(planetNames.begin(), planetNames.end());
+
+	std::vector<Ogre::String> cityNames;
+	for(int i = 0; i < kNumCityNames; i++)  {
+		cityNames.push_back(gCityNames[i]);
+	}
+	std::random_shuffle(cityNames.begin(), cityNames.end());
+
+	std::vector<Ogre::String> stationNames;
+	for(int i = 0; i < kNumStationNames; i++)  {
+		stationNames.push_back(gStationNames[i]);
+	}
+	std::random_shuffle(stationNames.begin(), stationNames.end());
+
+	std::vector<Ogre::String> contactNames;
+	for(int i = 0; i < kNumContactNames; i++)  {
+		contactNames.push_back(gContactNames[i]);
+	}
+	std::random_shuffle(contactNames.begin(), contactNames.end());
+
 	// generate content
 	mGameNodes.clear();
 
 	mGameNodesSceneNode =  mSceneManager->getRootSceneNode()->createChildSceneNode();
 
-	srand(time(NULL));
-	
+
 	int numColumns = 0;
 	int sector = 0;
 	// each sector is wider than the previous by one
@@ -174,6 +283,7 @@ void Game::createGameNodes(int numSectors, int nodesPerSector)
 				if(pos.x > 0 && pos.x < (float)mRenderWindow->getWidth() &&
 					pos.y > 0 && pos.y < (float)mRenderWindow->getHeight()) {
 
+					// don't let nodes be too close together
 					if(!isWithinMinRadius(pos,sectorRadius * 0.75,&mGameNodes)) {
 						break;
 					}
@@ -181,18 +291,19 @@ void Game::createGameNodes(int numSectors, int nodesPerSector)
 			}
 
 			GameNode *n = new GameNode();
-			n->title = "Node" + Ogre::StringConverter::toString(numNodes);
 			n->currentNode = false;
 			n->visible = false;
+			n->hasCity = false;
+			n->hasStation = false;
 			if(sector == 0 && i == 0) {
 				// first node has planet and station
 				pos.x = 0;
 				n->currentNode = true;
 				n->visible = true;
 				startPos = Ogre::Vector2(pos.x,pos.y);
+				n->type = GameNodeTypePlanet;
 				n->hasCity = true;
 				n->hasStation = true;
-				n->type = GameNodeTypePlanet;
 			}
 			else if(sector == numSectors - 1 && i == nodesPerSector - 1) {
 				// last node is planet
@@ -231,6 +342,29 @@ void Game::createGameNodes(int numSectors, int nodesPerSector)
 
 			n->scenenode = mGameNodesSceneNode->createChildSceneNode(Ogre::Vector3(pos.x,0,pos.y));
 
+			if(n->type == GameNodeTypePlanet) {
+				n->planet = new Planet(n->scenenode);
+			}
+
+			//if(n->type == GameNodeTypePlanet) {
+				n->title = planetNames[numNodes % planetNames.size()];
+			//}
+			Contact c;
+			if (n->hasCity) {
+				n->cityName = cityNames[numNodes %cityNames.size()];
+				c.name = contactNames[(numNodes * 4) % contactNames.size()];
+				n->cityContacts.push_back(c);
+				c.name = contactNames[(numNodes * 4 + 1) % contactNames.size()];
+				n->cityContacts.push_back(c);
+			}
+			if(n->hasStation) {
+				n->stationName = stationNames[numNodes % stationNames.size()];
+				c.name = contactNames[(numNodes * 4 + 2) % contactNames.size()];
+				n->stationContacts.push_back(c);
+				c.name = contactNames[(numNodes * 4 + 3) % contactNames.size()];
+				n->stationContacts.push_back(c);
+			}
+
 			/*
 			Ogre::Entity *ent = mSceneManager->createEntity(n->title,
 				Ogre::SceneManager::PT_SPHERE);
@@ -262,7 +396,8 @@ void Game::createScene(void)
 
 	mSceneManager->setSkyBox(true, "Spacescape1024");
 
-	playBackgroundMusic("music.ogg");
+	//playBackgroundMusic("music.ogg");
+
 
 	mDangerZones = mSceneManager->createBillboardSet();
 	mDangerZones->setAutoUpdate(true);
@@ -286,6 +421,13 @@ void Game::createScene(void)
 	mDangerZone = mDangerZones->createBillboard(Ogre::Vector3::ZERO);
 	mDangerZone->setColour(Ogre::ColourValue(1.0,0,0,1.0));
 	mDangerZone->setDimensions(mDangerZoneStart,mDangerZoneStart * 2.0);
+
+	// sun
+	Ogre::SceneNode *sunNode =  mSceneManager->getRootSceneNode()->createChildSceneNode(
+		mDangerZoneNode->getPosition());
+	Ogre::Entity *sun = Game::getSingleton().mSceneManager->createEntity(Ogre::SceneManager::PT_SPHERE);
+	//sunNode->setScale(0.4f,0.4f,0.4f);
+	sunNode->attachObject(sun);	
 
 	setShowNavGrid(mShowGrid);
 
@@ -342,7 +484,8 @@ bool Game::mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
     //...
 	return true;
 }
- 
+
+
 void Game::play()
 {
 	mCurrentNodeIdx = 0;
@@ -368,7 +511,7 @@ void Game::play()
 
 	updateVisibleNodes();
 
-	Ogre::Vector3 camPos = Ogre::Vector3(
+	mNavCamPosition =  Ogre::Vector3(
 		(float)mRenderWindow->getWidth() * 0.5,
 		1400.0,
 		(float)mRenderWindow->getHeight() * 0.5);
@@ -378,12 +521,15 @@ void Game::play()
 	mCamera->setFixedYawAxis(false);
 	mCamera->setAutoTracking(false);
 
-	mCamera->setPosition(camPos);
-	mCamera->lookAt(Ogre::Vector3(camPos.x,0,camPos.z));
+	mCamera->setPosition(mNavCamPosition);
+	mCamera->lookAt(Ogre::Vector3(mNavCamPosition.x,0,mNavCamPosition.z));
 
 	setGameState(GameStateCity);
 	
-	mNavOpen = false;
+	setNavVisible(false);
+
+	mInBattle = false;
+	mBattleDialogOpen = false;
 
 	mGameTimeRemaining = mMaxGameTime;
 }
@@ -439,6 +585,7 @@ void Game::setGameState(GameState state)
 
 				break;
 			}
+		case GameStateSpace:
 		default:
 			if(mNavOpen) {
 				if(mDangerZoneNode) {
@@ -446,6 +593,14 @@ void Game::setGameState(GameState state)
 				}
 				if(mPlayerShip->mRangeBillboardSet) {
 					mPlayerShip->mRangeBillboardSet->setVisible(true);
+				}
+			}
+			else {
+				if(mPlayerShip->mRangeBillboardSet) {
+					mPlayerShip->mRangeBillboardSet->setVisible(false);
+				}
+				if(mDangerZoneNode) {
+					mDangerZoneNode->setVisible(false);
 				}
 			}
 			mMainMenu->setVisible(false);
@@ -480,6 +635,36 @@ bool Game::keyReleased( const OIS::KeyEvent &arg )
     MyGUI::InputManager::getInstance().injectKeyRelease(MyGUI::KeyCode::Enum(arg.key));
     //...
 	return true;
+}
+
+void Game::setNavVisible(bool visible) 
+{
+	mNavOpen = visible;
+	if(mPlayerShip->mRangeBillboardSet) {
+		mPlayerShip->mRangeBillboardSet->setVisible(visible);
+	}
+	if(mDangerZoneNode) {
+		mDangerZoneNode->setVisible(visible);
+	}
+
+	if(visible) {
+		mCamera->setFixedYawAxis(false);
+		mCamera->setPosition(mNavCamPosition);
+		mCamera->lookAt(Ogre::Vector3(mNavCamPosition.x,0,mNavCamPosition.z));
+	}
+	else {
+		//if(mGameState == GameStateSpace) {
+			Ogre::Vector3 nodePos = mGameNodes[mCurrentNodeIdx]->scenenode->getPosition();
+			Ogre::Vector3 dir = mDangerZoneNode->getPosition() - nodePos;
+			dir.normalise();
+
+			float offset = 200.0f;
+			Ogre::Vector3 camPos = nodePos - dir * offset;
+			mCamera->setPosition(camPos);
+			mCamera->lookAt(nodePos);
+			mCamera->setFixedYawAxis(true);
+		//}
+	}
 }
 
 void Game::setShowNavGrid(bool show)
@@ -525,12 +710,28 @@ bool Game::travelToNodeWithIndex(unsigned int i, bool force)
 	
 	setGameState(GameStateSpace);
 
-	mNavOpen = false;
+	mInBattle = true;
+
+	setNavVisible(false);
 
 	mInGameMenu->update();
 
 	playEffect("warp.ogg");
 	return true;
+}
+
+void Game::run(MyGUI::WidgetPtr _sender)
+{
+	mInGameMenu->closeDialog(NULL);
+	mBattleDialogOpen = false;
+	mInBattle = false;
+}
+
+void Game::fight(MyGUI::WidgetPtr _sender)
+{
+	mInGameMenu->closeDialog(NULL);
+	mBattleDialogOpen = false;
+	mInBattle = false;
 }
 
 void Game::update(float dt)
@@ -569,6 +770,22 @@ void Game::update(float dt)
 	mDangerZone->setDimensions(dangerZoneSize,dangerZoneSize * 2.0);
 	mWarningZone->setDimensions(dangerZoneSize + mWarningZoneSize * 2.0,
 			(dangerZoneSize * 2.0) + mWarningZoneSize * 2.0);
+
+	if(mInBattle) {
+		if(!mBattleDialogOpen) {
+			mInGameMenu->displayDialog(
+					"COMBAT",
+					"A hostile ship is approaching! Do we run or fight?",
+					"",
+					"RUN",
+					MyGUI::newDelegate(this,&Game::run),
+					"FIGHT",
+					MyGUI::newDelegate(this, &Game::fight),
+					true
+				);
+			mBattleDialogOpen = true;
+		}
+	}
 
 	/*
 	mDangerZoneChildNode->setScale(

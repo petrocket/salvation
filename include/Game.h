@@ -31,8 +31,6 @@ typedef enum GameState_t
 	GameStateCity,
 	GameStateStation,
 
-	GameStateBattle,
-
 	GameStateEnd
 
 } GameState;
@@ -43,6 +41,11 @@ typedef enum GameNodeType_t
 	GameNodeTypePlanet,
 	GameNodeTypeAsteroids
 } GameNodeType;
+
+typedef struct Contact
+{
+	Ogre::String name;
+} Contact;
 
 typedef struct GameNode
 {
@@ -55,10 +58,16 @@ typedef struct GameNode
 
 	GameNodeType type;
 
-	bool hasStation;
+	Planet *planet;
 
 	bool hasCity;
+	Ogre::String cityName;
 
+	bool hasStation;
+	Ogre::String stationName;
+
+	std::vector<Contact> cityContacts;
+	std::vector<Contact> stationContacts;
 } GameNode;
 
 class Game : public OIS::MouseListener , public OIS::KeyListener , public Ogre::Singleton<Game>
@@ -84,6 +93,9 @@ public:
 	void play(); // play a game
 	void quit(); // return to main menu (quit game)
 
+	void run(MyGUI::WidgetPtr _sender);
+	void fight(MyGUI::WidgetPtr _sender);
+
 	bool canTravelToNodeWithIndex(unsigned int i);
 	bool travelToNodeWithIndex(unsigned int i, bool force = false); // attempt to travel
 	void update(float dt);
@@ -93,6 +105,7 @@ public:
 
 	void closeEndGameDialogPressed(MyGUI::WidgetPtr _sender);
 	void setShowNavGrid(bool show);
+	void setNavVisible(bool visible);
 	void setMaxGameTime(double time);
 
 	MyGUI::Gui *mGUI;
@@ -101,6 +114,7 @@ public:
 	MyGUI::VectorWidgetPtr mInGameMenuLayout;
 
 	Ogre::Camera *mCamera;
+	Ogre::Vector3 mNavCamPosition;
 	Ogre::SceneManager *mSceneManager;
 	Ogre::RenderWindow *mRenderWindow;
 
@@ -124,7 +138,8 @@ public:
 	double mGameTimeRemaining;
 	bool mPaused;
 	bool mNavOpen;
-
+	bool mInBattle;
+	bool mBattleDialogOpen;
 	bool mShutdown;
 	bool mShowGrid;
 

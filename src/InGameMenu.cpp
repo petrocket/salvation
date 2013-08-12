@@ -38,6 +38,10 @@ namespace Salvation
 		mLandButton->eventMouseButtonClick  += MyGUI::newDelegate(this, &Salvation::InGameMenu::land);
 		mDockButton->eventMouseButtonClick  += MyGUI::newDelegate(this, &Salvation::InGameMenu::dock);
 
+		mStoreButton->eventMouseButtonClick  += MyGUI::newDelegate(this, &Salvation::InGameMenu::openStore);
+		mStoreWindowWindow->eventWindowButtonPressed += MyGUI::newDelegate(this, &Salvation::InGameMenu::closeStore);
+
+
 		/*
 		const MyGUI::IntSize size(200, 200);
 		mJumpRange = MyGUI::Gui::getInstance().createWidget<MyGUI::ImageBox>("ImageBox",MyGUI::IntCoord(0,0, size.width, size.height), MyGUI::Align::Default, "Back");
@@ -53,11 +57,12 @@ namespace Salvation
 	void InGameMenu::closeDialog(MyGUI::WidgetPtr _sender)
 	{
 		mDialogWindowWindow->setVisibleSmooth(false);
+		mPopupPanel->setVisible(false);
 	}
 
 	void InGameMenu::closeNav(MyGUI::WidgetPtr _sender)
 	{
-		Game::getSingleton().mNavOpen = false;
+		Game::getSingleton().setNavVisible(false);
 		update();
 	}
 
@@ -67,7 +72,8 @@ namespace Salvation
 			Ogre::String action1Name,
 			MyGUI::delegates::CDelegate1<MyGUI::WidgetPtr>::IDelegate *action1Delegate,
 			Ogre::String action2Name,
-			MyGUI::delegates::CDelegate1<MyGUI::WidgetPtr>::IDelegate *action2Delegate
+			MyGUI::delegates::CDelegate1<MyGUI::WidgetPtr>::IDelegate *action2Delegate,
+			bool modal
 			)
 	{
 		mDialogTextBox->setCaption(title + "\n" + message);
@@ -99,6 +105,10 @@ namespace Salvation
 			mDialogImageImageBox->setVisible(false);
 		}
 
+		if(modal) {
+			mPopupPanel->setVisible(true); 
+		}
+		
 		mDialogWindowWindow->setVisibleSmooth(true);
 	}
 
@@ -107,6 +117,19 @@ namespace Salvation
 		Game::getSingleton().dock();
 	}
 
+	void InGameMenu::fight(MyGUI::WidgetPtr _sender)
+	{
+		mDialogWindowWindow->setVisibleSmooth(false);
+		mPopupPanel->setVisible(false);
+		//Game::getSingleton().fight();
+	}
+
+	void InGameMenu::run(MyGUI::WidgetPtr _sender)
+	{
+		mDialogWindowWindow->setVisibleSmooth(false);
+		mPopupPanel->setVisible(false);
+		//Game::getSingleton().run();
+	}
 
 	/**
 	* This little snippet gets the screenspace coordinates for a MovableObject
@@ -155,8 +178,18 @@ namespace Salvation
 
 	void InGameMenu::openNav(MyGUI::WidgetPtr _sender)
 	{
-		Game::getSingleton().mNavOpen = true;
+		Game::getSingleton().setNavVisible(true);
 		update();
+	}
+ 
+	void InGameMenu::openStore(MyGUI::WidgetPtr _sender)
+	{
+		mStoreWindowWindow->setVisibleSmooth(true);
+	}
+
+	void InGameMenu::closeStore(MyGUI::Window* _sender, const std::string& _name)
+	{
+		mStoreWindowWindow->setVisibleSmooth(false);
 	}
 
 	void InGameMenu::openSettings(MyGUI::WidgetPtr _sender)
@@ -178,6 +211,7 @@ namespace Salvation
 			mStoreWindowWindow->setVisible(false);
 			mShipWidget->setVisible(false);
 			mNavLocationWidget->setVisible(false);
+			mPopupPanel->setVisible(false);
 		}
 	}
 
@@ -196,6 +230,9 @@ namespace Salvation
 		mNavLocationWidget->setVisible(false);
 		mLandedWidget->setVisible(false);
 
+		GameNode *currentNode = Game::getSingleton().mGameNodes[
+					Game::getSingleton().mCurrentNodeIdx];
+
 		switch(Game::getSingleton().getGameState()) {
 			case GameStateMainMenu:
 				if(mNavButtons.size()) {
@@ -208,17 +245,52 @@ namespace Salvation
 				mCloseNavButton->setVisible(false);
 				break;
 			case GameStateSpace:
+				mContactsWidget->setVisible(false);
+				mLocationDescriptionTextBox->setCaption(currentNode->title);
 				if(!Game::getSingleton().mNavOpen) {
 					mNavLocationWidget->setVisible(true);
+					mLandButton->setVisible(currentNode->hasCity);
+					mDockButton->setVisible(currentNode->hasStation);
 				}
 				break;
 			case GameStateCity:
-			case GameStateStation:
+				mLandedDescriptionTextBox->setCaption(currentNode->cityName);
 				if(!Game::getSingleton().mNavOpen) {
 					mLandedWidget->setVisible(true);
 				}
+				// open contacts if the station has any
+				if(currentNode->cityContacts.size()) {
+					mContactsWidget->setVisible(true);
+					mContactsButton1Button->setCaption(currentNode->cityContacts[0].name);
+					if(currentNode->cityContacts.size() > 1) {
+						mContactsButton2Button->setCaption(currentNode->cityContacts[1].name);
+						mContactsButton2Button->setVisible(true);
+					}
+					else {
+						mContactsButton2Button->setVisible(false);
+					}
+				}
 				break;
-			case GameStateBattle:
+			case GameStateStation:
+				mLandedDescriptionTextBox->setCaption(currentNode->stationName);
+				if(!Game::getSingleton().mNavOpen) {
+					mLandedWidget->setVisible(true);
+				}
+
+				// open contacts if the station has any
+				if(currentNode->stationContacts.size()) {
+					mContactsWidget->setVisible(true);
+					mContactsButton1Button->setCaption(currentNode->stationContacts[0].name);
+					if(currentNode->stationContacts.size() > 1) {
+						mContactsButton2Button->setCaption(currentNode->stationContacts[1].name);
+						mContactsButton2Button->setVisible(true);
+					}
+					else {
+						mContactsButton2Button->setVisible(false);
+					}
+				}
+
+				break;
 			default:
 				break;
 		}
@@ -227,13 +299,21 @@ namespace Salvation
 			if(!mNavButtons.size()) {
 				createNavButtons();
 			}
-			setNavButtonsVisible(true);
-			mCloseNavButton->setVisible(true);
+			mContactsWidget->setVisible(false);
 		}
-		else {
-			setNavButtonsVisible(false);
-			mCloseNavButton->setVisible(false);
+
+		setNavButtonsVisible(Game::getSingleton().mNavOpen);
+		mCloseNavButton->setVisible(Game::getSingleton().mNavOpen);
+
+		if(Game::getSingleton().mPlayerShip->mRangeBillboardSet) {
+			Game::getSingleton().mPlayerShip->mRangeBillboardSet->setVisible(
+				Game::getSingleton().mNavOpen);
 		}
+		if(Game::getSingleton().mDangerZoneNode) {
+			Game::getSingleton().mDangerZoneNode->setVisible(
+				Game::getSingleton().mNavOpen);
+		}
+
 	}
 
 	void InGameMenu::updateMaxGameTime(MyGUI::EditBox* _sender)
@@ -320,11 +400,14 @@ namespace Salvation
 	{
 		unsigned int i = *(_sender->getUserData<unsigned int>());
 
+		GameNode *node = Game::getSingleton().mGameNodes[i];
 		playButtonClick(_sender);
 
 		if(Game::getSingleton().canTravelToNodeWithIndex(i)) {
 			mDialogWindowWindow->setUserData(i);
-			displayDialog("NAV NODE NAME","DESCRIPTION\n\nFuel Needed: 3\n\nDistance: 1","",
+			displayDialog(
+				node->title,
+				"Fuel Needed: 3\n\nDistance: 1","",
 				"CLOSE",
 				MyGUI::newDelegate(this,&InGameMenu::closeDialog),
 				"TRAVEL",
@@ -332,7 +415,18 @@ namespace Salvation
 				);
 		}
 		else {
-			displayDialog("NAV NODE NAME","DESCRIPTION\n\nFuel Needed: 3\n\nDistance: 1","",
+			Ogre::String err = "Cannot travel: Out of range or not\n enough fuel.";
+			if(Game::getSingleton().getGameState() == GameStateCity) {
+				err = "Cannot travel: Unable to engage FTL system\n when landed.";
+			}
+			else if(Game::getSingleton().getGameState() == GameStateStation) {
+				err = "Cannot travel: Unable to engage FTL system\n when docked.";
+			}
+
+			displayDialog(
+				node->title,
+				"Fuel Needed: 3\n\nDistance: 1\n\n" + err,
+				"",
 				"",
 				NULL,
 				"CLOSE",

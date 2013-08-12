@@ -108,6 +108,7 @@ xcopy "$(SolutionDir)..\..\media" "$(OGRE_HOME)\media" /e /y /i /r</Command>
     <ClInclude Include="..\..\include\InGameMenu.h" />
     <ClInclude Include="..\..\include\MainMenu.h" />
     <ClInclude Include="..\..\include\OgreUtil.h" />
+    <ClInclude Include="..\..\include\Planet.h" />
     <ClInclude Include="..\..\include\Ship.h" />
     <ClInclude Include="BaseApplication.h" />
     <ClInclude Include="GameButton.h" />
@@ -118,6 +119,7 @@ xcopy "$(SolutionDir)..\..\media" "$(OGRE_HOME)\media" /e /y /i /r</Command>
     <ClCompile Include="..\..\src\Game.cpp" />
     <ClCompile Include="..\..\src\InGameMenu.cpp" />
     <ClCompile Include="..\..\src\MainMenu.cpp" />
+    <ClCompile Include="..\..\src\Planet.cpp" />
     <ClCompile Include="..\..\src\Ship.cpp" />
     <ClCompile Include="BaseApplication.cpp" />
     <ClCompile Include="GameAudio.cpp" />

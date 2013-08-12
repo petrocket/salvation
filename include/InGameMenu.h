@@ -25,24 +25,34 @@ namespace Salvation
 		InGameMenu(MyGUI::Widget* _parent = nullptr);
 		virtual ~InGameMenu();
 
-		void displayDialog(Ogre::String title, 
+		void displayDialog(
+			Ogre::String title, 
 			Ogre::String message, 
 			Ogre::String imageName,
 			Ogre::String action1Name,
 			MyGUI::delegates::CDelegate1<MyGUI::WidgetPtr>::IDelegate *action1Delegate,
 			Ogre::String action2Name,
-			MyGUI::delegates::CDelegate1<MyGUI::WidgetPtr>::IDelegate *action2Delegate
+			MyGUI::delegates::CDelegate1<MyGUI::WidgetPtr>::IDelegate *action2Delegate,
+			bool modal = false
 			);
-		void setVisible(bool visible);
-		
 		void closeDialog(MyGUI::WidgetPtr _sender);
-		void closeNav(MyGUI::WidgetPtr _sender);
-		void closeSettings(MyGUI::Window* _sender, const std::string& _name);
+
+		void setVisible(bool visible);	
+
 		void depart(MyGUI::WidgetPtr _sender);
 		void dock(MyGUI::WidgetPtr _sender);
+		void fight(MyGUI::WidgetPtr _sender);
 		void land(MyGUI::WidgetPtr _sender);
+		void run(MyGUI::WidgetPtr _sender);
+
+		void closeNav(MyGUI::WidgetPtr _sender);
 		void openNav(MyGUI::WidgetPtr _sender);
+
 		void openSettings(MyGUI::WidgetPtr _sender);
+		void closeSettings(MyGUI::Window* _sender, const std::string& _name);
+
+		void openStore(MyGUI::WidgetPtr _sender);
+		void closeStore(MyGUI::Window* _sender, const std::string& _name);
 
 		void update();
 		void updateTimeLeft(double secLeft);
@@ -146,6 +156,10 @@ namespace Salvation
 		MyGUI::Button* mContactsButton1Button;
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mContactsButton2Button, "ContactsButton2");
 		MyGUI::Button* mContactsButton2Button;
+
+
+		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mPopupPanel, "PopupPanel");
+		MyGUI::Widget* mPopupPanel;
 
 
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mSettingsWindow, "SettingsDialog");

@@ -38,5 +38,6 @@
 #include "GameConfig.h"
 #include "InGameMenu.h"
 #include "MainMenu.h"
+#include "Planet.h"
 #include "Ship.h"
 #include "OgreUtil.h"
