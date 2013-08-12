@@ -14,8 +14,9 @@ Planet::Planet(Ogre::SceneNode *parent)
 {
 	mSceneNode = parent->createChildSceneNode();
 	mSurface = Game::getSingleton().mSceneManager->createEntity(Ogre::SceneManager::PT_SPHERE);
-	mSceneNode->setScale(0.4f,0.4f,0.4f);
+	mSceneNode->setScale(0.05f,0.05f,0.05f);
 	mSceneNode->attachObject(mSurface);
+	//mSceneNode->showBoundingBox(true);
 }
 
 

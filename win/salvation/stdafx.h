@@ -37,6 +37,7 @@
 #include "GameButton.h"
 #include "GameConfig.h"
 #include "InGameMenu.h"
+#include "LensFlare.h"
 #include "MainMenu.h"
 #include "Planet.h"
 #include "Ship.h"

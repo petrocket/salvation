@@ -19,6 +19,7 @@
 #include "Ship.h"
 #include "InGameMenu.h"
 #include "MainMenu.h"
+#include "LenseFlare.h"
 
 #endif
 
@@ -115,6 +116,7 @@ public:
 
 	Ogre::Camera *mCamera;
 	Ogre::Vector3 mNavCamPosition;
+	Ogre::Vector3 mSunCamPosition;
 	Ogre::SceneManager *mSceneManager;
 	Ogre::RenderWindow *mRenderWindow;
 
@@ -156,6 +158,9 @@ private:
 	GameState mPrevGameState;
 
 	Ogre::SceneNode *mGameNodesSceneNode;
+	Ogre::SceneNode *mSunSceneNode;
+
+	LensFlare *mLensFlare;
 
 	void createGameNodes(int numSectors, int nodesPerSector);
 	void updateVisibleNodes();

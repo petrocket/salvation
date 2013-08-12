@@ -37,3 +37,69 @@ material RangeMaterial
 		}
 	}
 }
+
+
+material LensFlareHalo
+{
+   technique
+   {
+      pass
+      {
+        ambient 1 1 1
+        diffuse 1 1 1
+        lighting off
+        scene_blend add
+        depth_write off
+        depth_check off
+
+        texture_unit
+        {
+         texture LensFlareHalo.png
+        }
+      }
+   }
+}
+
+material LensFlareCircle
+{
+   technique
+   {
+      pass
+      {
+        ambient 1 1 1
+        diffuse 1 1 1
+        lighting off
+        scene_blend add
+        depth_write off
+        depth_check on
+
+        texture_unit
+        {
+           texture LensFlareCircle.png
+        }
+      }
+   }
+}
+
+
+material LensFlareBurst
+{
+   technique
+   {
+      pass
+      {
+        ambient 1 1 1
+        diffuse 1 1 1
+        lighting off
+        scene_blend add
+        depth_write off
+        depth_check on
+
+        texture_unit
+        {
+         texture LensFlareBurst.png
+        }
+      }
+   }
+}
+

@@ -103,12 +103,13 @@ Game::Game(Ogre::SceneManager *mgr, Ogre::RenderWindow *win, Ogre::Camera* cam) 
 	mConfig(0),
 	mCurrentNodeIdx(0),
 	mGameNodesSceneNode(0),
+	mGameTimeRemaining(0.0),
 	mGUI(0),
 	mInBattle(false),
+	mLensFlare(0),
 	mMainMenuLayout(0),
 	mNavGridNode(0),
 	mNavOpen(false),
-	mGameTimeRemaining(0.0),
 	mPlatform(0),
 	mPlayerShip(0),
 	mPaused(false),
@@ -129,6 +130,12 @@ Game::Game(Ogre::SceneManager *mgr, Ogre::RenderWindow *win, Ogre::Camera* cam) 
 //-------------------------------------------------------------------------------------
 Game::~Game(void)
 {
+	if(mLensFlare) {
+		mLensFlare->End();
+		delete mLensFlare;
+		mLensFlare = 0;
+	}
+
 	if(mGUI) {
 		//mGUI->shutdown();
 		delete mGUI;
@@ -341,7 +348,7 @@ void Game::createGameNodes(int numSectors, int nodesPerSector)
 			}
 
 			n->scenenode = mGameNodesSceneNode->createChildSceneNode(Ogre::Vector3(pos.x,0,pos.y));
-
+			//n->scenenode->showBoundingBox(true);
 			if(n->type == GameNodeTypePlanet) {
 				n->planet = new Planet(n->scenenode);
 			}
@@ -365,13 +372,6 @@ void Game::createGameNodes(int numSectors, int nodesPerSector)
 				n->stationContacts.push_back(c);
 			}
 
-			/*
-			Ogre::Entity *ent = mSceneManager->createEntity(n->title,
-				Ogre::SceneManager::PT_SPHERE);
-			n->scenenode->setScale(0.4f,0.4f,0.4f);
-			n->scenenode->attachObject(ent);
-			//n->scenenode->showBoundingBox(true);
-			*/
 			n->scenenode->setVisible(n->visible);
 			mGameNodes.push_back(n);
 			numNodes++;
@@ -395,6 +395,12 @@ void Game::createScene(void)
 	mInGameMenu = new Salvation::InGameMenu();
 
 	mSceneManager->setSkyBox(true, "Spacescape1024");
+	
+	// randomly rotate the skybox
+	Ogre::SceneNode *n = mSceneManager->getSkyBoxNode();
+	n->yaw(Ogre::Radian(Ogre::Math::RangeRandom(0.0,Ogre::Math::TWO_PI)));
+	n->pitch(Ogre::Radian(Ogre::Math::RangeRandom(0.0,Ogre::Math::TWO_PI)));
+	n->roll(Ogre::Radian(Ogre::Math::RangeRandom(0.0,Ogre::Math::TWO_PI)));
 
 	//playBackgroundMusic("music.ogg");
 
@@ -423,19 +429,51 @@ void Game::createScene(void)
 	mDangerZone->setDimensions(mDangerZoneStart,mDangerZoneStart * 2.0);
 
 	// sun
-	Ogre::SceneNode *sunNode =  mSceneManager->getRootSceneNode()->createChildSceneNode(
+	mSunSceneNode =  mSceneManager->getRootSceneNode()->createChildSceneNode(
 		mDangerZoneNode->getPosition());
 	Ogre::Entity *sun = Game::getSingleton().mSceneManager->createEntity(Ogre::SceneManager::PT_SPHERE);
-	//sunNode->setScale(0.4f,0.4f,0.4f);
-	sunNode->attachObject(sun);	
+	mSunSceneNode->attachObject(sun);	
 
 	setShowNavGrid(mShowGrid);
+
+	mNavCamPosition =  Ogre::Vector3(
+		(float)mRenderWindow->getWidth() * 0.5,
+		1400.0,
+		(float)mRenderWindow->getHeight() * 0.5);
+	float sunOffset = 100.0;
+	/*
+	Ogre::Vector3 sunDir = Ogre::Vector3(
+		Ogre::Math::RangeRandom(-1.0,1.0),
+		Ogre::Math::RangeRandom(-1.0,1.0),
+		Ogre::Math::RangeRandom(-1.0,1.0)
+		);
+	sunDir->normalise();
+	*/
+	mSunCamPosition = mSunSceneNode->getPosition() + (Ogre::Vector3::UNIT_X * sunOffset);
+	mCamera->setNearClipDistance(1.0);
+	mCamera->setFarClipDistance(10000.0);
+	mCamera->setFixedYawAxis(false);
+	mCamera->setAutoTracking(false);
+
+	mCamera->setPosition(mSunCamPosition);
+	mCamera->lookAt(mSunSceneNode->getPosition());
+
+	mLensFlare = new LensFlare();//mSunSceneNode->getPosition(),mCamera,mSceneManager);
+	mLensFlare->Init(mSceneManager,mCamera,
+		(float)mRenderWindow->getWidth(),
+		(float)mRenderWindow->getHeight(),
+        200, //The size of the Sun flare 
+        25, //The base size of all the other flares
+        "LensFlareHalo", "LensFlareCircle", "LensFlareBurst");
+	mLensFlare->SetPosition(mSunSceneNode->getPosition());
 
 	/*
 	mSafeZones = mSceneManager->createBillboardSet();
 	mSafeZones->setAutoextend(true);
 	mSafeZones->setDefaultDimensions(offset + 200, offset + 200);
 	*/
+
+	setGameState(GameStateMainMenu);
 }
 
 void Game::depart()
@@ -490,6 +528,12 @@ void Game::play()
 {
 	mCurrentNodeIdx = 0;
 
+	// randomly rotate the skybox
+	Ogre::SceneNode *n = mSceneManager->getSkyBoxNode();
+	n->yaw(Ogre::Radian(Ogre::Math::RangeRandom(0.0,Ogre::Math::TWO_PI)));
+	n->pitch(Ogre::Radian(Ogre::Math::RangeRandom(0.0,Ogre::Math::TWO_PI)));
+	n->roll(Ogre::Radian(Ogre::Math::RangeRandom(0.0,Ogre::Math::TWO_PI)));
+
 	if(!mPlayerShip) {
 		mPlayerShip = new Ship();
 	}
@@ -502,6 +546,7 @@ void Game::play()
 		mConfig->getSetting("numNodesPerSector","","4"));
 
 	createGameNodes(numSectors,numNodesPerSector);
+	mGameNodesSceneNode->setVisible(true);
 
 	mPlayerShip->mRangeBillboard->setPosition(
 		mGameNodes[mCurrentNodeIdx]->scenenode->getPosition());
@@ -510,19 +555,6 @@ void Game::play()
 		mPlayerShip->mMaxJumpRange * 2.0);
 
 	updateVisibleNodes();
-
-	mNavCamPosition =  Ogre::Vector3(
-		(float)mRenderWindow->getWidth() * 0.5,
-		1400.0,
-		(float)mRenderWindow->getHeight() * 0.5);
-
-	mCamera->setNearClipDistance(1.0);
-	mCamera->setFarClipDistance(10000.0);
-	mCamera->setFixedYawAxis(false);
-	mCamera->setAutoTracking(false);
-
-	mCamera->setPosition(mNavCamPosition);
-	mCamera->lookAt(Ogre::Vector3(mNavCamPosition.x,0,mNavCamPosition.z));
 
 	setGameState(GameStateCity);
 	
@@ -544,18 +576,30 @@ void Game::setGameState(GameState state)
 	mPrevGameState = mGameState;
 	mGameState = state;
 
+	mLensFlare->SetFlareVisible(true);
+	mSunSceneNode->setScale(0.05f,0.05f,0.05f);
+
 	switch(mGameState) {
 		case GameStateIntro:
 			break;
 		case GameStateMainMenu:
 			mMainMenu->setVisible(true);
 			mInGameMenu->setVisible(false);
-			if(mPlayerShip->mRangeBillboardSet) {
-				mPlayerShip->mRangeBillboardSet->setVisible(false);
+
+			setNavVisible(false);
+
+			mCamera->setFixedYawAxis(true,Ogre::Vector3::UNIT_Y);
+			mCamera->setPosition(mSunCamPosition);
+			mCamera->lookAt(mSunSceneNode->getPosition());
+
+			// hide all the game nodes
+			if(mGameNodesSceneNode) {
+				mGameNodesSceneNode->setVisible(false);
 			}
-			if(mDangerZoneNode) {
-				mDangerZoneNode->setVisible(false);
-			}
+
+			// no flare in title
+			mLensFlare->SetFlareVisible(false);
+			mSunSceneNode->setScale(0.3f,0.3f,0.3f);
 			break;
 		case GameStateEnd:
 			{
@@ -640,7 +684,7 @@ bool Game::keyReleased( const OIS::KeyEvent &arg )
 void Game::setNavVisible(bool visible) 
 {
 	mNavOpen = visible;
-	if(mPlayerShip->mRangeBillboardSet) {
+	if(mPlayerShip && mPlayerShip->mRangeBillboardSet) {
 		mPlayerShip->mRangeBillboardSet->setVisible(visible);
 	}
 	if(mDangerZoneNode) {
@@ -648,22 +692,26 @@ void Game::setNavVisible(bool visible)
 	}
 
 	if(visible) {
-		mCamera->setFixedYawAxis(false);
+		mCamera->setFixedYawAxis(true,-Ogre::Vector3::UNIT_Z);
 		mCamera->setPosition(mNavCamPosition);
 		mCamera->lookAt(Ogre::Vector3(mNavCamPosition.x,0,mNavCamPosition.z));
 	}
 	else {
-		//if(mGameState == GameStateSpace) {
+		if(mGameState > GameStateMainMenu) {
 			Ogre::Vector3 nodePos = mGameNodes[mCurrentNodeIdx]->scenenode->getPosition();
 			Ogre::Vector3 dir = mDangerZoneNode->getPosition() - nodePos;
 			dir.normalise();
 
-			float offset = 200.0f;
+
+			float offset = 10.0f;
 			Ogre::Vector3 camPos = nodePos - dir * offset;
+
+			Ogre::Vector3 xDir = dir.crossProduct(Ogre::Vector3::UNIT_Y);
+			camPos += xDir * offset * 0.5;
 			mCamera->setPosition(camPos);
+			mCamera->setFixedYawAxis(true, Ogre::Vector3::UNIT_Y);
 			mCamera->lookAt(nodePos);
-			mCamera->setFixedYawAxis(true);
-		//}
+		}
 	}
 }
 
@@ -749,6 +797,11 @@ void Game::update(float dt)
 
 	if(mPaused) {
 		return;
+	}
+
+	// update lense flare
+	if(mLensFlare) {
+		mLensFlare->Update();
 	}
 
 	if(mGameState <= GameStateMainMenu) {

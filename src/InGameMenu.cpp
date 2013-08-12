@@ -230,8 +230,12 @@ namespace Salvation
 		mNavLocationWidget->setVisible(false);
 		mLandedWidget->setVisible(false);
 
-		GameNode *currentNode = Game::getSingleton().mGameNodes[
+		GameNode *currentNode = NULL;
+		
+		if(Game::getSingleton().getGameState() > GameStateMainMenu) {
+			currentNode = Game::getSingleton().mGameNodes[
 					Game::getSingleton().mCurrentNodeIdx];
+		}
 
 		switch(Game::getSingleton().getGameState()) {
 			case GameStateMainMenu:
@@ -305,7 +309,8 @@ namespace Salvation
 		setNavButtonsVisible(Game::getSingleton().mNavOpen);
 		mCloseNavButton->setVisible(Game::getSingleton().mNavOpen);
 
-		if(Game::getSingleton().mPlayerShip->mRangeBillboardSet) {
+		if(Game::getSingleton().mPlayerShip &&
+			Game::getSingleton().mPlayerShip->mRangeBillboardSet) {
 			Game::getSingleton().mPlayerShip->mRangeBillboardSet->setVisible(
 				Game::getSingleton().mNavOpen);
 		}
