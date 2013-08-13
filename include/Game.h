@@ -60,6 +60,8 @@ typedef struct GameNode
 	GameNodeType type;
 
 	Planet *planet;
+	
+	int sector;
 
 	bool hasCity;
 	Ogre::String cityName;
@@ -121,6 +123,7 @@ public:
 	Ogre::RenderWindow *mRenderWindow;
 
 	Ship *mPlayerShip;
+	Ship *mEnemyShip;
 
 	Salvation::MainMenu *mMainMenu;
 	Salvation::InGameMenu *mInGameMenu;

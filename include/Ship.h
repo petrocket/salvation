@@ -11,14 +11,18 @@
 class Ship
 {
 public:
-	Ship(void);
+	Ship(bool enemy = false);
 	virtual ~Ship(void);
 
 	virtual void reset(); // reset to default
 
+	void setSpecsForSector(int sector);
+
 	float maxJumpRangeForEngineLevel(int level);
 
 	float mHealth; // health 0 .. 100
+
+	float mFuel; // fuel
 
 	// SYSTEMS
 	int mEngineLevel;	// upgrade engine to boost range
@@ -34,6 +38,8 @@ public:
 
 	int mWeaponsLevel; // weapons level (strength & recharge)
 	float mWeaponsDamage; // damage to weapons system
+
+	bool mStatusUpdated;
 
 	Ogre::BillboardSet *mRangeBillboardSet;
 	Ogre::Billboard *mRangeBillboard;

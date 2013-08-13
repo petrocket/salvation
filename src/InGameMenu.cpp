@@ -229,6 +229,7 @@ namespace Salvation
 
 		mNavLocationWidget->setVisible(false);
 		mLandedWidget->setVisible(false);
+		mShipWidget->setVisible(false);
 
 		GameNode *currentNode = NULL;
 		
@@ -256,6 +257,7 @@ namespace Salvation
 					mLandButton->setVisible(currentNode->hasCity);
 					mDockButton->setVisible(currentNode->hasStation);
 				}
+				mShipWidget->setVisible(!Game::getSingleton().mNavOpen);
 				break;
 			case GameStateCity:
 				mLandedDescriptionTextBox->setCaption(currentNode->cityName);
@@ -274,6 +276,7 @@ namespace Salvation
 						mContactsButton2Button->setVisible(false);
 					}
 				}
+				mShipWidget->setVisible(!Game::getSingleton().mNavOpen);
 				break;
 			case GameStateStation:
 				mLandedDescriptionTextBox->setCaption(currentNode->stationName);
@@ -293,7 +296,7 @@ namespace Salvation
 						mContactsButton2Button->setVisible(false);
 					}
 				}
-
+				mShipWidget->setVisible(!Game::getSingleton().mNavOpen);
 				break;
 			default:
 				break;

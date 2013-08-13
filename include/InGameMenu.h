@@ -96,6 +96,9 @@ namespace Salvation
 
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mShipWidget, "Ship");
 		MyGUI::Widget* mShipWidget;
+		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mHullStatus, "HullStatus");
+		MyGUI::ImageBox* mHullStatus;
+
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mStatsTextBox, "Stats");
 		MyGUI::TextBox* mStatsTextBox;
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mInGameMenuWidget, "InGameMenu");

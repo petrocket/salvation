@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <MyGUI type="Layout" version="3.2.0">
+    <Widget type="Widget" skin="PanelEmpty" position="0 0 1280 720" align="Stretch" layer="Popup" name="PopupPanel"/>
     <Widget type="Widget" skin="PanelEmpty" position="0 0 1280 720" align="Stretch" layer="Main" name="_Main">
         <Widget type="Widget" skin="PanelSkin" position="-5 110 260 425" name="NavLocation">
             <Widget type="Button" skin="Button" position="20 225 220 50" name="Nav">
@@ -15,9 +16,12 @@
                 <Property key="Caption" value="DOCK AT STATION"/>
             </Widget>
         </Widget>
-        <Widget type="Widget" skin="PanelSkin" position="1000 485 280 235" name="Ship">
-            <Widget type="TextBox" skin="TextBox" position="20 15 245 205" name="Stats">
-                <Property key="Caption" value="SHIP STATUS"/>
+        <Widget type="Widget" skin="PanelSkin" position="1005 0 280 235" name="Ship">
+            <Widget type="TextBox" skin="TextBox" position="10 170 260 55" name="Stats">
+                <Property key="Caption" value="HULL        |  LEVEL 1  |  100%\nSHIELDS   |  LEVEL 2  |  100%\nWEAPONS |  LEVEL 3  |  100%"/>
+            </Widget>
+            <Widget type="ImageBox" skin="ImageBox" position="10 15 260 140" name="HullStatus">
+                <Property key="ImageTexture" value="hullstatus1.png"/>
             </Widget>
         </Widget>
         <Widget type="Widget" skin="PanelEmpty" position="0 0 1280 30" layer="Main" name="InGameMenu">
@@ -98,50 +102,49 @@
         </Widget>
         <Widget type="ImageBox" skin="ImageBox" position="15 25 145 180" name="DialogImage"/>
     </Widget>
-        <Widget type="Window" skin="WindowCX" position="520 55 575 355" layer="Info" name="StoreWindow">
-            <Property key="Caption" value="STORE"/>
-            <Widget type="Button" skin="Button" position="35 255 190 45" name="Repair">
-                <Property key="Caption" value="REPAIR"/>
-            </Widget>
-            <Widget type="TextBox" skin="TextBox" position="35 220 185 25" name="RepairCost">
-                <Property key="Caption" value="TOTAL: 200"/>
-            </Widget>
-            <Widget type="Button" skin="Button" position="320 255 190 45" name="Buy">
-                <Property key="Caption" value="BUY"/>
-            </Widget>
-            <Widget type="TextBox" skin="TextBox" position="320 220 190 25" name="BuyCost">
-                <Property key="Caption" value="TOTAL: 300"/>
-            </Widget>
-            <Widget type="Button" skin="CheckBox" position="35 55 185 20" name="RepairCheckBox1">
-                <Property key="Caption" value=" Engines: 150"/>
-            </Widget>
-            <Widget type="Button" skin="CheckBox" position="35 85 195 20" name="RepairCheckBox2">
-                <Property key="Caption" value=" Shields: 100"/>
-            </Widget>
-            <Widget type="Button" skin="CheckBox" position="35 115 190 20" name="RepairCheckBox3">
-                <Property key="Caption" value=" Hull: 500"/>
-            </Widget>
-            <Widget type="Button" skin="CheckBox" position="35 145 200 20" name="RepairCheckBox4">
-                <Property key="Caption" value=" Life Support: 150"/>
-            </Widget>
-            <Widget type="Button" skin="CheckBox" position="35 175 200 25" name="RepairCheckBox5">
-                <Property key="Caption" value=" Weapons: 50"/>
-            </Widget>
-            <Widget type="Button" skin="CheckBox" position="315 55 200 25" name="BuyCheckBox1">
-                <Property key="Caption" value=" Engine Upgrade: 100"/>
-            </Widget>
-            <Widget type="Button" skin="CheckBox" position="315 85 200 25" name="BuyCheckBox2">
-                <Property key="Caption" value=" Rear Turret: 500"/>
-            </Widget>
-            <Widget type="Button" skin="CheckBox" position="315 115 205 30" name="BuyCheckBox3">
-                <Property key="Caption" value=" Shield Upgrade: 350"/>
-            </Widget>
-            <Widget type="TextBox" skin="TextBox" position="35 5 220 40" name="RepairHint">
-                <Property key="Caption" value="Repair your ship to survive\nspace battles! "/>
-                <Property key="TextColour" value="0.725146 0.720906 0.720906"/>
-            </Widget>
+    <Widget type="Window" skin="WindowCX" position="405 185 575 355" layer="Info" name="StoreWindow">
+        <Property key="Caption" value="STORE"/>
+        <Widget type="Button" skin="Button" position="35 255 190 45" name="Repair">
+            <Property key="Caption" value="REPAIR"/>
         </Widget>
-    <Widget type="Widget" skin="PanelEmpty" position="0 0 1280 720" align="Stretch" layer="Popup" name="PopupPanel"/>
+        <Widget type="TextBox" skin="TextBox" position="35 220 185 25" name="RepairCost">
+            <Property key="Caption" value="TOTAL: 200"/>
+        </Widget>
+        <Widget type="Button" skin="Button" position="320 255 190 45" name="Buy">
+            <Property key="Caption" value="BUY"/>
+        </Widget>
+        <Widget type="TextBox" skin="TextBox" position="320 220 190 25" name="BuyCost">
+            <Property key="Caption" value="TOTAL: 300"/>
+        </Widget>
+        <Widget type="Button" skin="CheckBox" position="35 55 185 20" name="RepairCheckBox1">
+            <Property key="Caption" value=" Engines: 150"/>
+        </Widget>
+        <Widget type="Button" skin="CheckBox" position="35 85 195 20" name="RepairCheckBox2">
+            <Property key="Caption" value=" Shields: 100"/>
+        </Widget>
+        <Widget type="Button" skin="CheckBox" position="35 115 190 20" name="RepairCheckBox3">
+            <Property key="Caption" value=" Hull: 500"/>
+        </Widget>
+        <Widget type="Button" skin="CheckBox" position="35 145 200 20" name="RepairCheckBox4">
+            <Property key="Caption" value=" Life Support: 150"/>
+        </Widget>
+        <Widget type="Button" skin="CheckBox" position="35 175 200 25" name="RepairCheckBox5">
+            <Property key="Caption" value=" Weapons: 50"/>
+        </Widget>
+        <Widget type="Button" skin="CheckBox" position="315 55 200 25" name="BuyCheckBox1">
+            <Property key="Caption" value=" Engine Upgrade: 100"/>
+        </Widget>
+        <Widget type="Button" skin="CheckBox" position="315 85 200 25" name="BuyCheckBox2">
+            <Property key="Caption" value=" Rear Turret: 500"/>
+        </Widget>
+        <Widget type="Button" skin="CheckBox" position="315 115 205 30" name="BuyCheckBox3">
+            <Property key="Caption" value=" Shield Upgrade: 350"/>
+        </Widget>
+        <Widget type="TextBox" skin="TextBox" position="35 5 220 40" name="RepairHint">
+            <Property key="Caption" value="Repair your ship to survive\nspace battles! "/>
+            <Property key="TextColour" value="0.725146 0.720906 0.720906"/>
+        </Widget>
+    </Widget>
     <CodeGeneratorSettings>
         <Property key="IncludeDirectory" value="C:\Users\alex\Documents\Visual Studio 2010\Projects\PETROCKET_CGDC_2013\salvation-dev\include"/>
         <Property key="PanelName" value="InGameMenu"/>

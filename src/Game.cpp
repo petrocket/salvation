@@ -299,6 +299,7 @@ void Game::createGameNodes(int numSectors, int nodesPerSector)
 
 			GameNode *n = new GameNode();
 			n->currentNode = false;
+			n->sector = sector;
 			n->visible = false;
 			n->hasCity = false;
 			n->hasStation = false;
@@ -773,6 +774,8 @@ void Game::run(MyGUI::WidgetPtr _sender)
 	mInGameMenu->closeDialog(NULL);
 	mBattleDialogOpen = false;
 	mInBattle = false;
+	delete mEnemyShip;
+	mEnemyShip = 0;
 }
 
 void Game::fight(MyGUI::WidgetPtr _sender)
@@ -780,6 +783,11 @@ void Game::fight(MyGUI::WidgetPtr _sender)
 	mInGameMenu->closeDialog(NULL);
 	mBattleDialogOpen = false;
 	mInBattle = false;
+
+	delete mEnemyShip;
+	mEnemyShip = 0;
+
+	// do damage to the ship based on the enemy
 }
 
 void Game::update(float dt)
@@ -826,9 +834,20 @@ void Game::update(float dt)
 
 	if(mInBattle) {
 		if(!mBattleDialogOpen) {
+			mEnemyShip = new Ship(true);
+
+			GameNode *n = mGameNodes[mCurrentNodeIdx];
+			mEnemyShip->setSpecsForSector(n->sector);
+			// give the ship random specs
+
 			mInGameMenu->displayDialog(
 					"COMBAT",
-					"A hostile ship is approaching! Do we run or fight?",
+					"A hostile ship is approaching! Do we run or fight?\n\
+					Enemy Ship Stats: \n\
+					Shield Level: " + Ogre::StringConverter::toString(mEnemyShip->mShieldLevel) +
+					"Weapon Level: " + Ogre::StringConverter::toString(mEnemyShip->mWeaponsLevel) +
+					"Hull Level: " + Ogre::StringConverter::toString(mEnemyShip->mHullLevel)
+					,
 					"",
 					"RUN",
 					MyGUI::newDelegate(this,&Game::run),

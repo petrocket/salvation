@@ -9,19 +9,24 @@
 #endif
 
 
-Ship::Ship(void)
+Ship::Ship(bool enemy):
+	mStatusUpdated(false),
+	mRangeBillboardSet(0)
 {
 	reset();
-	mRangeBillboardSet = Game::getSingleton().mSceneManager->createBillboardSet();
-	mRangeBillboardSet->setAutoUpdate(true);
-	mRangeBillboardSet->setDefaultDimensions(mMaxJumpRange * 2.0,mMaxJumpRange * 2.0);
 
-	Ogre::MaterialPtr mat = Ogre::MaterialManager::getSingleton().getByName("RangeMaterial");
-	mRangeBillboardSet->setMaterial(mat);
-	Ogre::SceneNode *n = Game::getSingleton().mSceneManager->getRootSceneNode()->createChildSceneNode();
-	n->attachObject(mRangeBillboardSet);
+	if(!enemy) {
+		mRangeBillboardSet = Game::getSingleton().mSceneManager->createBillboardSet();
+		mRangeBillboardSet->setAutoUpdate(true);
+		mRangeBillboardSet->setDefaultDimensions(mMaxJumpRange * 2.0,mMaxJumpRange * 2.0);
 
-	mRangeBillboard = mRangeBillboardSet->createBillboard(Ogre::Vector3::ZERO);
+		Ogre::MaterialPtr mat = Ogre::MaterialManager::getSingleton().getByName("RangeMaterial");
+		mRangeBillboardSet->setMaterial(mat);
+		Ogre::SceneNode *n = Game::getSingleton().mSceneManager->getRootSceneNode()->createChildSceneNode();
+		n->attachObject(mRangeBillboardSet);
+
+		mRangeBillboard = mRangeBillboardSet->createBillboard(Ogre::Vector3::ZERO);
+	}
 }
 
 
@@ -33,6 +38,8 @@ Ship::~Ship(void)
 void Ship::reset()
 {
 	mHealth = 100;
+	
+	mFuel = 10;
 
 	// upgrade level
 	mEngineLevel = 1;
@@ -59,5 +66,28 @@ float Ship::maxJumpRangeForEngineLevel(int level)
 	}
 	else {
 		return 1000.0;
+	}
+}
+
+void Ship::setSpecsForSector(int sector)
+{
+	if(sector == 0) {
+		mHealth = 100;
+		mShieldLevel = 1;
+		mWeaponsLevel = 1;
+		mHullStrength = 100;
+	}
+	else if(sector == 1) {
+		mHealth = 100;
+		mShieldLevel = 1 + (Ogre::Math::UnitRandom() > 0.5 ? 1 : 0);
+		mWeaponsLevel = 1 + (Ogre::Math::UnitRandom() > 0.5 ? 1 : 0);
+		mHullStrength = 200;
+	}
+	else {
+		// max level
+		mHealth = 100;
+		mShieldLevel = 2 + (Ogre::Math::UnitRandom() > 0.5 ? 1 : 0);
+		mWeaponsLevel = 2 + (Ogre::Math::UnitRandom() > 0.5 ? 1 : 0);
+		mHullStrength = 300;
 	}
 }
