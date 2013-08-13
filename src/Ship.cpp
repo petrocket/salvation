@@ -39,7 +39,7 @@ void Ship::reset()
 {
 	mHealth = 100;
 	
-	mFuel = 10;
+	mFuel = 0;
 
 	// upgrade level
 	mEngineLevel = 1;

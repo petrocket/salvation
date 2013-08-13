@@ -99,8 +99,10 @@ public:
 	void run(MyGUI::WidgetPtr _sender);
 	void fight(MyGUI::WidgetPtr _sender);
 
+	float fuelCostToTravelTo(unsigned int i);
 	bool canTravelToNodeWithIndex(unsigned int i);
-	bool travelToNodeWithIndex(unsigned int i, bool force = false); // attempt to travel
+	bool travelToNodeWithIndex(unsigned int i, bool force = false);
+
 	void update(float dt);
 
 	GameState getGameState() { return mGameState; }
@@ -139,6 +141,7 @@ public:
 	float mDangerZoneEnd;
 	float mWarningZoneSize;
 
+	float mPlayerMoney;
 	double mMaxGameTime;
 	double mGameTimeRemaining;
 	bool mPaused;

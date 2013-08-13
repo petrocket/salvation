@@ -30,17 +30,37 @@ namespace Salvation
 		mMaxGameTime->setCaption(Ogre::StringConverter::toString((float)Game::getSingleton().mMaxGameTime));
 
 		mCloseNavButton->eventMouseButtonClick += MyGUI::newDelegate(this, &Salvation::InGameMenu::closeNav);
+		mCloseNavButton->eventMouseButtonClick += MyGUI::newDelegate(playButtonClick);
+		mCloseNavButton->eventMouseSetFocus += MyGUI::newDelegate(playButtonOver);
 		mDepartButton->eventMouseButtonClick += MyGUI::newDelegate(this, &Salvation::InGameMenu::depart);
+		mDepartButton->eventMouseButtonClick += MyGUI::newDelegate(playButtonClick);
+		mDepartButton->eventMouseSetFocus += MyGUI::newDelegate(playButtonOver);
 
 		mLandedNavMapButton->eventMouseButtonClick += MyGUI::newDelegate(this, &Salvation::InGameMenu::openNav);
+		mLandedNavMapButton->eventMouseButtonClick += MyGUI::newDelegate(playButtonClick);
+		mLandedNavMapButton->eventMouseSetFocus += MyGUI::newDelegate(playButtonOver);
 		mNavButton->eventMouseButtonClick  += MyGUI::newDelegate(this, &Salvation::InGameMenu::openNav);
+		mNavButton->eventMouseButtonClick += MyGUI::newDelegate(playButtonClick);
+		mNavButton->eventMouseSetFocus += MyGUI::newDelegate(playButtonOver);
 
 		mLandButton->eventMouseButtonClick  += MyGUI::newDelegate(this, &Salvation::InGameMenu::land);
+		mLandButton->eventMouseButtonClick += MyGUI::newDelegate(playButtonClick);
+		mLandButton->eventMouseSetFocus += MyGUI::newDelegate(playButtonOver);
 		mDockButton->eventMouseButtonClick  += MyGUI::newDelegate(this, &Salvation::InGameMenu::dock);
+		mDockButton->eventMouseButtonClick += MyGUI::newDelegate(playButtonClick);
+		mDockButton->eventMouseSetFocus += MyGUI::newDelegate(playButtonOver);
 
+		// STORE
 		mStoreButton->eventMouseButtonClick  += MyGUI::newDelegate(this, &Salvation::InGameMenu::openStore);
-		mStoreWindowWindow->eventWindowButtonPressed += MyGUI::newDelegate(this, &Salvation::InGameMenu::closeStore);
+		mStoreButton->eventMouseButtonClick  += MyGUI::newDelegate(playButtonClick);
+		mStoreButton->eventMouseSetFocus += MyGUI::newDelegate(playButtonOver);
 
+		mStoreWindowWindow->eventWindowButtonPressed += MyGUI::newDelegate(this, &Salvation::InGameMenu::closeStore);
+		mFuelUpButton->eventMouseButtonClick  += MyGUI::newDelegate(this, &Salvation::InGameMenu::fuelUp);
+		mFuelDownButton->eventMouseButtonClick  += MyGUI::newDelegate(this, &Salvation::InGameMenu::fuelDown);
+		mBuyButton->eventMouseButtonClick  += MyGUI::newDelegate(this, &Salvation::InGameMenu::buy);
+		mBuyButton->eventMouseButtonClick  += MyGUI::newDelegate(playButtonClick);
+		mBuyButton->eventMouseSetFocus += MyGUI::newDelegate(playButtonOver);
 
 		/*
 		const MyGUI::IntSize size(200, 200);
@@ -52,6 +72,43 @@ namespace Salvation
 
 	InGameMenu::~InGameMenu()
 	{
+	}
+
+	void InGameMenu::buy(MyGUI::WidgetPtr _sender)
+	{
+		updateBuyCost();
+
+		// do we have enough money for this?
+		float cost = Ogre::StringConverter::parseReal(mBuyCostTextBox->getCaption());
+		if(cost < 0) cost = 0;
+
+		if(cost > Game::getSingleton().mPlayerMoney) {
+			playEffect("error.ogg");
+			return;
+		}
+
+		playButtonClick(_sender);
+
+		int fuel = Ogre::StringConverter::parseInt(mFuelQty->getCaption());
+		if(fuel < 0) fuel = 0;
+		Game::getSingleton().mPlayerShip->mFuel += fuel;
+		Game::getSingleton().mPlayerMoney -= cost;
+		
+		// sanity check for rounding issues
+		if(Game::getSingleton().mPlayerMoney < 0) {
+			Game::getSingleton().mPlayerMoney = 0;
+		}
+
+		mFuelQty->setCaption("0");
+		mFuelCost->setCaption("Fuel Cost: 0");
+
+		// credits
+		mMoneyTextBoxTextBox->setCaption("Credits: " + 
+			Ogre::StringConverter::toString(Game::getSingleton().mPlayerMoney));
+
+		// fuel
+		mFuelTextBox->setCaption("Fuel: " +
+			Ogre::StringConverter::toString(Game::getSingleton().mPlayerShip->mFuel));
 	}
 
 	void InGameMenu::closeDialog(MyGUI::WidgetPtr _sender)
@@ -115,6 +172,42 @@ namespace Salvation
 	void InGameMenu::dock(MyGUI::WidgetPtr _sender)
 	{
 		Game::getSingleton().dock();
+	}
+
+	void InGameMenu::fuelUp(MyGUI::WidgetPtr _sender)
+	{
+		int fuel = Ogre::StringConverter::parseInt(
+			mFuelQty->getCaption());
+		if(fuel < 0) fuel = 0;
+		fuel++;
+
+		playButtonClick(_sender);
+
+		mFuelQty->setCaption(Ogre::StringConverter::toString(fuel));
+		float fuelCost = (float)fuel * 100.0;
+		mFuelCost->setCaption("Fuel Cost: " + 
+			Ogre::StringConverter::toString(fuelCost));
+		updateBuyCost();
+	}
+
+	void InGameMenu::fuelDown(MyGUI::WidgetPtr _sender)
+	{
+		int fuel = Ogre::StringConverter::parseInt(
+			mFuelQty->getCaption());
+		fuel--;
+		if(fuel < 0) {
+			playEffect("error.ogg");
+			fuel = 0;
+		}
+		else {
+			playButtonClick(_sender);
+		}
+
+		mFuelQty->setCaption(Ogre::StringConverter::toString(fuel));
+		float fuelCost = (float)fuel * 100.0;
+		mFuelCost->setCaption("Fuel Cost: " + 
+			Ogre::StringConverter::toString(fuelCost));
+		updateBuyCost();
 	}
 
 	void InGameMenu::fight(MyGUI::WidgetPtr _sender)
@@ -184,11 +277,18 @@ namespace Salvation
  
 	void InGameMenu::openStore(MyGUI::WidgetPtr _sender)
 	{
+		// reset
+		mFuelQty->setCaption("0");
+		mFuelCost->setCaption("Fuel Cost: 0");
+
+		updateBuyCost();
+
 		mStoreWindowWindow->setVisibleSmooth(true);
 	}
 
 	void InGameMenu::closeStore(MyGUI::Window* _sender, const std::string& _name)
 	{
+		playButtonClick(_sender);
 		mStoreWindowWindow->setVisibleSmooth(false);
 	}
 
@@ -322,6 +422,15 @@ namespace Salvation
 				Game::getSingleton().mNavOpen);
 		}
 
+		// credits
+		mMoneyTextBoxTextBox->setCaption("Credits: " + 
+			Ogre::StringConverter::toString(Game::getSingleton().mPlayerMoney));
+
+		// fuel
+		if(Game::getSingleton().mPlayerShip) {
+			mFuelTextBox->setCaption("Fuel: " +
+				Ogre::StringConverter::toString(Game::getSingleton().mPlayerShip->mFuel));
+		}
 	}
 
 	void InGameMenu::updateMaxGameTime(MyGUI::EditBox* _sender)
@@ -411,11 +520,13 @@ namespace Salvation
 		GameNode *node = Game::getSingleton().mGameNodes[i];
 		playButtonClick(_sender);
 
+		float fuelNeeded = Game::getSingleton().fuelCostToTravelTo(i);
+
 		if(Game::getSingleton().canTravelToNodeWithIndex(i)) {
 			mDialogWindowWindow->setUserData(i);
 			displayDialog(
 				node->title,
-				"Fuel Needed: 3\n\nDistance: 1","",
+				"Fuel Needed: " + Ogre::StringConverter::toString(fuelNeeded),"",
 				"CLOSE",
 				MyGUI::newDelegate(this,&InGameMenu::closeDialog),
 				"TRAVEL",
@@ -433,7 +544,8 @@ namespace Salvation
 
 			displayDialog(
 				node->title,
-				"Fuel Needed: 3\n\nDistance: 1\n\n" + err,
+				"Fuel Needed: " + Ogre::StringConverter::toString(fuelNeeded) +
+				"\n\n" + err,
 				"",
 				"",
 				NULL,
@@ -455,6 +567,21 @@ namespace Salvation
 		else {
 			playEffect("error.ogg");
 		}
+	}
+
+	void InGameMenu::updateBuyCost()
+	{
+		float cost = 0;
+
+		int fuel = Ogre::StringConverter::parseInt(mFuelQty->getCaption());
+		if(fuel < 0) fuel = 0;
+		float fuelCost = (float)fuel * 100.0;
+
+
+		cost = fuelCost;
+
+		mBuyCostTextBox->setCaption("TOTAL: " +
+			Ogre::StringConverter::toString(cost));
 	}
 
 	void InGameMenu::setNavButtonsVisible(bool visible)

@@ -53,6 +53,9 @@ namespace Salvation
 
 		void openStore(MyGUI::WidgetPtr _sender);
 		void closeStore(MyGUI::Window* _sender, const std::string& _name);
+		void fuelUp(MyGUI::WidgetPtr _sender);
+		void fuelDown(MyGUI::WidgetPtr _sender);
+		void buy(MyGUI::WidgetPtr _sender);
 
 		void update();
 		void updateTimeLeft(double secLeft);
@@ -69,6 +72,8 @@ namespace Salvation
 		bool getScreenspaceCoords(Ogre::SceneNode* node, Ogre::Camera* camera, Ogre::Vector2& result);
 		void createNavButtons();
 		void setNavButtonsVisible(bool visible);
+
+		void updateBuyCost();
 
 	//%LE Widget_Declaration list start
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mDialogWindowWindow, "DialogWindow");
@@ -98,17 +103,19 @@ namespace Salvation
 		MyGUI::Widget* mShipWidget;
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mHullStatus, "HullStatus");
 		MyGUI::ImageBox* mHullStatus;
-
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mStatsTextBox, "Stats");
 		MyGUI::TextBox* mStatsTextBox;
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mInGameMenuWidget, "InGameMenu");
 		MyGUI::Widget* mInGameMenuWidget;
+
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mQuitButton, "Quit");
 		MyGUI::Button* mQuitButton;
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mSettingsButton, "Settings");
 		MyGUI::Button* mSettingsButton;
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mMoneyTextBoxTextBox, "MoneyTextBox");
 		MyGUI::TextBox* mMoneyTextBoxTextBox;
+		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mFuelTextBox, "Fuel");
+		MyGUI::TextBox* mFuelTextBox;
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mTimerTextBoxTextBox, "TimerTextBox");
 		MyGUI::TextBox* mTimerTextBoxTextBox;
 
@@ -123,6 +130,7 @@ namespace Salvation
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mLandedNavMapButton, "landedNavMap");
 		MyGUI::Button* mLandedNavMapButton;
 
+		// STORE
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mStoreWindowWindow, "StoreWindow");
 		MyGUI::Window* mStoreWindowWindow;
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mRepairButton, "Repair");
@@ -151,6 +159,16 @@ namespace Salvation
 		MyGUI::Button* mBuyCheckBox3Button;
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mRepairHintTextBox, "RepairHint");
 		MyGUI::TextBox* mRepairHintTextBox;
+		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mFuelUpButton, "FuelUp");
+		MyGUI::Button* mFuelUpButton;
+		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mFuelDownButton, "FuelDown");
+		MyGUI::Button* mFuelDownButton;
+		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mFuelQty, "FuelQty");
+		MyGUI::TextBox* mFuelQty;
+		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mFuelCost, "FuelCost");
+		MyGUI::TextBox* mFuelCost;
+
+		// CONTACTS
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mContactsWidget, "Contacts");
 		MyGUI::Widget* mContactsWidget;
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mContactsTitleTextBox, "ContactsTitle");

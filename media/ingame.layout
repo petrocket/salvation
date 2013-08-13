@@ -3,22 +3,31 @@
     <Widget type="Widget" skin="PanelEmpty" position="0 0 1280 720" align="Stretch" layer="Popup" name="PopupPanel"/>
     <Widget type="Widget" skin="PanelEmpty" position="0 0 1280 720" align="Stretch" layer="Main" name="_Main">
         <Widget type="Widget" skin="PanelSkin" position="-5 110 260 425" name="NavLocation">
+            <Property key="Alpha" value="0.8"/>
             <Widget type="Button" skin="Button" position="20 225 220 50" name="Nav">
                 <Property key="Caption" value="NAV MAP"/>
+                <Property key="InheritsAlpha" value="false"/>
             </Widget>
             <Widget type="TextBox" skin="TextBox" position="20 30 220 185" name="LocationDescription">
                 <Property key="Caption" value="Description"/>
+                <Property key="InheritsAlpha" value="false"/>
             </Widget>
             <Widget type="Button" skin="Button" position="20 290 220 50" name="Land">
                 <Property key="Caption" value="LAND ON PLANET"/>
+                <Property key="InheritsAlpha" value="false"/>
             </Widget>
             <Widget type="Button" skin="Button" position="20 355 220 50" name="Dock">
                 <Property key="Caption" value="DOCK AT STATION"/>
+                <Property key="InheritsAlpha" value="false"/>
             </Widget>
         </Widget>
         <Widget type="Widget" skin="PanelSkin" position="1005 0 280 235" name="Ship">
+            <Property key="Alpha" value="0.8"/>
             <Widget type="TextBox" skin="TextBox" position="10 170 260 55" name="Stats">
                 <Property key="Caption" value="HULL        |  LEVEL 1  |  100%\nSHIELDS   |  LEVEL 2  |  100%\nWEAPONS |  LEVEL 3  |  100%"/>
+                <Property key="InheritsAlpha" value="false"/>
+                <Property key="TextShadow" value="true"/>
+                <Property key="TextColour" value="0.690058 0.690058 0.690058"/>
             </Widget>
             <Widget type="ImageBox" skin="ImageBox" position="10 15 260 140" name="HullStatus">
                 <Property key="ImageTexture" value="hullstatus1.png"/>
@@ -31,39 +40,51 @@
             <Widget type="Button" skin="Button" position="90 0 110 30" name="Settings">
                 <Property key="Caption" value="SETTINGS"/>
             </Widget>
-            <Widget type="TextBox" skin="TextBox" position="495 5 160 20" name="MoneyTextBox">
+            <Widget type="TextBox" skin="TextBox" position="435 5 145 20" name="MoneyTextBox">
                 <Property key="Caption" value="Credits: 1000"/>
                 <Property key="TextShadow" value="true"/>
             </Widget>
-            <Widget type="TextBox" skin="TextBox" position="685 5 165 20" name="TimerTextBox">
+            <Widget type="TextBox" skin="TextBox" position="710 5 165 20" name="TimerTextBox">
                 <Property key="Caption" value="Time Remaining: 03:00"/>
                 <Property key="TextShadow" value="true"/>
             </Widget>
+            <Widget type="TextBox" skin="TextBox" position="585 5 85 20" name="Fuel">
+                <Property key="Caption" value="Fuel: 10.0"/>
+            </Widget>
         </Widget>
         <Widget type="Widget" skin="PanelSkin" position="-5 110 260 425" layer="Main" name="Landed">
+            <Property key="Alpha" value="0.8"/>
             <Widget type="TextBox" skin="TextBox" position="20 30 220 185" name="LandedDescription">
                 <Property key="Caption" value="Description"/>
+                <Property key="InheritsAlpha" value="false"/>
             </Widget>
             <Widget type="Button" skin="Button" position="20 290 220 50" name="Depart">
                 <Property key="Caption" value="DEPART"/>
+                <Property key="InheritsAlpha" value="false"/>
             </Widget>
             <Widget type="Button" skin="Button" position="20 355 220 50" name="Store">
                 <Property key="Caption" value="STORE"/>
+                <Property key="InheritsAlpha" value="false"/>
             </Widget>
             <Widget type="Button" skin="Button" position="20 225 220 50" name="landedNavMap">
                 <Property key="Caption" value="NAV MAP"/>
+                <Property key="InheritsAlpha" value="false"/>
             </Widget>
         </Widget>
         <Widget type="Widget" skin="PanelSkin" position="15 565 190 140" name="Contacts">
+            <Property key="Alpha" value="0.8"/>
             <Widget type="TextBox" skin="TextBox" position="5 5 175 25" name="ContactsTitle">
                 <Property key="Caption" value="CONTACTS"/>
                 <Property key="TextAlign" value="Center"/>
+                <Property key="InheritsAlpha" value="false"/>
             </Widget>
             <Widget type="Button" skin="ButtonImage" position="5 40 175 35" name="ContactsButton1">
                 <Property key="Caption" value="Alex"/>
+                <Property key="InheritsAlpha" value="false"/>
             </Widget>
             <Widget type="Button" skin="ButtonImage" position="10 75 170 40" name="ContactsButton2">
                 <Property key="Caption" value="Sarah"/>
+                <Property key="InheritsAlpha" value="false"/>
             </Widget>
         </Widget>
         <Widget type="Button" skin="Button" position="15 45 175 50" name="closeNav">
@@ -126,7 +147,7 @@
             <Property key="Caption" value=" Hull: 500"/>
         </Widget>
         <Widget type="Button" skin="CheckBox" position="35 145 200 20" name="RepairCheckBox4">
-            <Property key="Caption" value=" Life Support: 150"/>
+            <Property key="Caption" value=" Life Support: 0"/>
         </Widget>
         <Widget type="Button" skin="CheckBox" position="35 175 200 25" name="RepairCheckBox5">
             <Property key="Caption" value=" Weapons: 50"/>
@@ -143,6 +164,16 @@
         <Widget type="TextBox" skin="TextBox" position="35 5 220 40" name="RepairHint">
             <Property key="Caption" value="Repair your ship to survive\nspace battles! "/>
             <Property key="TextColour" value="0.725146 0.720906 0.720906"/>
+        </Widget>
+        <Widget type="Button" skin="ButtonUpSkin" position="340 140 25 15" name="FuelUp"/>
+        <Widget type="Button" skin="ButtonDownSkin" position="340 160 25 15" name="FuelDown"/>
+        <Widget type="TextBox" skin="TextBox" position="320 145 15 25" name="FuelQty">
+            <Property key="Caption" value="0"/>
+            <Property key="TextAlign" value="Center"/>
+        </Widget>
+        <Widget type="TextBox" skin="TextBox" position="370 145 140 25" name="FuelCost">
+            <Property key="Caption" value="Fuel: 100"/>
+            <Property key="TextAlign" value="Left VCenter"/>
         </Widget>
     </Widget>
     <CodeGeneratorSettings>

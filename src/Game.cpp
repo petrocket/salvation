@@ -184,8 +184,28 @@ bool Game::canTravelToNodeWithIndex(unsigned int i)
 	if(curPos.squaredDistance(destPos) > rangeSquared) {
 		return false;
 	}
+
+	float fuelCost = fuelCostToTravelTo(i);
+	if(fuelCost > mPlayerShip->mFuel) {
+		return false;
+	}
 	
 	return true;
+}
+
+float Game::fuelCostToTravelTo(unsigned int i)
+{
+	GameNode *curNode = mGameNodes[mCurrentNodeIdx];
+	GameNode *destNode = mGameNodes[i];
+
+	// check fuel cost
+	float dist = curNode->scenenode->getPosition().distance(
+		destNode->scenenode->getPosition());
+
+	// distance is relative to playing area size
+	float fuelNeeded = dist / (float)mRenderWindow->getWidth();
+
+	return fuelNeeded;
 }
 
 void randomPointInCircle(float radius, float &x, float &y)
@@ -529,6 +549,9 @@ void Game::play()
 {
 	mCurrentNodeIdx = 0;
 
+	mPlayerMoney =  Ogre::StringConverter::parseReal(
+		mConfig->getSetting("startFunds","","1000.0"));
+
 	// randomly rotate the skybox
 	Ogre::SceneNode *n = mSceneManager->getSkyBoxNode();
 	n->yaw(Ogre::Radian(Ogre::Math::RangeRandom(0.0,Ogre::Math::TWO_PI)));
@@ -748,6 +771,9 @@ bool Game::travelToNodeWithIndex(unsigned int i, bool force)
 {
 	if(!force && !canTravelToNodeWithIndex(i)) return false;
 
+	mPlayerShip->mFuel -= fuelCostToTravelTo(i);
+	if(mPlayerShip->mFuel < 0) mPlayerShip->mFuel = 0;
+
 	mCurrentNodeIdx = i;
 	
 	mPlayerShip->mRangeBillboard->setPosition(
@@ -759,7 +785,9 @@ bool Game::travelToNodeWithIndex(unsigned int i, bool force)
 	
 	setGameState(GameStateSpace);
 
-	mInBattle = true;
+	if(Ogre::Math::UnitRandom() > 0.5) {
+		mInBattle = true;
+	}
 
 	setNavVisible(false);
 
