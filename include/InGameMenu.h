@@ -60,6 +60,8 @@ namespace Salvation
 		void toggleBuyCheckbox(MyGUI::WidgetPtr _sender);
 		void toggleRepairCheckbox(MyGUI::WidgetPtr _sender);
 
+		void contactButtonPressed(MyGUI::WidgetPtr _sender);
+
 		void update();
 		void updateTimeLeft(double secLeft);
 		void updateBattleStats();

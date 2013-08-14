@@ -13,6 +13,14 @@
 #endif
 
 
+static const Ogre::String gSpecialistTypes[5] = {
+	"None",
+	"Engine Systems",
+	"Weapon Systems",
+	"Shield Systems",
+	"Hull Repair"
+};
+
 #define kNumContactNames 30
 static const Ogre::String gContactNames[kNumContactNames] = {
 	"Keithua Jonand",
@@ -298,7 +306,6 @@ void Game::createGameNodes(int numSectors, int nodesPerSector)
 
 	mGameNodesSceneNode =  mSceneManager->getRootSceneNode()->createChildSceneNode();
 
-
 	int numColumns = 0;
 	int sector = 0;
 	// each sector is wider than the previous by one
@@ -340,6 +347,10 @@ void Game::createGameNodes(int numSectors, int nodesPerSector)
 			n->visible = false;
 			n->hasCity = false;
 			n->hasStation = false;
+			n->playerHasMap = false;
+			n->mapRequired = false;
+			n->hasHostileShip = false;
+
 			if(sector == 0 && i == 0) {
 				// first node has planet and station
 				pos.x = 0;
@@ -364,6 +375,11 @@ void Game::createGameNodes(int numSectors, int nodesPerSector)
 				n->type = GameNodeTypePlanet;
 			}
 			else {
+				// second node in sector is always hidden (requires a map)
+				if(i == 1) {
+					n->mapRequired = true;
+				}
+
 				float r = Ogre::Math::UnitRandom();
 				if(r < 0.25) {
 					n->type = GameNodeTypeAsteroids;
@@ -395,6 +411,8 @@ void Game::createGameNodes(int numSectors, int nodesPerSector)
 				n->title = planetNames[numNodes % planetNames.size()];
 			//}
 			Contact c;
+			c.mission.type = MissionTypeNone;
+			c.mission.status = MissionStatusDefault;
 			if (n->hasCity) {
 				n->cityName = cityNames[numNodes %cityNames.size()];
 				c.name = contactNames[(numNodes * 4) % contactNames.size()];
@@ -566,6 +584,9 @@ void Game::play()
 {
 	mCurrentNodeIdx = 0;
 
+	mPassengers.clear();
+	mMissions.clear();
+
 	mPlayerMoney =  Ogre::StringConverter::parseReal(
 		mConfig->getSetting("startFunds","","1000.0"));
 
@@ -587,6 +608,8 @@ void Game::play()
 		mConfig->getSetting("numNodesPerSector","","4"));
 
 	createGameNodes(numSectors,numNodesPerSector);
+	updateContacts();
+
 	mGameNodesSceneNode->setVisible(true);
 
 	mPlayerShip->mRangeBillboard->setPosition(
@@ -813,7 +836,8 @@ bool Game::travelToNodeWithIndex(unsigned int i, bool force)
 	
 	setGameState(GameStateSpace);
 
-	if(Ogre::Math::UnitRandom() > 0.5 || 1) {
+	if(mGameNodes[mCurrentNodeIdx]->hasHostileShip ||
+		Ogre::Math::UnitRandom() > 0.5 || 1) {
 		mInBattle = true;
 		mBattleDialogOpened = false;
 		mBattleStarted = false;
@@ -959,14 +983,236 @@ void Game::update(float dt)
 			}
 		}
 	}
+}
 
-	/*
-	mDangerZoneChildNode->setScale(
-		dangerZoneSize * 0.01,
-		1.0,
-		dangerZoneSize * 2.0 * 0.01
-		);
-		*/
+int hiddenNodeInSector(std::vector<GameNode *> *nodes, int sector) {
+	for(unsigned int i = 0; i < nodes->size(); i++) {
+		if(nodes->at(i)->sector == sector &&
+			nodes->at(i)->mapRequired) {
+			return i;
+		}
+	}
+	return -1;
+}
+
+bool missionTypeExistsInSector(std::vector<GameNode *> *nodes, int sector, MissionType type) {
+	for(unsigned int i = 0; i < nodes->size(); i++) {
+		GameNode *n = nodes->at(i);
+		if(n->sector == sector) {
+			if(n->hasCity) {
+				for(unsigned int j = 0; j < n->cityContacts.size(); j++) {
+					if(n->cityContacts[j].mission.type == type) {
+						return true;
+					}
+				}
+			}
+			if(n->hasStation) {
+				for(unsigned int j = 0; j < n->stationContacts.size(); j++) {
+					if(n->stationContacts[j].mission.type == type) {
+						return true;
+					}
+				}
+			}
+		}
+	}
+	return false;
+}
+
+int randomNodeInSector(std::vector<GameNode *> *nodes, int nodeIdx)
+{
+	int sector = nodes->at(nodeIdx)->sector;
+
+	std::vector<int>possibleNodes;
+	for(unsigned int i = 0; i < nodes->size(); i++) {
+		if(i == nodeIdx) continue;
+
+		GameNode *n = nodes->at(i);
+		if(n->sector == sector) {
+			possibleNodes.push_back(i);
+		}
+	}
+	std::random_shuffle(possibleNodes.begin(), possibleNodes.end());
+
+	if(possibleNodes.size()) {
+		return possibleNodes[0];
+	}
+	else {
+		return -1;
+	}
+}
+
+void createMapMissionForContact(std::vector<GameNode *> *nodes, int nodeIdx, 
+	Contact *c) 
+{
+	int sector = nodes->at(nodeIdx)->sector;
+	c->mission.type = MissionTypeMap;
+	c->mission.objectiveNodeIdx = hiddenNodeInSector(nodes,sector);
+	c->mission.cost = floorf(Ogre::Math::RangeRandom(100,300));
+	c->mission.reward = 0;
+	c->mission.objective = "I'm the only one who knows the nav coords for " +
+		nodes->at(c->mission.objectiveNodeIdx)->title + ".\nI'll sell them to you for " +
+		Ogre::StringConverter::toString(c->mission.cost) + "!";
+	c->mission.successMessage = "Congrats! You now know the secret nav coords for " +
+		nodes->at(c->mission.objectiveNodeIdx)->title;
+}
+
+void createDeliverMissionForContact(std::vector<GameNode *> *nodes, int nodeIdx, 
+	Contact *c) 
+{
+	int sector = nodes->at(nodeIdx)->sector;
+	c->mission.type = MissionTypeDeliver;
+	c->mission.objectiveNodeIdx = randomNodeInSector(nodes,nodeIdx);
+	c->mission.cost = 0;
+	c->mission.reward = floorf(Ogre::Math::RangeRandom(100,300));
+	c->mission.objective = "I'm looking for someone to deliver some cargo to " +
+		nodes->at(c->mission.objectiveNodeIdx)->title + ".\nI'll gladly pay " +
+		Ogre::StringConverter::toString(c->mission.reward) + ".";
+	c->mission.waitingMessage = "Deliver my cargo to " +
+		nodes->at(c->mission.objectiveNodeIdx)->title + " and I'll give you " +
+		Ogre::StringConverter::toString(c->mission.reward) + ".";
+	c->mission.successMessage = "Thanks for delivering my cargo!  \nI'll let you know if I have other shipping needs.";
+}
+
+void createDestroyMissionForContact(std::vector<GameNode *> *nodes, int nodeIdx, 
+	Contact *c) 
+{
+	int sector = nodes->at(nodeIdx)->sector;
+	c->mission.type = MissionTypeDestroyEnemy;
+	c->mission.objectiveNodeIdx = randomNodeInSector(nodes,nodeIdx);
+	c->mission.cost = 0;
+	c->mission.reward = floorf(Ogre::Math::RangeRandom(100,300)) * sector;
+	c->mission.objective = nodes->at(c->mission.objectiveNodeIdx)->title + 
+		" needs help eliminating a hostile ship that has been attacking all inbound vessels!\n\nThey'll gladly pay you " +
+		Ogre::StringConverter::toString(c->mission.reward) + " if you succeed.";
+	c->mission.waitingMessage = nodes->at(c->mission.objectiveNodeIdx)->title + 
+		" awaits your help eliminating a hostile ship that has been attacking all inbound vessels!\n\nThey'll gladly pay you " +
+		Ogre::StringConverter::toString(c->mission.reward) + " if you succeed.";
+	c->mission.successMessage = "The council of " +
+		nodes->at(c->mission.objectiveNodeIdx)->title + " thanks you for your service and protection.";
+}
+
+void createPassengerMissionForContact(std::vector<GameNode *> *nodes, int nodeIdx, 
+	Contact *c) 
+{
+	int sector = nodes->at(nodeIdx)->sector;
+	c->mission.type = MissionTypePassenger;
+	c->mission.objectiveNodeIdx = nodeIdx;
+
+	c->mission.cost = 0;
+	c->mission.reward = 0;
+	if(Ogre::Math::UnitRandom() > 0.5) {
+		c->mission.reward = floorf(Ogre::Math::RangeRandom(0,300));
+	}
+	c->mission.upgradeType = (MissionUpgradeType)(int)floorf(
+		Ogre::Math::RangeRandom(0,3.99f));
+
+	c->mission.objective = "I heard you talking about the sun collapsing.\n I want to join you on your ship and I'll help out however I can!";
+	c->mission.successMessage = "Thank you!\n";
+
+	if(c->mission.upgradeType > MissionUpgradeTypeNone) {
+		Ogre::String specialistType;
+		c->mission.successMessage = "\nBy the way, did I mention I'm a " +
+			gSpecialistTypes[c->mission.upgradeType] + 
+			" specialist?\nI'll help out however I can.\n";
+	}
+
+	if(c->mission.reward > 0) {
+		c->mission.successMessage += "\nHere's " +
+			Ogre::StringConverter::toString(c->mission.reward) + " for your trouble.";
+	}
+}
+
+void createMissionForContact(std::vector<GameNode *> *nodes, int nodeIdx, 
+	Contact *c, bool firstNodeInSector)
+{
+	int sector = nodes->at(nodeIdx)->sector;
+
+	// each node needs to have a hidden map quest
+	if(firstNodeInSector && !missionTypeExistsInSector(nodes,sector, MissionTypeMap)) {
+		createMapMissionForContact(nodes,nodeIdx,c);
+		return;
+	}
+
+	if(!missionTypeExistsInSector(nodes,sector,MissionTypeDeliver)) {
+		createDeliverMissionForContact(nodes,nodeIdx,c);
+		return;
+	}
+
+	if(!missionTypeExistsInSector(nodes,sector,MissionTypeDestroyEnemy)) {
+		createDestroyMissionForContact(nodes,nodeIdx,c);
+		return;
+	}
+
+	if(!missionTypeExistsInSector(nodes,sector,MissionTypePassenger)) {
+		createPassengerMissionForContact(nodes,nodeIdx,c);
+		return;
+	}
+	
+	// randomly create a mission
+	float r = Ogre::Math::UnitRandom();
+	if(r < 0.33) {
+		createDeliverMissionForContact(nodes,nodeIdx,c);
+	}
+	else if( r < 0.66) {
+		createDestroyMissionForContact(nodes,nodeIdx,c);
+	}
+	else {
+		createPassengerMissionForContact(nodes,nodeIdx,c);
+	}
+}
+
+void Game::updateContacts()
+{
+	int sector = -1;
+	for(unsigned int i = 0; i < mGameNodes.size(); i++) {
+		GameNode *n = mGameNodes[i];
+
+		bool firstNodeInSector = n->sector != sector;
+
+		if(firstNodeInSector) {
+			sector = n->sector;
+		}
+
+		if(n->hasCity) {
+			int numContactsToCreate = 2;
+			for(unsigned int j = 0; j < n->cityContacts.size(); j++) {
+				Contact *c = &(n->cityContacts[j]);
+
+				if(c->mission.status == MissionTypeNone) {
+					numContactsToCreate--;
+					// create the mission
+					createMissionForContact(&mGameNodes, i, c, firstNodeInSector);
+				}
+				else if(c->mission.status != MissionStatusTurnedIn) {
+					numContactsToCreate--;
+				}
+			}
+
+			if(numContactsToCreate > 0) {
+				// @TODO create new contacts
+			}
+		}
+
+		if(n->hasStation) {
+			int numContactsToCreate = 2;
+			for(unsigned int j = 0; j < n->stationContacts.size(); j++) {
+				Contact *c = &(n->stationContacts[j]);
+
+				if(c->mission.status == MissionTypeNone) {
+					numContactsToCreate--;
+					// create the mission
+					createMissionForContact(&mGameNodes, i, c, firstNodeInSector);
+				}
+				else if(c->mission.status != MissionStatusTurnedIn) {
+					numContactsToCreate--;
+				}
+			}
+
+			if(numContactsToCreate > 0) {
+				// @TODO create new contacts
+			}
+		}
+	}
 }
 
 void Game::updateVisibleNodes()
@@ -979,7 +1225,13 @@ void Game::updateVisibleNodes()
 
 	for(unsigned int i = 0; i < mGameNodes.size(); i++) {
 		GameNode *n = mGameNodes[i];
-		if(n->scenenode->getPosition().squaredDistance(curPos) <= squaredRange) {
+		// some nodes require a map
+		if(n->mapRequired && !n->playerHasMap) {
+			n->visible = false;
+			n->scenenode->setVisible(false);
+		}
+		else if(n->scenenode->getPosition().squaredDistance(curPos) <= squaredRange ||
+			n->playerHasMap) {
 			n->visible = true;
 			n->scenenode->setVisible(true);
 		}

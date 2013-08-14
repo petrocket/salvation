@@ -91,9 +91,19 @@ namespace Salvation
 		mRepairButton->eventMouseButtonClick  += MyGUI::newDelegate(playButtonClick);
 		mRepairButton->eventMouseSetFocus += MyGUI::newDelegate(playButtonOver);
 
+		// battle
 		mRunButton->eventMouseButtonClick  += MyGUI::newDelegate(this, &Salvation::InGameMenu::run);
 		mRunButton->eventMouseButtonClick  += MyGUI::newDelegate(playButtonClick);
 		mRunButton->eventMouseSetFocus += MyGUI::newDelegate(playButtonOver);
+
+		// contacts
+		mContactsButton1Button->eventMouseButtonClick += MyGUI::newDelegate(this, &Salvation::InGameMenu::contactButtonPressed);
+		mContactsButton1Button->eventMouseButtonClick  += MyGUI::newDelegate(playButtonClick);
+		mContactsButton1Button->eventMouseSetFocus += MyGUI::newDelegate(playButtonOver);
+
+		mContactsButton2Button->eventMouseButtonClick += MyGUI::newDelegate(this, &Salvation::InGameMenu::contactButtonPressed);
+		mContactsButton2Button->eventMouseButtonClick  += MyGUI::newDelegate(playButtonClick);
+		mContactsButton2Button->eventMouseSetFocus += MyGUI::newDelegate(playButtonOver);
 		/*
 		const MyGUI::IntSize size(200, 200);
 		mJumpRange = MyGUI::Gui::getInstance().createWidget<MyGUI::ImageBox>("ImageBox",MyGUI::IntCoord(0,0, size.width, size.height), MyGUI::Align::Default, "Back");
@@ -329,6 +339,20 @@ namespace Salvation
 		mStoreWindowWindow->setVisibleSmooth(false);
 	}
 
+	void InGameMenu::contactButtonPressed(MyGUI::WidgetPtr _sender)
+	{
+		Contact *c = *(_sender->getUserData<Contact *>());
+		displayDialog(
+			c->name,
+			c->mission.objective,
+			"",
+			"",
+			NULL,
+			"OK",
+			MyGUI::newDelegate(this,&InGameMenu::closeDialog)
+			);
+	}
+
 	void InGameMenu::openSettings(MyGUI::WidgetPtr _sender)
 	{
 		if(!mSettingsWindow->getVisible()) {
@@ -432,9 +456,11 @@ namespace Salvation
 				if(currentNode->cityContacts.size()) {
 					mContactsWidget->setVisible(true);
 					mContactsButton1Button->setCaption(currentNode->cityContacts[0].name);
+					mContactsButton1Button->setUserData(&currentNode->cityContacts[0]);
 					if(currentNode->cityContacts.size() > 1) {
 						mContactsButton2Button->setCaption(currentNode->cityContacts[1].name);
 						mContactsButton2Button->setVisible(true);
+						mContactsButton2Button->setUserData(&currentNode->cityContacts[1]);
 					}
 					else {
 						mContactsButton2Button->setVisible(false);
@@ -452,9 +478,11 @@ namespace Salvation
 				if(currentNode->stationContacts.size()) {
 					mContactsWidget->setVisible(true);
 					mContactsButton1Button->setCaption(currentNode->stationContacts[0].name);
+					mContactsButton1Button->setUserData(&currentNode->stationContacts[0]);
 					if(currentNode->stationContacts.size() > 1) {
 						mContactsButton2Button->setCaption(currentNode->stationContacts[1].name);
 						mContactsButton2Button->setVisible(true);
+						mContactsButton2Button->setUserData(&currentNode->stationContacts[1]);
 					}
 					else {
 						mContactsButton2Button->setVisible(false);

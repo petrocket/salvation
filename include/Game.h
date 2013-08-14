@@ -43,9 +43,56 @@ typedef enum GameNodeType_t
 	GameNodeTypeAsteroids
 } GameNodeType;
 
+typedef enum MissionStatus_t
+{
+	MissionStatusDefault = 0,
+	MissionStatusAccepted,
+	MissionStatusFailed,
+	MissionStatusCompleted,
+	MissionStatusTurnedIn
+} MissionStatus;
+
+typedef enum MissionType_t
+{
+	MissionTypeNone = 0,
+	MissionTypeDeliver, // take cargo to another city/station
+	MissionTypeDestroyEnemy, // destory hostile ship at location
+	MissionTypePassenger, // take passenger on board (possible upgrade)
+	MissionTypeMap // purchase map of new location
+} MissionType;
+
+typedef enum MissionUpgradeType_t
+{
+	MissionUpgradeTypeNone = 0,
+	MissionUpgradeTypeEngines,
+	MissionUpgradeTypeWeapons,
+	MissionUpgradeTypeShields,
+	MissionUpgradeTypeHull
+} MissionUpgradeType;
+
+typedef struct Mission_t
+{
+	MissionStatus status;
+	MissionType type;
+	float cost;
+	float reward;
+	MissionUpgradeType upgradeType;
+	Ogre::String objective;
+	Ogre::String successMessage;
+	Ogre::String waitingMessage;
+	Ogre::String failureMessage;
+
+	// type specific
+	int objectiveNodeIdx;
+	bool objectiveInCity;
+	bool objectiveInStation;
+} Mission;
+
 typedef struct Contact
 {
 	Ogre::String name;
+	Mission mission;
+	bool isPassenger;
 } Contact;
 
 typedef struct GameNode
@@ -56,6 +103,9 @@ typedef struct GameNode
 	Ogre::SceneNode *scenenode;
 	bool visible;
 	bool currentNode;
+	bool playerHasMap;
+	bool mapRequired;
+	bool hasHostileShip;
 
 	GameNodeType type;
 
@@ -157,6 +207,9 @@ public:
 	int mCurrentNodeIdx;
 	std::vector<GameNode *>mGameNodes;
 
+	std::vector<Contact>mPassengers;
+	std::vector<Mission*>mMissions;
+
 	Ogre::GameConfig *mConfig;
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
@@ -172,6 +225,7 @@ private:
 	LensFlare *mLensFlare;
 
 	void createGameNodes(int numSectors, int nodesPerSector);
+	void updateContacts();
 	void updateVisibleNodes();
 };
 
