@@ -17,10 +17,20 @@ public:
 	virtual void reset(); // reset to default
 
 	void setSpecsForSector(int sector);
+	
+	void updateSpecs();
 
 	float maxJumpRangeForEngineLevel(int level);
+	float fireRateForLevel(int level);
+	float shieldStrengthForLevel(int level);
+	float shieldRechargeRateForLevel(int level);
+	float missChanceForLevel(int level);
+	float weaponDamageForLevel(int level);
 
-	float mHealth; // health 0 .. 100
+	float fire(double dt);
+	void prepForBattle();
+	void takeDamage(double amt);
+	void rechargeShields(double dt);
 
 	float mFuel; // fuel
 
@@ -30,6 +40,8 @@ public:
 	float mMaxJumpRange; // jump range
 
 	int mShieldLevel; // upgrade shield strength and recharge rate
+	float mShieldStrength; // shield strength
+	float mShieldRechargeRate; // shield recharge rate
 	float mShieldDamage; // damage to shield generator
 	float mShields; // shield level
 
@@ -38,6 +50,8 @@ public:
 
 	int mWeaponsLevel; // weapons level (strength & recharge)
 	float mWeaponsDamage; // damage to weapons system
+	float mFireRate; // how fast the weapons can fire
+	double mWeaponCooldownRemaining;
 
 	bool mStatusUpdated;
 

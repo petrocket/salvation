@@ -75,7 +75,7 @@ static const Ogre::String gCityNames[kNumCityNames] = {
 	"Vely",
 	"Fron Colony",
 	"Gornan",
-	"Oran",
+	"Oran V",
 	"Nienna",
 };
 
@@ -86,7 +86,7 @@ static const Ogre::String gStationNames[kNumStationNames] = {
 	"Solitude",
 	"Prosperus IV",
 	"Truma 344",
-	"Ve",
+	"Veda II",
 	"Antini",
 	"Zalda 7",
 	"Boto VI",
@@ -102,10 +102,12 @@ Game::Game(Ogre::SceneManager *mgr, Ogre::RenderWindow *win, Ogre::Camera* cam) 
 	mCamera(cam),
 	mConfig(0),
 	mCurrentNodeIdx(0),
+	mEnemyShip(0),
 	mGameNodesSceneNode(0),
 	mGameTimeRemaining(0.0),
 	mGUI(0),
 	mInBattle(false),
+	mBattleStarted(false),
 	mLensFlare(0),
 	mMainMenuLayout(0),
 	mNavGridNode(0),
@@ -130,6 +132,8 @@ Game::Game(Ogre::SceneManager *mgr, Ogre::RenderWindow *win, Ogre::Camera* cam) 
 //-------------------------------------------------------------------------------------
 Game::~Game(void)
 {
+	mConfig->save();
+
 	if(mLensFlare) {
 		mLensFlare->End();
 		delete mLensFlare;
@@ -152,8 +156,6 @@ Game::~Game(void)
 		delete mPlayerShip;
 		mPlayerShip = 0;
 	}
-
-	mConfig->save();
 
 	mGameNodes.clear();
 }
@@ -240,6 +242,21 @@ bool isWithinMinRadius(Ogre::Vector2 pos, float radius, std::vector<GameNode *> 
 void Game::closeEndGameDialogPressed(MyGUI::WidgetPtr _sender)
 {
 	setGameState(GameStateMainMenu);
+}
+
+//-------------------------------------------------------------------------------------
+void Game::closeBattleDialogPressed(MyGUI::WidgetPtr _sender)
+{
+	mInGameMenu->closeDialog(NULL);
+
+	mInBattle = false;
+
+	delete mEnemyShip;
+	mEnemyShip = 0;
+
+	mPlayerShip->updateSpecs();
+	mPlayerShip->prepForBattle();
+	mInGameMenu->update();
 }
 
 //-------------------------------------------------------------------------------------
@@ -585,7 +602,7 @@ void Game::play()
 	setNavVisible(false);
 
 	mInBattle = false;
-	mBattleDialogOpen = false;
+	mBattleDialogOpened = false;
 
 	mGameTimeRemaining = mMaxGameTime;
 }
@@ -627,28 +644,39 @@ void Game::setGameState(GameState state)
 			break;
 		case GameStateEnd:
 			{
-				GameNode *node = mGameNodes[mCurrentNodeIdx];
-				bool survive = false;
-				float x = node->scenenode->getPosition().x;
-				if( x > mRenderWindow->getWidth() - 100) {
-					survive = true;
-				}
-				else if(x > mRenderWindow->getWidth() - mWarningZoneSize) {
-					survive = Ogre::Math::UnitRandom() > 0.5;
-				}
-				if(survive) {
-					mInGameMenu->displayDialog("Game Over","You Survived!","win.png",
+				if(mPlayerShip->mHullStrength <= 0) {
+					mInGameMenu->displayDialog("Game Over",
+						"Your ship was destroyed",
+						"lose.png", 
 						"",
 						NULL,
 						"CLOSE",
 						MyGUI::newDelegate(this,&Game::closeEndGameDialogPressed));
 				}
 				else {
-					mInGameMenu->displayDialog("Game Over","Your didn't make it","lose.png", 
-						"",
-						NULL,
-						"CLOSE",
-						MyGUI::newDelegate(this,&Game::closeEndGameDialogPressed));
+					GameNode *node = mGameNodes[mCurrentNodeIdx];
+					bool survive = false;
+					float x = node->scenenode->getPosition().x;
+					if( x > mRenderWindow->getWidth() - 100) {
+						survive = true;
+					}
+					else if(x > mRenderWindow->getWidth() - mWarningZoneSize) {
+						survive = Ogre::Math::UnitRandom() > 0.5;
+					}
+					if(survive) {
+						mInGameMenu->displayDialog("Game Over","You Survived!","win.png",
+							"",
+							NULL,
+							"CLOSE",
+							MyGUI::newDelegate(this,&Game::closeEndGameDialogPressed));
+					}
+					else {
+						mInGameMenu->displayDialog("Game Over","Your didn't make it","lose.png", 
+							"",
+							NULL,
+							"CLOSE",
+							MyGUI::newDelegate(this,&Game::closeEndGameDialogPressed));
+					}
 				}
 
 				break;
@@ -785,8 +813,10 @@ bool Game::travelToNodeWithIndex(unsigned int i, bool force)
 	
 	setGameState(GameStateSpace);
 
-	if(Ogre::Math::UnitRandom() > 0.5) {
+	if(Ogre::Math::UnitRandom() > 0.5 || 1) {
 		mInBattle = true;
+		mBattleDialogOpened = false;
+		mBattleStarted = false;
 	}
 
 	setNavVisible(false);
@@ -800,22 +830,26 @@ bool Game::travelToNodeWithIndex(unsigned int i, bool force)
 void Game::run(MyGUI::WidgetPtr _sender)
 {
 	mInGameMenu->closeDialog(NULL);
-	mBattleDialogOpen = false;
 	mInBattle = false;
-	delete mEnemyShip;
-	mEnemyShip = 0;
+	if(mEnemyShip) {
+		delete mEnemyShip;
+		mEnemyShip = 0;
+	}
+	mBattleStarted = false;
+
+	mPlayerShip->updateSpecs();
+	mPlayerShip->prepForBattle();
 }
 
 void Game::fight(MyGUI::WidgetPtr _sender)
 {
 	mInGameMenu->closeDialog(NULL);
-	mBattleDialogOpen = false;
-	mInBattle = false;
+	mBattleStarted = true;
+	mInBattle = true;
+	mInGameMenu->update();
 
-	delete mEnemyShip;
-	mEnemyShip = 0;
-
-	// do damage to the ship based on the enemy
+	mPlayerShip->prepForBattle();
+	mEnemyShip->prepForBattle();
 }
 
 void Game::update(float dt)
@@ -861,7 +895,7 @@ void Game::update(float dt)
 			(dangerZoneSize * 2.0) + mWarningZoneSize * 2.0);
 
 	if(mInBattle) {
-		if(!mBattleDialogOpen) {
+		if(!mBattleDialogOpened) {
 			mEnemyShip = new Ship(true);
 
 			GameNode *n = mGameNodes[mCurrentNodeIdx];
@@ -883,7 +917,46 @@ void Game::update(float dt)
 					MyGUI::newDelegate(this, &Game::fight),
 					true
 				);
-			mBattleDialogOpen = true;
+			mBattleDialogOpened = true;
+			mUpdateBattleStatsCooldown = 0;
+		}
+
+		if(mBattleStarted) {
+			mPlayerShip->rechargeShields(dt);
+			mEnemyShip->rechargeShields(dt);
+
+			mEnemyShip->takeDamage(mPlayerShip->fire(dt));
+			if(mEnemyShip->mHullStrength > 0.0) {
+				mPlayerShip->takeDamage(mEnemyShip->fire(dt));
+
+				if(mPlayerShip->mHullStrength <= 0.0) {
+					mBattleStarted = false;
+					setGameState(GameStateEnd);
+				}
+			}
+			else {
+				// enemy destroyed
+				mBattleStarted = false;
+				GameNode *n = mGameNodes[mCurrentNodeIdx];
+				float reward = 500.0 * ((float)n->sector + 1.0);
+				mPlayerMoney += reward;
+				mInGameMenu->displayDialog(
+						"COMBAT",
+						"The hostile ship has been destroyed.\nYou have been rewarded " +
+						Ogre::StringConverter::toString(reward),
+						"",
+						"",
+						NULL,
+						"CLOSE",
+						MyGUI::newDelegate(this, &Game::closeBattleDialogPressed),
+						true
+					);
+			}
+			mUpdateBattleStatsCooldown -= dt;
+			if(mUpdateBattleStatsCooldown <= 0) {
+				mUpdateBattleStatsCooldown = 0.5;
+				mInGameMenu->updateBattleStats();
+			}
 		}
 	}
 

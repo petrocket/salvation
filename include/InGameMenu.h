@@ -56,9 +56,13 @@ namespace Salvation
 		void fuelUp(MyGUI::WidgetPtr _sender);
 		void fuelDown(MyGUI::WidgetPtr _sender);
 		void buy(MyGUI::WidgetPtr _sender);
+		void repair(MyGUI::WidgetPtr _sender);
+		void toggleBuyCheckbox(MyGUI::WidgetPtr _sender);
+		void toggleRepairCheckbox(MyGUI::WidgetPtr _sender);
 
 		void update();
 		void updateTimeLeft(double secLeft);
+		void updateBattleStats();
 
 		void quit(MyGUI::WidgetPtr _sender);
 		void navButtonPressed(MyGUI::WidgetPtr _sender);
@@ -66,6 +70,7 @@ namespace Salvation
 		void travelToNode(MyGUI::WidgetPtr _sender);
 		void updateMaxGameTime(MyGUI::EditBox* _sender);
 
+		void reloadConfig(MyGUI::WidgetPtr _sender);
 	private:
 		std::vector<MyGUI::ButtonPtr> mNavButtons;
 
@@ -73,7 +78,11 @@ namespace Salvation
 		void createNavButtons();
 		void setNavButtonsVisible(bool visible);
 
+		void resetBuyMenu();
+		void resetRepairMenu();
+
 		void updateBuyCost();
+		void updateRepairCost();
 
 	//%LE Widget_Declaration list start
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mDialogWindowWindow, "DialogWindow");
@@ -99,12 +108,25 @@ namespace Salvation
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mDockButton, "Dock");
 		MyGUI::Button* mDockButton;
 
+		// ship status
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mShipWidget, "Ship");
 		MyGUI::Widget* mShipWidget;
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mHullStatus, "HullStatus");
 		MyGUI::ImageBox* mHullStatus;
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mStatsTextBox, "Stats");
 		MyGUI::TextBox* mStatsTextBox;
+
+		// enemy status
+		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mEnemyWidget, "Enemy");
+		MyGUI::Widget* mEnemyWidget;
+		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mEnemyHullStatus, "EnemyHull");
+		MyGUI::ImageBox* mEnemyHullStatus;
+		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mEnemyStatsTextBox, "EnemyStats");
+		MyGUI::TextBox* mEnemyStatsTextBox;
+
+		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mRunButton, "Run");
+		MyGUI::Button* mRunButton;
+
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mInGameMenuWidget, "InGameMenu");
 		MyGUI::Widget* mInGameMenuWidget;
 
@@ -149,14 +171,14 @@ namespace Salvation
 		MyGUI::Button* mRepairCheckBox3Button;
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mRepairCheckBox4Button, "RepairCheckBox4");
 		MyGUI::Button* mRepairCheckBox4Button;
-		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mRepairCheckBox5Button, "RepairCheckBox5");
-		MyGUI::Button* mRepairCheckBox5Button;
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mBuyCheckBox1Button, "BuyCheckBox1");
 		MyGUI::Button* mBuyCheckBox1Button;
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mBuyCheckBox2Button, "BuyCheckBox2");
 		MyGUI::Button* mBuyCheckBox2Button;
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mBuyCheckBox3Button, "BuyCheckBox3");
 		MyGUI::Button* mBuyCheckBox3Button;
+		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mBuyCheckBox4Button, "BuyCheckBox4");
+		MyGUI::Button* mBuyCheckBox4Button;
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mRepairHintTextBox, "RepairHint");
 		MyGUI::TextBox* mRepairHintTextBox;
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mFuelUpButton, "FuelUp");
@@ -191,6 +213,9 @@ namespace Salvation
 		MyGUI::Button* mShowNavGrid;
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mMaxGameTime, "maxGameTime");
 		MyGUI::EditBox* mMaxGameTime;
+		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mReloadConfigButton, "ReloadConfig");
+		MyGUI::Button* mReloadConfigButton;
+
 
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mCloseNavButton, "closeNav");
 		MyGUI::Button* mCloseNavButton;

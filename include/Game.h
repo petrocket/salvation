@@ -109,6 +109,7 @@ public:
 	void setGameState(GameState state);
 
 	void closeEndGameDialogPressed(MyGUI::WidgetPtr _sender);
+	void closeBattleDialogPressed(MyGUI::WidgetPtr _sender);
 	void setShowNavGrid(bool show);
 	void setNavVisible(bool visible);
 	void setMaxGameTime(double time);
@@ -144,10 +145,12 @@ public:
 	float mPlayerMoney;
 	double mMaxGameTime;
 	double mGameTimeRemaining;
+	double mUpdateBattleStatsCooldown;
 	bool mPaused;
 	bool mNavOpen;
 	bool mInBattle;
-	bool mBattleDialogOpen;
+	bool mBattleDialogOpened;
+	bool mBattleStarted;
 	bool mShutdown;
 	bool mShowGrid;
 

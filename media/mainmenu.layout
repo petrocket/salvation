@@ -3,12 +3,15 @@
     <Widget type="Widget" skin="PanelEmpty" position="0 0 375 720" layer="Main" name="_Main">
         <Widget type="Button" skin="Button" position="25 635 210 60" layer="Main" name="QuitButton">
             <Property key="Caption" value="QUIT"/>
+            <Property key="Colour" value="0.4 0.4 0.4"/>
         </Widget>
         <Widget type="Button" skin="Button" position="25 560 210 60" layer="Main" name="HelpButton">
             <Property key="Caption" value="HELP"/>
+            <Property key="Colour" value="0.4 0.4 0.4"/>
         </Widget>
         <Widget type="Button" skin="Button" position="25 485 210 60" layer="Main" name="PlayButton">
             <Property key="Caption" value="PLAY"/>
+            <Property key="Colour" value="0.4 0.4 0.4"/>
         </Widget>
         <Widget type="TextBox" skin="TextBox" position="20 50 335 25">
             <Property key="Caption" value="Christian Game Dev SpeedGame 2013"/>

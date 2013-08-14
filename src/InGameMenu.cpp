@@ -1,6 +1,16 @@
+#include "OgrePlatform.h"
+
+#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
+// using pch
+#include "stdafx.h"
+
+#else
+
 #include "InGameMenu.h"
 #include "GameAudioInterface.h"
 #include "Game.h"
+
+#endif
 
 namespace Salvation
 {
@@ -20,6 +30,7 @@ namespace Salvation
 
 		setVisible(false);
 
+		// settings
 		mSettingsWindow->setVisible(false);
 		mSettingsWindow->eventWindowButtonPressed += MyGUI::newDelegate(this, &Salvation::InGameMenu::closeSettings);
 
@@ -29,6 +40,10 @@ namespace Salvation
 		mMaxGameTime->eventEditTextChange += MyGUI::newDelegate(this, &Salvation::InGameMenu::updateMaxGameTime);
 		mMaxGameTime->setCaption(Ogre::StringConverter::toString((float)Game::getSingleton().mMaxGameTime));
 
+		mReloadConfigButton->eventMouseButtonClick += MyGUI::newDelegate(this, &Salvation::InGameMenu::reloadConfig);
+		mReloadConfigButton->eventMouseButtonClick += MyGUI::newDelegate(playButtonClick);
+
+		// nav
 		mCloseNavButton->eventMouseButtonClick += MyGUI::newDelegate(this, &Salvation::InGameMenu::closeNav);
 		mCloseNavButton->eventMouseButtonClick += MyGUI::newDelegate(playButtonClick);
 		mCloseNavButton->eventMouseSetFocus += MyGUI::newDelegate(playButtonOver);
@@ -55,6 +70,11 @@ namespace Salvation
 		mStoreButton->eventMouseButtonClick  += MyGUI::newDelegate(playButtonClick);
 		mStoreButton->eventMouseSetFocus += MyGUI::newDelegate(playButtonOver);
 
+		mBuyCheckBox1Button->eventMouseButtonClick += MyGUI::newDelegate(this, &Salvation::InGameMenu::toggleBuyCheckbox);
+		mBuyCheckBox2Button->eventMouseButtonClick += MyGUI::newDelegate(this, &Salvation::InGameMenu::toggleBuyCheckbox);
+		mBuyCheckBox3Button->eventMouseButtonClick += MyGUI::newDelegate(this, &Salvation::InGameMenu::toggleBuyCheckbox);
+		mBuyCheckBox4Button->eventMouseButtonClick += MyGUI::newDelegate(this, &Salvation::InGameMenu::toggleBuyCheckbox);
+
 		mStoreWindowWindow->eventWindowButtonPressed += MyGUI::newDelegate(this, &Salvation::InGameMenu::closeStore);
 		mFuelUpButton->eventMouseButtonClick  += MyGUI::newDelegate(this, &Salvation::InGameMenu::fuelUp);
 		mFuelDownButton->eventMouseButtonClick  += MyGUI::newDelegate(this, &Salvation::InGameMenu::fuelDown);
@@ -62,6 +82,18 @@ namespace Salvation
 		mBuyButton->eventMouseButtonClick  += MyGUI::newDelegate(playButtonClick);
 		mBuyButton->eventMouseSetFocus += MyGUI::newDelegate(playButtonOver);
 
+		mRepairCheckBox1Button->eventMouseButtonClick += MyGUI::newDelegate(this, &Salvation::InGameMenu::toggleRepairCheckbox);
+		mRepairCheckBox2Button->eventMouseButtonClick += MyGUI::newDelegate(this, &Salvation::InGameMenu::toggleRepairCheckbox);
+		mRepairCheckBox3Button->eventMouseButtonClick += MyGUI::newDelegate(this, &Salvation::InGameMenu::toggleRepairCheckbox);
+		mRepairCheckBox4Button->eventMouseButtonClick += MyGUI::newDelegate(this, &Salvation::InGameMenu::toggleRepairCheckbox);
+
+		mRepairButton->eventMouseButtonClick  += MyGUI::newDelegate(this, &Salvation::InGameMenu::repair);
+		mRepairButton->eventMouseButtonClick  += MyGUI::newDelegate(playButtonClick);
+		mRepairButton->eventMouseSetFocus += MyGUI::newDelegate(playButtonOver);
+
+		mRunButton->eventMouseButtonClick  += MyGUI::newDelegate(this, &Salvation::InGameMenu::run);
+		mRunButton->eventMouseButtonClick  += MyGUI::newDelegate(playButtonClick);
+		mRunButton->eventMouseSetFocus += MyGUI::newDelegate(playButtonOver);
 		/*
 		const MyGUI::IntSize size(200, 200);
 		mJumpRange = MyGUI::Gui::getInstance().createWidget<MyGUI::ImageBox>("ImageBox",MyGUI::IntCoord(0,0, size.width, size.height), MyGUI::Align::Default, "Back");
@@ -79,10 +111,10 @@ namespace Salvation
 		updateBuyCost();
 
 		// do we have enough money for this?
-		float cost = Ogre::StringConverter::parseReal(mBuyCostTextBox->getCaption());
+		float cost = *(mBuyCostTextBox->getUserData<float>());
 		if(cost < 0) cost = 0;
 
-		if(cost > Game::getSingleton().mPlayerMoney) {
+		if(cost <= 0 || cost > Game::getSingleton().mPlayerMoney) {
 			playEffect("error.ogg");
 			return;
 		}
@@ -91,7 +123,24 @@ namespace Salvation
 
 		int fuel = Ogre::StringConverter::parseInt(mFuelQty->getCaption());
 		if(fuel < 0) fuel = 0;
-		Game::getSingleton().mPlayerShip->mFuel += fuel;
+
+		Ship *playerShip = Game::getSingleton().mPlayerShip;
+
+		playerShip->mFuel += fuel;
+
+		if(mBuyCheckBox1Button->getStateSelected()) {
+			playerShip->mEngineLevel++;
+		}
+		if(mBuyCheckBox2Button->getStateSelected()) {
+			playerShip->mShieldLevel++;
+		}
+		if(mBuyCheckBox3Button->getStateSelected()) {
+			playerShip->mHullLevel++;
+		}
+		if(mBuyCheckBox4Button->getStateSelected()) {
+			playerShip->mWeaponsLevel++;
+		}
+
 		Game::getSingleton().mPlayerMoney -= cost;
 		
 		// sanity check for rounding issues
@@ -99,8 +148,7 @@ namespace Salvation
 			Game::getSingleton().mPlayerMoney = 0;
 		}
 
-		mFuelQty->setCaption("0");
-		mFuelCost->setCaption("Fuel Cost: 0");
+		resetBuyMenu();
 
 		// credits
 		mMoneyTextBoxTextBox->setCaption("Credits: " + 
@@ -210,18 +258,10 @@ namespace Salvation
 		updateBuyCost();
 	}
 
-	void InGameMenu::fight(MyGUI::WidgetPtr _sender)
-	{
-		mDialogWindowWindow->setVisibleSmooth(false);
-		mPopupPanel->setVisible(false);
-		//Game::getSingleton().fight();
-	}
-
 	void InGameMenu::run(MyGUI::WidgetPtr _sender)
 	{
-		mDialogWindowWindow->setVisibleSmooth(false);
-		mPopupPanel->setVisible(false);
-		//Game::getSingleton().run();
+		Game::getSingleton().run(NULL);
+		update();
 	}
 
 	/**
@@ -277,11 +317,8 @@ namespace Salvation
  
 	void InGameMenu::openStore(MyGUI::WidgetPtr _sender)
 	{
-		// reset
-		mFuelQty->setCaption("0");
-		mFuelCost->setCaption("Fuel Cost: 0");
-
-		updateBuyCost();
+		resetBuyMenu();
+		resetRepairMenu();
 
 		mStoreWindowWindow->setVisibleSmooth(true);
 	}
@@ -312,7 +349,29 @@ namespace Salvation
 			mShipWidget->setVisible(false);
 			mNavLocationWidget->setVisible(false);
 			mPopupPanel->setVisible(false);
+			mEnemyWidget->setVisible(false);
+			mRunButton->setVisible(false);
 		}
+	}
+
+	void InGameMenu::toggleBuyCheckbox(MyGUI::WidgetPtr _sender)
+	{
+		MyGUI::ButtonPtr btn = (MyGUI::ButtonPtr)_sender;
+		btn->setStateSelected(!btn->getStateSelected());
+		
+		playButtonClick(NULL);
+
+		updateBuyCost();
+	}
+
+	void InGameMenu::toggleRepairCheckbox(MyGUI::WidgetPtr _sender)
+	{
+		MyGUI::ButtonPtr btn = (MyGUI::ButtonPtr)_sender;
+		btn->setStateSelected(!btn->getStateSelected());
+		
+		playButtonClick(NULL);
+
+		updateRepairCost();
 	}
 
 	void InGameMenu::toggleShowNavGrid(MyGUI::WidgetPtr _sender)
@@ -330,6 +389,11 @@ namespace Salvation
 		mNavLocationWidget->setVisible(false);
 		mLandedWidget->setVisible(false);
 		mShipWidget->setVisible(false);
+		mEnemyWidget->setVisible(false);
+		mRunButton->setVisible(false);
+
+		BOOL navOpen = Game::getSingleton().mNavOpen;
+		BOOL inBattle = Game::getSingleton().mBattleStarted;
 
 		GameNode *currentNode = NULL;
 		
@@ -352,16 +416,16 @@ namespace Salvation
 			case GameStateSpace:
 				mContactsWidget->setVisible(false);
 				mLocationDescriptionTextBox->setCaption(currentNode->title);
-				if(!Game::getSingleton().mNavOpen) {
+				if(!navOpen && !inBattle) {
 					mNavLocationWidget->setVisible(true);
 					mLandButton->setVisible(currentNode->hasCity);
 					mDockButton->setVisible(currentNode->hasStation);
 				}
-				mShipWidget->setVisible(!Game::getSingleton().mNavOpen);
+				mShipWidget->setVisible(!navOpen);
 				break;
 			case GameStateCity:
 				mLandedDescriptionTextBox->setCaption(currentNode->cityName);
-				if(!Game::getSingleton().mNavOpen) {
+				if(!navOpen && !inBattle) {
 					mLandedWidget->setVisible(true);
 				}
 				// open contacts if the station has any
@@ -376,11 +440,11 @@ namespace Salvation
 						mContactsButton2Button->setVisible(false);
 					}
 				}
-				mShipWidget->setVisible(!Game::getSingleton().mNavOpen);
+				mShipWidget->setVisible(!navOpen);
 				break;
 			case GameStateStation:
 				mLandedDescriptionTextBox->setCaption(currentNode->stationName);
-				if(!Game::getSingleton().mNavOpen) {
+				if(!navOpen && !inBattle) {
 					mLandedWidget->setVisible(true);
 				}
 
@@ -396,30 +460,35 @@ namespace Salvation
 						mContactsButton2Button->setVisible(false);
 					}
 				}
-				mShipWidget->setVisible(!Game::getSingleton().mNavOpen);
+				mShipWidget->setVisible(!navOpen);
 				break;
 			default:
 				break;
 		}
 
-		if(Game::getSingleton().mNavOpen) {
+		if(navOpen && !inBattle) {
 			if(!mNavButtons.size()) {
 				createNavButtons();
 			}
 			mContactsWidget->setVisible(false);
 		}
+		if(inBattle) {
+			mShipWidget->setVisible(true);
+			mEnemyWidget->setVisible(true);
+			mRunButton->setVisible(true);
+		}
 
-		setNavButtonsVisible(Game::getSingleton().mNavOpen);
-		mCloseNavButton->setVisible(Game::getSingleton().mNavOpen);
+		setNavButtonsVisible(navOpen && !inBattle);
+		mCloseNavButton->setVisible(navOpen && !inBattle);
 
 		if(Game::getSingleton().mPlayerShip &&
 			Game::getSingleton().mPlayerShip->mRangeBillboardSet) {
 			Game::getSingleton().mPlayerShip->mRangeBillboardSet->setVisible(
-				Game::getSingleton().mNavOpen);
+				navOpen && !inBattle);
 		}
 		if(Game::getSingleton().mDangerZoneNode) {
 			Game::getSingleton().mDangerZoneNode->setVisible(
-				Game::getSingleton().mNavOpen);
+				navOpen && !inBattle);
 		}
 
 		// credits
@@ -431,6 +500,39 @@ namespace Salvation
 			mFuelTextBox->setCaption("Fuel: " +
 				Ogre::StringConverter::toString(Game::getSingleton().mPlayerShip->mFuel));
 		}
+	}
+
+	void InGameMenu::updateBattleStats()
+	{
+		Ship *player = Game::getSingleton().mPlayerShip;
+		Ship *enemy =  Game::getSingleton().mEnemyShip;
+
+		Ogre::String hull, hullAmt,
+			wpn,wpnAmt,
+			shld, shldAmt;
+		hull = Ogre::StringConverter::toString(player->mHullLevel);
+		hullAmt = Ogre::StringConverter::toString(player->mHullStrength);
+		wpn = Ogre::StringConverter::toString(player->mWeaponsLevel);
+		wpnAmt = Ogre::StringConverter::toString((float)(100.0 - player->mWeaponsDamage));
+		shld = Ogre::StringConverter::toString(player->mShieldLevel);
+		shldAmt = Ogre::StringConverter::toString((float)(player->mShieldStrength));
+
+		mStatsTextBox->setCaption("HULL        |  LEVEL " + hull + 
+			"  |  "+ hullAmt + 
+			"%\nSHIELDS   |  LEVEL " + shld +"  |  " +shldAmt +
+			"%\nWEAPONS |  LEVEL " + wpn + "  |  " + wpnAmt +"%");
+
+		hull = Ogre::StringConverter::toString(enemy->mHullLevel);
+		hullAmt = Ogre::StringConverter::toString(enemy->mHullStrength);
+		wpn = Ogre::StringConverter::toString(enemy->mWeaponsLevel);
+		wpnAmt = Ogre::StringConverter::toString((float)(100.0 - enemy->mWeaponsDamage));
+		shld = Ogre::StringConverter::toString(enemy->mShieldLevel);
+		shldAmt = Ogre::StringConverter::toString((float)(enemy->mShieldStrength));
+
+		mEnemyStatsTextBox->setCaption("HULL        |  LEVEL " + hull + 
+			"  |  "+ hullAmt + 
+			"%\nSHIELDS   |  LEVEL " + shld +"  |  " +shldAmt +
+			"%\nWEAPONS |  LEVEL " + wpn + "  |  " + wpnAmt +"%");
 	}
 
 	void InGameMenu::updateMaxGameTime(MyGUI::EditBox* _sender)
@@ -506,6 +608,8 @@ namespace Salvation
 	void InGameMenu::depart(MyGUI::WidgetPtr _sender)
 	{
 		Game::getSingleton().depart();
+		// hide store
+		closeStore(NULL,"");
 	}
 
 	void InGameMenu::land(MyGUI::WidgetPtr _sender)
@@ -557,6 +661,193 @@ namespace Salvation
 
 	}
 
+	void InGameMenu::repair(MyGUI::WidgetPtr _sender)
+	{
+		updateRepairCost();
+
+		// do we have enough money for this?
+		float cost = *(mRepairCostTextBox->getUserData<float>());
+		if(cost < 0) cost = 0;
+
+		if(cost <= 0 || cost > Game::getSingleton().mPlayerMoney) {
+			playEffect("error.ogg");
+			return;
+		}
+
+		playButtonClick(_sender);
+
+		Ship *playerShip = Game::getSingleton().mPlayerShip;
+
+		if(mRepairCheckBox1Button->getStateSelected()) {
+			playerShip->mEngineDamage = 0;
+		}
+		if(mRepairCheckBox2Button->getStateSelected()) {
+			playerShip->mShieldDamage = 0;
+		}
+		if(mRepairCheckBox3Button->getStateSelected()) {
+			playerShip->mHullStrength = 100;
+		}
+		if(mRepairCheckBox4Button->getStateSelected()) {
+			playerShip->mWeaponsDamage = 0;
+		}
+
+		Game::getSingleton().mPlayerMoney -= cost;
+		
+		// sanity check for rounding issues
+		if(Game::getSingleton().mPlayerMoney < 0) {
+			Game::getSingleton().mPlayerMoney = 0;
+		}
+
+		resetRepairMenu();
+
+		// credits
+		mMoneyTextBoxTextBox->setCaption("Credits: " + 
+			Ogre::StringConverter::toString(Game::getSingleton().mPlayerMoney));
+	}
+
+	void InGameMenu::reloadConfig(MyGUI::WidgetPtr _sender)
+	{
+		Game::getSingleton().mConfig->load("Game.cfg","=:\t", false);
+	}
+
+	void InGameMenu::resetBuyMenu()
+	{
+		Ship *playerShip = Game::getSingleton().mPlayerShip;
+
+		mFuelQty->setCaption("0");
+		mFuelCost->setCaption("Fuel Cost: 0");
+
+		mBuyCheckBox1Button->setStateSelected(false);
+		if(playerShip->mEngineLevel < 3) {
+			mBuyCheckBox1Button->setEnabled(true);
+			int lvl = playerShip->mEngineLevel + 1;
+			int cost = lvl * 100;
+			mBuyCheckBox1Button->setUserData(cost);
+			mBuyCheckBox1Button->setCaption(" Engine Upgrade " +
+				Ogre::StringConverter::toString(lvl) + ": " +
+				Ogre::StringConverter::toString(cost) );
+		}
+		else {
+			mBuyCheckBox1Button->setCaption(" No Engine Upgrades");
+			mBuyCheckBox1Button->setEnabled(false);
+		}
+
+		mBuyCheckBox2Button->setStateSelected(false);
+		if(playerShip->mShieldLevel < 3) {
+			mBuyCheckBox2Button->setEnabled(true);
+			int lvl = playerShip->mShieldLevel + 1;
+			int cost = lvl * 100;
+
+			mBuyCheckBox2Button->setUserData(cost);
+			mBuyCheckBox2Button->setCaption(" Shields Upgrade " +
+				Ogre::StringConverter::toString(lvl) + ": " +
+				Ogre::StringConverter::toString(cost) );
+		}
+		else {
+			mBuyCheckBox2Button->setCaption(" No Shield Upgrades");
+			mBuyCheckBox2Button->setEnabled(false);
+		}
+
+		mBuyCheckBox3Button->setStateSelected(false);
+		if(playerShip->mHullLevel < 3) {
+			mBuyCheckBox3Button->setEnabled(true);
+			int lvl = playerShip->mHullLevel + 1;
+			int cost = lvl * 100;
+
+			mBuyCheckBox3Button->setUserData(cost);
+			mBuyCheckBox3Button->setCaption(" Hull Upgrade " +
+				Ogre::StringConverter::toString(lvl) + ": " +
+				Ogre::StringConverter::toString(cost) );
+		}
+		else {
+			mBuyCheckBox3Button->setCaption(" No Hull Upgrades");
+			mBuyCheckBox3Button->setEnabled(false);
+		}
+
+		mBuyCheckBox4Button->setStateSelected(false);
+		if(playerShip->mWeaponsLevel < 3) {
+			mBuyCheckBox4Button->setEnabled(true);
+			int lvl = playerShip->mWeaponsLevel + 1;
+			int cost = lvl * 100;
+
+			mBuyCheckBox4Button->setUserData(cost);
+			mBuyCheckBox4Button->setCaption(" Weapons Upgrade " +
+				Ogre::StringConverter::toString(lvl) + ": " +
+				Ogre::StringConverter::toString(cost) );
+		}
+		else {
+			mBuyCheckBox4Button->setCaption(" No Weapons Upgrades");
+			mBuyCheckBox4Button->setEnabled(false);
+		}
+
+		updateBuyCost();
+	}
+
+	void InGameMenu::resetRepairMenu()
+	{
+		Ship *playerShip = Game::getSingleton().mPlayerShip;
+
+		float cost = 0;
+
+		cost = playerShip->mEngineDamage;
+		if(cost < 0) cost = 0;
+		mRepairCheckBox1Button->setUserData(cost);
+		mRepairCheckBox1Button->setStateSelected(false);
+		if(cost <= 0) {
+			mRepairCheckBox1Button->setEnabled(false);
+			mRepairCheckBox1Button->setCaption(" No Engine Damage ");
+		}
+		else {
+			mRepairCheckBox1Button->setEnabled(true);
+			mRepairCheckBox1Button->setCaption(" Engine Damage: " +
+				Ogre::StringConverter::toString(cost) );
+		}
+
+		cost = playerShip->mShieldDamage;
+		if(cost < 0) cost = 0;
+		mRepairCheckBox2Button->setUserData(cost);
+		mRepairCheckBox2Button->setStateSelected(false);
+		if(cost <= 0) {
+			mRepairCheckBox2Button->setEnabled(false);
+			mRepairCheckBox2Button->setCaption(" No Shield Damage ");
+		}
+		else {
+			mRepairCheckBox2Button->setEnabled(true);
+			mRepairCheckBox2Button->setCaption(" Shield Damage: " +
+				Ogre::StringConverter::toString(cost) );
+		}
+		cost = 100.0 - playerShip->mHullStrength;
+		if(cost < 0) cost = 0;
+		mRepairCheckBox3Button->setUserData(cost);
+		mRepairCheckBox3Button->setStateSelected(false);
+		if(cost <= 0) {
+			mRepairCheckBox3Button->setEnabled(false);
+			mRepairCheckBox3Button->setCaption(" No Hull Damage ");
+		}
+		else {
+			mRepairCheckBox3Button->setEnabled(true);
+			mRepairCheckBox3Button->setCaption(" Hull Damage: " +
+				Ogre::StringConverter::toString(cost) );
+		}
+
+		cost = playerShip->mWeaponsDamage;
+		if(cost < 0) cost = 0;
+		mRepairCheckBox4Button->setUserData(cost);
+		mRepairCheckBox4Button->setStateSelected(false);
+		if(cost <= 0) {
+			mRepairCheckBox4Button->setEnabled(false);
+			mRepairCheckBox4Button->setCaption(" No Weapons Damage ");
+		}
+		else {
+			mRepairCheckBox4Button->setEnabled(true);
+			mRepairCheckBox4Button->setCaption(" Weapons Damage: " +
+				Ogre::StringConverter::toString(cost) );
+		}
+
+		updateRepairCost();
+	}
+
+
 	void InGameMenu::travelToNode(MyGUI::WidgetPtr _sender)
 	{
 		closeDialog(NULL);
@@ -573,17 +864,59 @@ namespace Salvation
 	{
 		float cost = 0;
 
-		int fuel = Ogre::StringConverter::parseInt(mFuelQty->getCaption());
+		float fuel = Ogre::StringConverter::parseInt(mFuelQty->getCaption());
 		if(fuel < 0) fuel = 0;
 		float fuelCost = (float)fuel * 100.0;
 
+		int engine = *(mBuyCheckBox1Button->getUserData<int>());
+		if(engine < 0) engine = 0;
+		if(!mBuyCheckBox1Button->getStateSelected()) engine = 0;
 
-		cost = fuelCost;
+		float shields = *(mBuyCheckBox2Button->getUserData<int>());
+		if(shields < 0) shields = 0;
+		if(!mBuyCheckBox2Button->getStateSelected()) shields = 0;
 
+		float hull = *(mBuyCheckBox3Button->getUserData<int>());
+		if(hull < 0) hull = 0;
+		if(!mBuyCheckBox3Button->getStateSelected()) hull = 0;
+
+		float weapons =*(mBuyCheckBox4Button->getUserData<int>());
+		if(weapons < 0) weapons = 0;
+		if(!mBuyCheckBox4Button->getStateSelected()) weapons = 0;
+
+		cost = fuelCost + engine + shields + hull + weapons;
+
+		mBuyCostTextBox->setUserData(cost);
 		mBuyCostTextBox->setCaption("TOTAL: " +
 			Ogre::StringConverter::toString(cost));
 	}
 
+	void InGameMenu::updateRepairCost()
+	{
+		float cost = 0;
+
+		float engines = *(mRepairCheckBox1Button->getUserData<float>());
+		if(engines < 0) engines = 0;
+		if(!mRepairCheckBox1Button->getStateSelected()) engines = 0;
+
+		float shields = *(mRepairCheckBox2Button->getUserData<float>());
+		if(shields < 0) shields = 0;
+		if(!mRepairCheckBox2Button->getStateSelected()) shields = 0;
+
+		float hull = *(mRepairCheckBox3Button->getUserData<float>());
+		if(hull < 0) hull = 0;
+		if(!mRepairCheckBox3Button->getStateSelected()) hull = 0;
+
+		float weapons = *(mRepairCheckBox4Button->getUserData<float>());
+		if(weapons < 0) weapons = 0;
+		if(!mRepairCheckBox4Button->getStateSelected()) weapons = 0;
+
+		cost = engines + shields + hull + weapons;
+
+		mRepairCostTextBox->setUserData(cost);
+		mRepairCostTextBox->setCaption("TOTAL: " +
+			Ogre::StringConverter::toString(cost));
+	}
 	void InGameMenu::setNavButtonsVisible(bool visible)
 	{
 		for(unsigned int i = 0; i < mNavButtons.size(); i++) {
