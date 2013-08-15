@@ -116,6 +116,45 @@ namespace Salvation
 	{
 	}
 
+	void InGameMenu::acceptMission(MyGUI::WidgetPtr _sender)
+	{
+		Contact *c = *(_sender->getUserData<Contact *>());
+
+		if(c->mission.type == MissionTypePassenger) {
+			c->mission.status = MissionStatusTurnedIn;
+			c->isPassenger = true;
+
+			if(c->mission.reward > 0) {
+				Game::getSingleton().mPlayerMoney += c->mission.reward;
+			}
+
+			Game::getSingleton().mPassengers.push_back(c);
+		}
+		else if(c->mission.type == MissionTypeMap) {
+			if(Game::getSingleton().mPlayerMoney < c->mission.cost) {
+				playEffect("error.ogg");
+
+			}
+			else {
+				c->mission.status = MissionStatusTurnedIn;
+				Game::getSingleton().mPlayerMoney -= c->mission.cost;
+				GameNode *n = Game::getSingleton().mGameNodes[c->mission.objectiveNodeIdx];
+				n->playerHasMap = true;
+				n->visible = true;
+				n->scenenode->setVisible(true);
+				update();
+			}
+		}
+		else {
+			c->mission.status = MissionStatusAccepted;
+		}
+
+		Mission *m = &c->mission;
+		Game::getSingleton().mMissions.push_back(m);
+
+		closeDialog(NULL);
+	}
+
 	void InGameMenu::buy(MyGUI::WidgetPtr _sender)
 	{
 		updateBuyCost();
@@ -342,15 +381,60 @@ namespace Salvation
 	void InGameMenu::contactButtonPressed(MyGUI::WidgetPtr _sender)
 	{
 		Contact *c = *(_sender->getUserData<Contact *>());
+
+		Ogre::String msg = "";
+		MyGUI::delegates::CDelegate1<MyGUI::WidgetPtr>::IDelegate *action1 = NULL;
+		Ogre::String action1msg = "";
+		MyGUI::delegates::CDelegate1<MyGUI::WidgetPtr>::IDelegate *action2 = NULL;
+		Ogre::String action2msg = "";
+
+		switch(c->mission.status) {
+		case MissionStatusDefault:
+			action1msg = "NO THANKS";
+			action1 = MyGUI::newDelegate(this,&InGameMenu::closeDialog);
+			action2msg = "ACCEPT";
+			action2 = MyGUI::newDelegate(this,&InGameMenu::acceptMission);
+			msg = c->mission.objective;
+			break;
+		case MissionStatusAccepted:
+			action2msg = "CLOSE";
+			action2 = MyGUI::newDelegate(this,&InGameMenu::closeDialog);
+			msg = c->mission.waitingMessage;
+			break;
+		case MissionStatusCompleted:
+			action2msg = "CLOSE";
+			action2 = MyGUI::newDelegate(this,&InGameMenu::closeDialog);
+			msg = c->mission.successMessage;
+			c->mission.status = MissionStatusTurnedIn;
+
+			if(c->mission.reward > 0) {
+				Game::getSingleton().mPlayerMoney += c->mission.reward;
+				update();
+			}
+			break;
+		case MissionStatusTurnedIn:
+			action2msg = "CLOSE";
+			action2 = MyGUI::newDelegate(this,&InGameMenu::closeDialog);
+			msg = c->mission.successMessage;
+			break;
+		case MissionStatusFailed:
+		default:
+			// nada
+			return;
+		}
+
 		displayDialog(
 			c->name,
-			c->mission.objective,
-			"",
-			"",
-			NULL,
-			"OK",
-			MyGUI::newDelegate(this,&InGameMenu::closeDialog)
+			msg,
+			c->imageName,
+			action1msg,
+			action1,
+			action2msg,
+			action2,
+			true
 			);
+
+		mOkButton->setUserData(c);
 	}
 
 	void InGameMenu::openSettings(MyGUI::WidgetPtr _sender)

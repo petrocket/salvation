@@ -91,6 +91,7 @@ typedef struct Mission_t
 typedef struct Contact
 {
 	Ogre::String name;
+	Ogre::String imageName;
 	Mission mission;
 	bool isPassenger;
 } Contact;
@@ -207,7 +208,7 @@ public:
 	int mCurrentNodeIdx;
 	std::vector<GameNode *>mGameNodes;
 
-	std::vector<Contact>mPassengers;
+	std::vector<Contact*>mPassengers;
 	std::vector<Mission*>mMissions;
 
 	Ogre::GameConfig *mConfig;
@@ -223,6 +224,10 @@ private:
 	Ogre::SceneNode *mSunSceneNode;
 
 	LensFlare *mLensFlare;
+
+	void completeMissionAtNode(int idx, MissionType type);
+	void completeMissionAtCity(int idx, MissionType type);
+	void completeMissionAtStation(int idx, MissionType type);
 
 	void createGameNodes(int numSectors, int nodesPerSector);
 	void updateContacts();

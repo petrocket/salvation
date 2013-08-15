@@ -268,6 +268,63 @@ void Game::closeBattleDialogPressed(MyGUI::WidgetPtr _sender)
 }
 
 //-------------------------------------------------------------------------------------
+void Game::completeMissionAtCity(int idx, MissionType type)
+{
+	for(unsigned int i = 0; i < mMissions.size(); i++) {
+		Mission *m = mMissions[i];
+		if(m->type != type || m->objectiveNodeIdx != idx) {
+			continue;
+		}
+		if(!m->objectiveInCity) continue;
+
+		if(m->status == MissionStatusAccepted) {
+			m->status = MissionStatusCompleted;
+			break;
+		}
+	}
+}
+
+//-------------------------------------------------------------------------------------
+void Game::completeMissionAtStation(int idx, MissionType type)
+{
+	for(unsigned int i = 0; i < mMissions.size(); i++) {
+		Mission *m = mMissions[i];
+		if(m->type != type || m->objectiveNodeIdx != idx) {
+			continue;
+		}
+		if(!m->objectiveInStation) continue;
+
+		if(m->status == MissionStatusAccepted) {
+			m->status = MissionStatusCompleted;
+			break;
+		}
+	}
+}
+
+//-------------------------------------------------------------------------------------
+void Game::completeMissionAtNode(int idx, MissionType type)
+{
+	for(unsigned int i = 0; i < mMissions.size(); i++) {
+		Mission *m = mMissions[i];
+		if(m->type != type || m->objectiveNodeIdx != idx) {
+			continue;
+		}
+		if(m->objectiveInCity || m->objectiveInStation) {
+			continue;
+		}
+
+		if(m->status == MissionStatusAccepted) {
+			m->status = MissionStatusCompleted;
+			if(type == MissionTypeDestroyEnemy) {
+				mGameNodes[idx]->hasHostileShip = false;
+			}
+
+			break;
+		}
+	}
+}
+
+//-------------------------------------------------------------------------------------
 void Game::createGameNodes(int numSectors, int nodesPerSector)
 {
 	srand(time(NULL));
@@ -413,6 +470,7 @@ void Game::createGameNodes(int numSectors, int nodesPerSector)
 			Contact c;
 			c.mission.type = MissionTypeNone;
 			c.mission.status = MissionStatusDefault;
+			c.imageName = "";
 			if (n->hasCity) {
 				n->cityName = cityNames[numNodes %cityNames.size()];
 				c.name = contactNames[(numNodes * 4) % contactNames.size()];
@@ -488,7 +546,16 @@ void Game::createScene(void)
 	mSunSceneNode =  mSceneManager->getRootSceneNode()->createChildSceneNode(
 		mDangerZoneNode->getPosition());
 	Ogre::Entity *sun = Game::getSingleton().mSceneManager->createEntity(Ogre::SceneManager::PT_SPHERE);
-	mSunSceneNode->attachObject(sun);	
+	mSunSceneNode->attachObject(sun);
+	sun->setCastShadows(false);
+
+	mSceneManager->setAmbientLight(Ogre::ColourValue(0.05, 0.05, 0.1));
+	//mSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_STENCIL_ADDITIVE);
+	Ogre::Light *l = mSceneManager->createLight();
+	l->setType(Ogre::Light::LT_POINT);
+	l->setDiffuseColour(1.0, 1.0, 1.0);
+	l->setPosition(mDangerZoneNode->getPosition() + Ogre::Vector3(300,0,0));
+	//mSunSceneNode->attachObject(l);
 
 	setShowNavGrid(mShowGrid);
 
@@ -523,11 +590,6 @@ void Game::createScene(void)
         "LensFlareHalo", "LensFlareCircle", "LensFlareBurst");
 	mLensFlare->SetPosition(mSunSceneNode->getPosition());
 
-	/*
-	mSafeZones = mSceneManager->createBillboardSet();
-	mSafeZones->setAutoextend(true);
-	mSafeZones->setDefaultDimensions(offset + 200, offset + 200);
-	*/
 
 	setGameState(GameStateMainMenu);
 }
@@ -543,6 +605,7 @@ void Game::dock()
 {
 	if(mGameState != GameStateStation) {
 		setGameState(GameStateStation);
+		completeMissionAtStation(mCurrentNodeIdx,MissionTypeDeliver);
 	}
 }
 
@@ -550,6 +613,7 @@ void Game::land()
 {
 	if(mGameState != GameStateCity) {
 		setGameState(GameStateCity);
+		completeMissionAtCity(mCurrentNodeIdx,MissionTypeDeliver);
 	}
 }
 
@@ -928,11 +992,10 @@ void Game::update(float dt)
 
 			mInGameMenu->displayDialog(
 					"COMBAT",
-					"A hostile ship is approaching! Do we run or fight?\n\
-					Enemy Ship Stats: \n\
-					Shield Level: " + Ogre::StringConverter::toString(mEnemyShip->mShieldLevel) +
-					"Weapon Level: " + Ogre::StringConverter::toString(mEnemyShip->mWeaponsLevel) +
-					"Hull Level: " + Ogre::StringConverter::toString(mEnemyShip->mHullLevel)
+					"A hostile ship is approaching! Do we run or fight?\nEnemy Ship Stats: \nShield Level: " + 
+					Ogre::StringConverter::toString(mEnemyShip->mShieldLevel) +
+					"\nWeapon Level: " + Ogre::StringConverter::toString(mEnemyShip->mWeaponsLevel) +
+					"\nHull Level: " + Ogre::StringConverter::toString(mEnemyShip->mHullLevel)
 					,
 					"",
 					"RUN",
@@ -964,6 +1027,13 @@ void Game::update(float dt)
 				GameNode *n = mGameNodes[mCurrentNodeIdx];
 				float reward = 500.0 * ((float)n->sector + 1.0);
 				mPlayerMoney += reward;
+
+				// did this fulfill a mission?
+				if(n->hasHostileShip) {
+					// does the player have the mission?
+					completeMissionAtNode(mCurrentNodeIdx,MissionTypeDestroyEnemy);
+				}
+
 				mInGameMenu->displayDialog(
 						"COMBAT",
 						"The hostile ship has been destroyed.\nYou have been rewarded " +
@@ -1062,11 +1132,41 @@ void createDeliverMissionForContact(std::vector<GameNode *> *nodes, int nodeIdx,
 	int sector = nodes->at(nodeIdx)->sector;
 	c->mission.type = MissionTypeDeliver;
 	c->mission.objectiveNodeIdx = randomNodeInSector(nodes,nodeIdx);
+
+	GameNode *n = nodes->at(c->mission.objectiveNodeIdx);
+	Ogre::String location;
+	
+	c->mission.objectiveInStation = false;
+	c->mission.objectiveInCity = false;
+
+	if(n->hasCity && n->hasStation) {
+		float r = Ogre::Math::UnitRandom();
+		if (r < 0.5) {
+			c->mission.objectiveInCity = true;
+			location = n->cityName; 
+		}
+		else {
+			c->mission.objectiveInStation = true;
+			location = n->stationName;
+		}
+	}
+	else if(n->hasCity) {
+		c->mission.objectiveInCity = true;
+		location = n->cityName;
+	}
+	else if(n->hasStation) {
+		c->mission.objectiveInStation = true;
+		location = n->stationName;
+	}
+
 	c->mission.cost = 0;
 	c->mission.reward = floorf(Ogre::Math::RangeRandom(100,300));
-	c->mission.objective = "I'm looking for someone to deliver some cargo to " +
-		nodes->at(c->mission.objectiveNodeIdx)->title + ".\nI'll gladly pay " +
+	
+	location += " in the " +  n->title + " system";
+	c->mission.objective = "I'm looking for someone to deliver some cargo to " + 
+		location + ".\nI'll gladly pay " +
 		Ogre::StringConverter::toString(c->mission.reward) + ".";
+
 	c->mission.waitingMessage = "Deliver my cargo to " +
 		nodes->at(c->mission.objectiveNodeIdx)->title + " and I'll give you " +
 		Ogre::StringConverter::toString(c->mission.reward) + ".";
@@ -1079,8 +1179,14 @@ void createDestroyMissionForContact(std::vector<GameNode *> *nodes, int nodeIdx,
 	int sector = nodes->at(nodeIdx)->sector;
 	c->mission.type = MissionTypeDestroyEnemy;
 	c->mission.objectiveNodeIdx = randomNodeInSector(nodes,nodeIdx);
+	c->mission.objectiveInCity = false;
+	c->mission.objectiveInStation = false;
+	c->mission.upgradeType = MissionUpgradeTypeNone;
+
+	GameNode *n = nodes->at(c->mission.objectiveNodeIdx);
+	n->hasHostileShip = true;
 	c->mission.cost = 0;
-	c->mission.reward = floorf(Ogre::Math::RangeRandom(100,300)) * sector;
+	c->mission.reward = floorf(Ogre::Math::RangeRandom(100,300)) * (float)(sector + 1.0);
 	c->mission.objective = nodes->at(c->mission.objectiveNodeIdx)->title + 
 		" needs help eliminating a hostile ship that has been attacking all inbound vessels!\n\nThey'll gladly pay you " +
 		Ogre::StringConverter::toString(c->mission.reward) + " if you succeed.";
@@ -1111,7 +1217,7 @@ void createPassengerMissionForContact(std::vector<GameNode *> *nodes, int nodeId
 
 	if(c->mission.upgradeType > MissionUpgradeTypeNone) {
 		Ogre::String specialistType;
-		c->mission.successMessage = "\nBy the way, did I mention I'm a " +
+		c->mission.successMessage += "\nBy the way, did I mention I'm a " +
 			gSpecialistTypes[c->mission.upgradeType] + 
 			" specialist?\nI'll help out however I can.\n";
 	}
@@ -1150,11 +1256,8 @@ void createMissionForContact(std::vector<GameNode *> *nodes, int nodeIdx,
 	
 	// randomly create a mission
 	float r = Ogre::Math::UnitRandom();
-	if(r < 0.33) {
+	if(r < 0.5) {
 		createDeliverMissionForContact(nodes,nodeIdx,c);
-	}
-	else if( r < 0.66) {
-		createDestroyMissionForContact(nodes,nodeIdx,c);
 	}
 	else {
 		createPassengerMissionForContact(nodes,nodeIdx,c);

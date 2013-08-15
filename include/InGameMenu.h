@@ -51,6 +51,8 @@ namespace Salvation
 		void openSettings(MyGUI::WidgetPtr _sender);
 		void closeSettings(MyGUI::Window* _sender, const std::string& _name);
 
+		void acceptMission(MyGUI::WidgetPtr _sender);
+
 		void openStore(MyGUI::WidgetPtr _sender);
 		void closeStore(MyGUI::Window* _sender, const std::string& _name);
 		void fuelUp(MyGUI::WidgetPtr _sender);
@@ -87,10 +89,11 @@ namespace Salvation
 		void updateRepairCost();
 
 	//%LE Widget_Declaration list start
+		// dialog
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mDialogWindowWindow, "DialogWindow");
 		MyGUI::Window* mDialogWindowWindow;
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mDialogTextBox, "Dialog");
-		MyGUI::TextBox* mDialogTextBox;
+		MyGUI::EditBox* mDialogTextBox;
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mOkButton, "Ok");
 		MyGUI::Button* mOkButton;
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mAction1Button, "Action1");

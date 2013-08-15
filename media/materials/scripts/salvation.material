@@ -16,6 +16,38 @@ material Spacescape1024
    }
 }
 
+material PlanetMaterial1
+{
+	technique
+	{
+		pass
+		{
+         		lighting on
+			texture_unit
+			{
+				texture planetsurface1.png
+			}
+
+		}
+	}
+}
+
+material PlanetMaterial2
+{
+	technique
+	{
+		pass
+		{
+         		lighting on
+			texture_unit
+			{
+				texture planetsurface2.png
+			}
+
+		}
+	}
+}
+
 material RangeMaterial
 {
 	technique
