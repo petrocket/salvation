@@ -60,7 +60,8 @@ void createSphere(const std::string& strName, const float r, const int nRings = 
 
 static bool gSphereMeshCreated = false;
 
-Planet::Planet(Ogre::SceneNode *parent)
+Planet::Planet(Ogre::SceneNode *parent) :
+	mRotateSpeed(0.025f)
 {
 	if(!gSphereMeshCreated) {
 		gSphereMeshCreated = true;
@@ -68,20 +69,32 @@ Planet::Planet(Ogre::SceneNode *parent)
 	}
 
 	mSceneNode = parent->createChildSceneNode();
+
+	mCloudsNode = mSceneNode->createChildSceneNode();
+	mSurfaceNode = mSceneNode->createChildSceneNode();
+
 	//mSurface = Game::getSingleton().mSceneManager->createEntity(Ogre::SceneManager::PT_SPHERE);
 	mSurface = Game::getSingleton().mSceneManager->createEntity("planetSphere");
-	if(Ogre::Math::UnitRandom() > 0.5) {
-		mSurface->setMaterialName("PlanetMaterial1");
-	}
-	else {
-		mSurface->setMaterialName("PlanetMaterial2");
-	}
-	mSceneNode->setScale(0.05f,0.05f,0.05f);
-	mSceneNode->attachObject(mSurface);
-	//mSceneNode->showBoundingBox(true);
-}
+	int idx = floorf(Ogre::Math::RangeRandom(1.1, 7.9));
+	mSurface->setMaterialName("PlanetTerrainMaterial" + 
+		Ogre::StringConverter::toString(idx));
+	mSurfaceNode->setScale(0.05f,0.05f,0.05f);
+	mSurfaceNode->attachObject(mSurface);
 
+	mClouds = Game::getSingleton().mSceneManager->createEntity("planetSphere");
+	mClouds->setMaterialName("PlanetCloudsMaterial");
+	mCloudsNode->setScale(0.0505f,0.0505f,0.0505f);
+	if(idx != 7) {
+		mCloudsNode->attachObject(mClouds);
+	}
+}
 
 Planet::~Planet(void)
 {
 }
+
+void Planet::update(float dt)
+{
+	mSceneNode->yaw(Ogre::Radian(dt * mRotateSpeed));
+}
+

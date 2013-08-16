@@ -57,6 +57,9 @@ public:
 
 	Ogre::BillboardSet *mRangeBillboardSet;
 	Ogre::Billboard *mRangeBillboard;
+
+	Ogre::SceneNode *mSceneNode;
+	Ogre::Entity *mEntity;
 };
 
 #endif

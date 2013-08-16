@@ -13,8 +13,17 @@ public:
 	Planet(Ogre::SceneNode *parent);
 	virtual ~Planet(void);
 
+	void update(float dt);
+
+	float mRotateSpeed;
+
 	Ogre::SceneNode *mSceneNode;
 	Ogre::Entity *mSurface;
+	Ogre::Entity *mClouds;
+
+private:
+	Ogre::SceneNode *mSurfaceNode;
+	Ogre::SceneNode *mCloudsNode;
 };
 
 #endif

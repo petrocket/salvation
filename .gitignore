@@ -4,3 +4,9 @@
 /win/salvation/*.sdf
 
 /win/salvation/*.opensdf
+
+/media/*.layout~
+
+/media/materials/programs/*.glsl~
+
+/media/materials/scripts/*.material~

@@ -32,6 +32,10 @@ Ship::Ship(bool enemy):
 		n->attachObject(mRangeBillboardSet);
 
 		mRangeBillboard = mRangeBillboardSet->createBillboard(Ogre::Vector3::ZERO);
+
+		mSceneNode = mgr->getRootSceneNode()->createChildSceneNode();
+		mEntity = mgr->createEntity("PlayerShip.mesh");
+		mSceneNode->attachObject(mEntity);
 	}
 }
 

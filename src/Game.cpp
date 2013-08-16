@@ -401,6 +401,7 @@ void Game::createGameNodes(int numSectors, int nodesPerSector)
 			GameNode *n = new GameNode();
 			n->currentNode = false;
 			n->sector = sector;
+			n->planet = NULL;
 			n->visible = false;
 			n->hasCity = false;
 			n->hasStation = false;
@@ -545,11 +546,12 @@ void Game::createScene(void)
 	// sun
 	mSunSceneNode =  mSceneManager->getRootSceneNode()->createChildSceneNode(
 		mDangerZoneNode->getPosition());
+	/*
 	Ogre::Entity *sun = Game::getSingleton().mSceneManager->createEntity(Ogre::SceneManager::PT_SPHERE);
 	mSunSceneNode->attachObject(sun);
 	sun->setCastShadows(false);
-
-	mSceneManager->setAmbientLight(Ogre::ColourValue(0.05, 0.05, 0.1));
+	*/
+	mSceneManager->setAmbientLight(Ogre::ColourValue(0.01f, 0.01f, 0.05f));
 	//mSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_STENCIL_ADDITIVE);
 	Ogre::Light *l = mSceneManager->createLight();
 	l->setType(Ogre::Light::LT_POINT);
@@ -590,7 +592,11 @@ void Game::createScene(void)
         "LensFlareHalo", "LensFlareCircle", "LensFlareBurst");
 	mLensFlare->SetPosition(mSunSceneNode->getPosition());
 
-
+	mPlayerShip = new Ship();
+	mPlayerShip->mSceneNode->setPosition(mCamera->getPosition() +
+		Ogre::Vector3(-20.0,0,0));
+	mPlayerShip->mSceneNode->yaw(Ogre::Degree(30.f));
+	mPlayerShip->mSceneNode->pitch(Ogre::Degree(30.f));
 	setGameState(GameStateMainMenu);
 }
 
@@ -660,10 +666,6 @@ void Game::play()
 	n->pitch(Ogre::Radian(Ogre::Math::RangeRandom(0.0,Ogre::Math::TWO_PI)));
 	n->roll(Ogre::Radian(Ogre::Math::RangeRandom(0.0,Ogre::Math::TWO_PI)));
 
-	if(!mPlayerShip) {
-		mPlayerShip = new Ship();
-	}
-
 	mPlayerShip->reset();
 
 	int numSectors = Ogre::StringConverter::parseInt(
@@ -704,7 +706,7 @@ void Game::setGameState(GameState state)
 	mPrevGameState = mGameState;
 	mGameState = state;
 
-	mLensFlare->SetFlareVisible(true);
+	mLensFlare->SetFlareVisible(false);
 	mSunSceneNode->setScale(0.05f,0.05f,0.05f);
 
 	switch(mGameState) {
@@ -830,6 +832,8 @@ void Game::setNavVisible(bool visible)
 		mDangerZoneNode->setVisible(visible);
 	}
 
+	mCamera->detachFromParent();
+
 	if(visible) {
 		mCamera->setFixedYawAxis(true,-Ogre::Vector3::UNIT_Z);
 		mCamera->setPosition(mNavCamPosition);
@@ -841,15 +845,22 @@ void Game::setNavVisible(bool visible)
 			Ogre::Vector3 dir = mDangerZoneNode->getPosition() - nodePos;
 			dir.normalise();
 
-
-			float offset = 10.0f;
-			Ogre::Vector3 camPos = nodePos - dir * offset;
-
-			Ogre::Vector3 xDir = dir.crossProduct(Ogre::Vector3::UNIT_Y);
-			camPos += xDir * offset * 0.5;
-			mCamera->setPosition(camPos);
-			mCamera->setFixedYawAxis(true, Ogre::Vector3::UNIT_Y);
-			mCamera->lookAt(nodePos);
+			if(mGameNodes[mCurrentNodeIdx]->planet) {
+				mGameNodes[mCurrentNodeIdx]->planet->mSceneNode->attachObject(mCamera);
+				mCamera->setPosition(-10.0,0.5,1.0);
+				mCamera->setFixedYawAxis(true, Ogre::Vector3::UNIT_Y);
+				mCamera->lookAt(nodePos);
+			}
+			else {
+				float offset = 10.0f;
+				Ogre::Vector3 camPos = nodePos - dir * offset;
+				Ogre::Vector3 xDir = dir.crossProduct(Ogre::Vector3::UNIT_Y);
+				camPos += xDir * offset * 0.5f;
+				camPos += Ogre::Vector3::UNIT_Y * 2.0f;
+				mCamera->setPosition(camPos);
+				mCamera->setFixedYawAxis(true, Ogre::Vector3::UNIT_Y);
+				mCamera->lookAt(nodePos);
+			}
 		}
 	}
 }
@@ -981,6 +992,14 @@ void Game::update(float dt)
 	mDangerZone->setDimensions(dangerZoneSize,dangerZoneSize * 2.0);
 	mWarningZone->setDimensions(dangerZoneSize + mWarningZoneSize * 2.0,
 			(dangerZoneSize * 2.0) + mWarningZoneSize * 2.0);
+
+	if(mGameState > GameStateMainMenu) {
+		// make the planet rotate
+		GameNode *n = mGameNodes[mCurrentNodeIdx];
+		if(n->planet) {
+			n->planet->update(dt);
+		}
+	}
 
 	if(mInBattle) {
 		if(!mBattleDialogOpened) {
