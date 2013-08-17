@@ -567,6 +567,7 @@ void Game::createScene(void)
 	l->setType(Ogre::Light::LT_POINT);
 	l->setDiffuseColour(1.0, 1.0, 1.0);
 	l->setPosition(mDangerZoneNode->getPosition() + Ogre::Vector3(300,0,0));
+	l->setLightMask(1 << 0);
 	//mSunSceneNode->attachObject(l);
 
 	setShowNavGrid(mShowGrid);
@@ -661,6 +662,7 @@ void Game::land()
 void Game::exit()
 {
 	mShutdown = true;
+
 }
 
 bool Game::mouseMoved( const OIS::MouseEvent &arg )
@@ -768,7 +770,7 @@ void Game::setGameState(GameState state)
 			mLensFlare->SetFlareVisible(false);
 			mSunSceneNode->setScale(0.3f,0.3f,0.3f);
 
-			mPlayerShip->mSceneNode->setVisible(true);
+			mPlayerShip->mSceneNode->setVisible(true,false);
 			mPlayerShip->mSceneNode->getParentSceneNode()->removeChild(
 				mPlayerShip->mSceneNode);
 			mSceneManager->getRootSceneNode()->addChild(
@@ -776,6 +778,8 @@ void Game::setGameState(GameState state)
 			mPlayerShip->mSceneNode->setOrientation(Ogre::Quaternion::IDENTITY);
 			mPlayerShip->mSceneNode->setPosition(mSunCamPosition +
 				Ogre::Vector3(-20.0,0,0));
+			mPlayerShip->mLaserLight->setVisible(false);
+			mPlayerShip->mLaser->mSceneNode->setVisible(false);
 			mPlayerShip->mSceneNode->setScale(0.7f,0.7f,0.7f);
 			mPlayerShip->mSceneNode->yaw(Ogre::Degree(30.f));
 			mPlayerShip->mSceneNode->pitch(Ogre::Degree(30.f));
@@ -896,7 +900,7 @@ void Game::setNavVisible(bool visible)
 			Ogre::Vector3 dir = mDangerZoneNode->getPosition() - nodePos;
 			dir.normalise();
 
-			mPlayerShip->mSceneNode->setVisible(true);
+			mPlayerShip->mSceneNode->setVisible(true,false);
 			if(mGameNodes[mCurrentNodeIdx]->planet) {
 				mPlayerShip->mSceneNode->getParentSceneNode()->removeChild(mPlayerShip->mSceneNode);
 				mGameNodes[mCurrentNodeIdx]->planet->mSceneNode->addChild(mPlayerShip->mSceneNode);
@@ -915,9 +919,9 @@ void Game::setNavVisible(bool visible)
 				mPlayerShip->mSceneNode->getParentSceneNode()->removeChild(mPlayerShip->mSceneNode);
 				mGameNodes[mCurrentNodeIdx]->scenenode->addChild(mPlayerShip->mSceneNode);
 				mPlayerShip->mSceneNode->setOrientation(Ogre::Quaternion::IDENTITY);
-				mPlayerShip->mSceneNode->setPosition(0.0,0.5,0.0);
-				mPlayerShip->mSceneNode->setScale(0.2f,0.2f,0.2f);
-				mPlayerShip->mSceneNode->yaw(Ogre::Degree(90.0));
+				mPlayerShip->mSceneNode->setPosition(0.0,0.5,-2.75);
+				mPlayerShip->mSceneNode->setScale(0.1f,0.1f,0.1f);
+				mPlayerShip->mSceneNode->yaw(Ogre::Degree(-90.0));
 
 				float offset = 10.0f;
 				Ogre::Vector3 camPos = nodePos - dir * offset;
@@ -1025,6 +1029,11 @@ void Game::update(float dt)
 {
 	if(mShutdown) {
 		mShutdown = false;
+
+		if(mPlayerShip) {
+			delete mPlayerShip;
+			mPlayerShip = 0;
+		}
 
 		mGUI->shutdown();
 		mPlatform->shutdown();
@@ -1136,6 +1145,8 @@ void Game::update(float dt)
 						MyGUI::newDelegate(this, &Game::closeBattleDialogPressed),
 						true
 					);
+				delete mEnemyShip;
+				mEnemyShip = 0;
 			}
 			mUpdateBattleStatsCooldown -= dt;
 			if(mUpdateBattleStatsCooldown <= 0) {
@@ -1143,6 +1154,13 @@ void Game::update(float dt)
 				mInGameMenu->updateBattleStats();
 			}
 		}
+	}
+
+	if(mPlayerShip) {
+		mPlayerShip->update(dt);
+	}
+	if(mEnemyShip) {
+		mEnemyShip->update(dt);
 	}
 }
 

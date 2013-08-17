@@ -9,7 +9,7 @@ varying vec3 lightDir;
 
 void main()
 {
-    float NdotL  = max(dot(normalize(vertexNormal), normalize(lightDir)), 0.0);
+    float NdotL  = max(dot(normalize(vertexNormal), normalize(-lightDir)), 0.0);
     
     vec2 uv = gl_TexCoord[0].st;
     uv.x = uv.x - time * 1.0 / 70.0;

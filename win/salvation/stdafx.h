@@ -33,6 +33,7 @@
 #include "TutorialApplication.h"
 #include "BaseApplication.h"
 #include "Game.h"
+#include "Laser.h"
 #include "GameAudioInterface.h"
 #include "GameButton.h"
 #include "GameConfig.h"

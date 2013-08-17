@@ -11,7 +11,10 @@
 
 Ship::Ship(bool enemy):
 	mStatusUpdated(false),
-	mRangeBillboardSet(0)
+	mRangeBillboardSet(0),
+	mWeaponCooldownRemaining(0),
+	mWeaponVisibleRemaining(0),
+	mLaserLight(0)
 {
 	reset();
 
@@ -25,17 +28,29 @@ Ship::Ship(bool enemy):
 		if(n->planet) {
 			mSceneNode->getParentSceneNode()->removeChild(mSceneNode);
 			n->planet->mSceneNode->addChild(mSceneNode);
-			mSceneNode->setPosition(-5.0,0.5,-2.2);
+			mSceneNode->setPosition(-5.0f,0.4f,-2.2f);
 			mSceneNode->setScale(0.1f,0.1f,0.1f);
 			mSceneNode->yaw(Ogre::Degree(-90.0));
 		}
 		else {
 			mSceneNode->getParentSceneNode()->removeChild(mSceneNode);
 			n->scenenode->addChild(mSceneNode);
-			mSceneNode->setPosition(0.0,-0.5,0.0);
-			mSceneNode->setScale(0.4f,0.4f,0.4f);
-			mSceneNode->yaw(Ogre::Degree(-90.0));
+			mSceneNode->setPosition(0.0,0.4,2.5);
+			mSceneNode->setScale(0.1f,0.1f,0.1f);
+			mSceneNode->yaw(Ogre::Degree(90.0));
 		}
+
+		mLaser = new Laser(0.35,4,"EnemyLaserMaterial");
+		mLaser->createManualObject();
+		mLaser->mSceneNode = mSceneNode->createChildSceneNode();
+		mLaser->fire(Ogre::Vector3(0,0.5,0),Ogre::Vector3(50.0,0.5,0));
+
+		mLaserLight = mgr->createLight();
+		mLaserLight->setType(Ogre::Light::LT_POINT);
+		//mLaserLight->setAttenuation(7.0f, 1.0f, 0.7f, 1.8f);
+		mLaserLight->setPosition(Ogre::Vector3(10.0f,0,0));
+		mLaserLight->setDiffuseColour(Ogre::ColourValue(1.0,0,0));
+		mSceneNode->attachObject(mLaserLight);
 	}
 	else {
 		mRangeBillboardSet = mgr->createBillboardSet();
@@ -56,12 +71,35 @@ Ship::Ship(bool enemy):
 		mSceneNode = mgr->getRootSceneNode()->createChildSceneNode();
 		mEntity = mgr->createEntity("PlayerShip.mesh");
 		mSceneNode->attachObject(mEntity);
+
+		mLaser = new Laser(0.35,4,"PlayerLaserMaterial");
+		mLaser->createManualObject();
+		mLaser->mSceneNode = mSceneNode->createChildSceneNode();
+		mLaser->fire(Ogre::Vector3(0,0,0),Ogre::Vector3(50.0,0.0,0));
+
+		mLaserLight = mgr->createLight();
+		mLaserLight->setType(Ogre::Light::LT_POINT);
+
+		//mLaserLight->setAttenuation(7.0f, 1.0f, 0.7f, 1.8f);
+		//mLaserLight->setAttenuation(50, 1.0, 0.09, 0.032);
+		
+		mLaserLight->setPosition(Ogre::Vector3(10.0f,0,0));
+		mLaserLight->setDiffuseColour(Ogre::ColourValue(0.0,0.5,1.0f));
+		mSceneNode->attachObject(mLaserLight);
+
 	}
+
+	mLaserLight->setLightMask(1 << 1);
+	mLaserLight->setVisible(false);
+	mLaser->mSceneNode->setVisible(false);
 }
 
 
 Ship::~Ship(void)
 {
+	if(mLaserLight) {
+		Game::getSingleton().mSceneManager->destroyLight(mLaserLight);
+	}
 }
 
 float Ship::fireRateForLevel(int level)
@@ -100,7 +138,12 @@ float Ship::fire(double dt)
 		return 0.0;
 	}
 
+
 	mWeaponCooldownRemaining = 1.0 / mFireRate;
+	mLaserLight->setVisible(true);
+
+	mWeaponVisibleRemaining =  mWeaponCooldownRemaining * 0.4;
+	mLaser->mSceneNode->setVisible(true);
 
 	// damage for level
 	return weaponDamageForLevel(mWeaponsLevel);
@@ -117,6 +160,15 @@ void Ship::prepForBattle()
 	mShieldStrength = maxStrength;
 }
 
+void Ship::update(double dt)
+{
+	mWeaponVisibleRemaining -= dt;
+	if(mWeaponVisibleRemaining <= 0) {
+		mLaserLight->setVisible(false);
+		mLaser->mSceneNode->setVisible(false);
+
+	}
+}
 void Ship::rechargeShields(double dt)
 {
 	// are shields operational at all?

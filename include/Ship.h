@@ -32,6 +32,8 @@ public:
 	void takeDamage(double amt);
 	void rechargeShields(double dt);
 
+	void update(double dt);
+
 	float mFuel; // fuel
 
 	// SYSTEMS
@@ -51,15 +53,20 @@ public:
 	int mWeaponsLevel; // weapons level (strength & recharge)
 	float mWeaponsDamage; // damage to weapons system
 	float mFireRate; // how fast the weapons can fire
+	double mWeaponVisibleRemaining;
 	double mWeaponCooldownRemaining;
 
 	bool mStatusUpdated;
+
+	Laser *mLaser;
 
 	Ogre::BillboardSet *mRangeBillboardSet;
 	Ogre::Billboard *mRangeBillboard;
 
 	Ogre::SceneNode *mSceneNode;
 	Ogre::Entity *mEntity;
+	Ogre::Light *mLaserLight;
+
 };
 
 #endif

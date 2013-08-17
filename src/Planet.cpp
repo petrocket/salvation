@@ -75,6 +75,7 @@ Planet::Planet(Ogre::SceneNode *parent) :
 
 	//mSurface = Game::getSingleton().mSceneManager->createEntity(Ogre::SceneManager::PT_SPHERE);
 	mSurface = Game::getSingleton().mSceneManager->createEntity("planetSphere");
+	mSurface->setLightMask(1 << 0);
 	int idx = floorf(Ogre::Math::RangeRandom(1.1f, 7.9f));
 	mSurface->setMaterialName("PlanetTerrainMaterial" + 
 		Ogre::StringConverter::toString(idx));
@@ -84,6 +85,7 @@ Planet::Planet(Ogre::SceneNode *parent) :
 	mClouds = Game::getSingleton().mSceneManager->createEntity("planetSphere");
 	mClouds->setMaterialName("PlanetCloudsMaterial");
 	mCloudsNode->setScale(0.0505f,0.0505f,0.0505f);
+	mClouds->setLightMask(1 << 0);
 	if(idx != 7) {
 		mCloudsNode->attachObject(mClouds);
 	}

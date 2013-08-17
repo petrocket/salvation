@@ -110,6 +110,7 @@ material PlanetTerrainMaterial
 				param_named_auto worldMatrix world_matrix
 				param_named_auto worldViewProjMatrix worldviewproj_matrix
 				param_named_auto lightPos light_position_object_space 0
+				//param_named lightPos float4 0 0 0 0
 			}
 			fragment_program_ref planet_terrain_fp
 			{
