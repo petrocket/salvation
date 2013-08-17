@@ -1002,9 +1002,6 @@ void Game::run(MyGUI::WidgetPtr _sender)
 	mInGameMenu->closeDialog(NULL);
 	mInBattle = false;
 	if(mEnemyShip) {
-		mEnemyShip->mSceneNode->removeAndDestroyAllChildren();
-		mEnemyShip->mSceneNode->detachAllObjects();
-
 		delete mEnemyShip;
 		mEnemyShip = 0;
 	}

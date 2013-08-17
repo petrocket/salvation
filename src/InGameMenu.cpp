@@ -225,6 +225,10 @@ namespace Salvation
 		// fuel
 		mFuelTextBox->setCaption("Fuel: " +
 			Ogre::StringConverter::toString(Game::getSingleton().mPlayerShip->mFuel));
+
+		// update stats
+		update();
+		updateBattleStats();
 	}
 
 	void InGameMenu::closeDialog(MyGUI::WidgetPtr _sender)
@@ -666,18 +670,19 @@ namespace Salvation
 			"  |  "+ hullAmt + 
 			"%\nSHIELDS   |  LEVEL " + shld +"  |  " +shldAmt +
 			"%\nWEAPONS |  LEVEL " + wpn + "  |  " + wpnAmt +"%");
+		if(enemy) {
+			hull = Ogre::StringConverter::toString(enemy->mHullLevel);
+			hullAmt = Ogre::StringConverter::toString(enemy->mHullStrength);
+			wpn = Ogre::StringConverter::toString(enemy->mWeaponsLevel);
+			wpnAmt = Ogre::StringConverter::toString((float)(100.0 - enemy->mWeaponsDamage));
+			shld = Ogre::StringConverter::toString(enemy->mShieldLevel);
+			shldAmt = Ogre::StringConverter::toString((float)(enemy->mShieldStrength));
 
-		hull = Ogre::StringConverter::toString(enemy->mHullLevel);
-		hullAmt = Ogre::StringConverter::toString(enemy->mHullStrength);
-		wpn = Ogre::StringConverter::toString(enemy->mWeaponsLevel);
-		wpnAmt = Ogre::StringConverter::toString((float)(100.0 - enemy->mWeaponsDamage));
-		shld = Ogre::StringConverter::toString(enemy->mShieldLevel);
-		shldAmt = Ogre::StringConverter::toString((float)(enemy->mShieldStrength));
-
-		mEnemyStatsTextBox->setCaption("HULL        |  LEVEL " + hull + 
-			"  |  "+ hullAmt + 
-			"%\nSHIELDS   |  LEVEL " + shld +"  |  " +shldAmt +
-			"%\nWEAPONS |  LEVEL " + wpn + "  |  " + wpnAmt +"%");
+			mEnemyStatsTextBox->setCaption("HULL        |  LEVEL " + hull + 
+				"  |  "+ hullAmt + 
+				"%\nSHIELDS   |  LEVEL " + shld +"  |  " +shldAmt +
+				"%\nWEAPONS |  LEVEL " + wpn + "  |  " + wpnAmt +"%");
+		}
 	}
 
 	void InGameMenu::updateMaxGameTime(MyGUI::EditBox* _sender)

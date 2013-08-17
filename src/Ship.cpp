@@ -100,6 +100,10 @@ Ship::~Ship(void)
 	if(mLaserLight) {
 		Game::getSingleton().mSceneManager->destroyLight(mLaserLight);
 	}
+	if(mSceneNode) {
+		mSceneNode->removeAndDestroyAllChildren();
+		mSceneNode->detachAllObjects();
+	}
 }
 
 float Ship::fireRateForLevel(int level)

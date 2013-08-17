@@ -24,7 +24,10 @@ TutorialApplication::TutorialApplication(void) :
 //-------------------------------------------------------------------------------------
 TutorialApplication::~TutorialApplication(void)
 {
-	delete mGame;
+	if(mGame) {
+		delete mGame;
+		mGame = 0;
+	}
 }
 
 //-------------------------------------------------------------------------------------
