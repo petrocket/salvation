@@ -15,9 +15,29 @@ Ship::Ship(bool enemy):
 {
 	reset();
 
-	if(!enemy) {
-		Ogre::SceneManager *mgr = Game::getSingleton().mSceneManager;
+	Ogre::SceneManager *mgr = Game::getSingleton().mSceneManager;
+	if(enemy) {
+		mSceneNode = mgr->getRootSceneNode()->createChildSceneNode();
+		mEntity = mgr->createEntity("EnemyShip.mesh");
+		mSceneNode->attachObject(mEntity);
 
+		GameNode *n = Game::getSingleton().mGameNodes[Game::getSingleton().mCurrentNodeIdx];
+		if(n->planet) {
+			mSceneNode->getParentSceneNode()->removeChild(mSceneNode);
+			n->planet->mSceneNode->addChild(mSceneNode);
+			mSceneNode->setPosition(-5.0,0.5,-2.2);
+			mSceneNode->setScale(0.1f,0.1f,0.1f);
+			mSceneNode->yaw(Ogre::Degree(-90.0));
+		}
+		else {
+			mSceneNode->getParentSceneNode()->removeChild(mSceneNode);
+			n->scenenode->addChild(mSceneNode);
+			mSceneNode->setPosition(0.0,-0.5,0.0);
+			mSceneNode->setScale(0.4f,0.4f,0.4f);
+			mSceneNode->yaw(Ogre::Degree(-90.0));
+		}
+	}
+	else {
 		mRangeBillboardSet = mgr->createBillboardSet();
 		mRangeBillboardSet->setAutoUpdate(true);
 		mRangeBillboardSet->setDefaultDimensions(
@@ -150,7 +170,7 @@ void Ship::takeDamage(double amt)
 
 void Ship::reset()
 {
-	mFuel = 2;
+	mFuel = 0.5;
 
 	// upgrade level
 	mEngineLevel = 1;
@@ -172,7 +192,7 @@ float Ship::maxJumpRangeForEngineLevel(int level)
 	if(level <= 1) {
 		return Ogre::StringConverter::parseReal(
 			Game::getSingleton().mConfig->getSetting(
-			"range1","engines","600"));
+			"range1","engines","300"));
 	}
 	else if(level <= 2) {
 		return Ogre::StringConverter::parseReal(
@@ -284,6 +304,12 @@ void Ship::updateSpecs()
 		mShieldDamage * Ogre::StringConverter::parseReal(
 			Game::getSingleton().mConfig->getSetting(
 			"shieldRechargeDamageModifier","shields","0.01"));
+
+	if(mRangeBillboardSet) {
+		mRangeBillboardSet->setDefaultDimensions(
+			mMaxJumpRange * 2.0,
+			mMaxJumpRange * 2.0);
+	}
 }
 
 float Ship::weaponDamageForLevel(int level)

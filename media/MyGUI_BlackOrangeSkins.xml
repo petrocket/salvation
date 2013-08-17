@@ -1123,16 +1123,16 @@
             <State name="pushed" colour="0 0 0" shift="1"/>
         </BasisSkin>
     </Resource>
-    <Resource type="ResourceSkin" name="ButtonNavSkin" size="28 28" texture="MyGUI_BlackOrangeSkins.png">
-        <BasisSkin type="SubSkin" offset="0 0 28 28" align="Stretch">
-            <State name="disabled" offset="478 20 28 28"/>
-            <State name="normal" offset="478 20 28 28"/>
-            <State name="highlighted" offset="478 49 28 28"/>
-            <State name="pushed" offset="478 49 28 28"/>
-            <State name="disabled_checked" offset="478 77 28 28"/>
-            <State name="normal_checked" offset="478 77 28 28"/>
-            <State name="highlighted_checked" offset="478 77 28 28"/>
-            <State name="pushed_checked" offset="478 77 28 28"/>
+    <Resource type="ResourceSkin" name="ButtonNavSkin" size="46 50" texture="MyGUI_BlackOrangeSkins.png">
+        <BasisSkin type="SubSkin" offset="0 0 46 50" align="Stretch">
+            <State name="disabled" offset="464 1 46 50"/>
+            <State name="normal" offset="464 1 46 50"/>
+            <State name="highlighted" offset="464 51 46 50"/>
+            <State name="pushed" offset="464 51 46 50"/>
+            <State name="disabled_checked" offset="464 101 46 50"/>
+            <State name="normal_checked" offset="464 101 46 50"/>
+            <State name="highlighted_checked" offset="464 101 46 50"/>
+            <State name="pushed_checked" offset="464 101 46 50"/>
         </BasisSkin>
     </Resource>
 </MyGUI>

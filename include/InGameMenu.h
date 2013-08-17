@@ -51,6 +51,9 @@ namespace Salvation
 		void openSettings(MyGUI::WidgetPtr _sender);
 		void closeSettings(MyGUI::Window* _sender, const std::string& _name);
 
+		void closeHelp(MyGUI::Window* _sender, const std::string& _name);
+		void openHelp(MyGUI::WidgetPtr _sender);
+
 		void acceptMission(MyGUI::WidgetPtr _sender);
 
 		void openStore(MyGUI::WidgetPtr _sender);
@@ -77,6 +80,7 @@ namespace Salvation
 		void reloadConfig(MyGUI::WidgetPtr _sender);
 	private:
 		std::vector<MyGUI::ButtonPtr> mNavButtons;
+		std::vector<MyGUI::TextBox *> mNavButtonLabels;
 
 		bool getScreenspaceCoords(Ogre::SceneNode* node, Ogre::Camera* camera, Ogre::Vector2& result);
 		void createNavButtons();
@@ -89,6 +93,11 @@ namespace Salvation
 		void updateRepairCost();
 
 	//%LE Widget_Declaration list start
+		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mHelpWindow, "HelpWindow");
+		MyGUI::Window* mHelpWindow;
+		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mHelpButton, "HelpButton");
+		MyGUI::Button* mHelpButton;
+
 		// dialog
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mDialogWindowWindow, "DialogWindow");
 		MyGUI::Window* mDialogWindowWindow;
@@ -107,7 +116,7 @@ namespace Salvation
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mNavButton, "Nav");
 		MyGUI::Button* mNavButton;
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mLocationDescriptionTextBox, "LocationDescription");
-		MyGUI::TextBox* mLocationDescriptionTextBox;
+		MyGUI::EditBox* mLocationDescriptionTextBox;
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mLandButton, "Land");
 		MyGUI::Button* mLandButton;
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mDockButton, "Dock");
@@ -149,7 +158,7 @@ namespace Salvation
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mLandedWidget, "Landed");
 		MyGUI::Widget* mLandedWidget;
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mLandedDescriptionTextBox, "LandedDescription");
-		MyGUI::TextBox* mLandedDescriptionTextBox;
+		MyGUI::EditBox* mLandedDescriptionTextBox;
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mDepartButton, "Depart");
 		MyGUI::Button* mDepartButton;
 		ATTRIBUTE_FIELD_WIDGET_NAME(InGameMenu, mStoreButton, "Store");

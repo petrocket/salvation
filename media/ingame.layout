@@ -4,37 +4,38 @@
     <Widget type="Widget" skin="PanelEmpty" position="0 0 1280 720" align="Stretch" layer="Main" name="_Main">
         <Widget type="Widget" skin="PanelSkin" position="-5 110 260 425" name="NavLocation">
             <Property key="Alpha" value="0.8"/>
-            <Property key="Colour" value="0.4 0.4 0.4"/>
+            <Property key="Colour" value="0.690571 0.781226 0.929825"/>
             <Widget type="Button" skin="Button" position="20 225 220 50" name="Nav">
                 <Property key="Caption" value="NAV MAP"/>
                 <Property key="InheritsAlpha" value="false"/>
-                <Property key="Colour" value="0.4 0.4 0.4"/>
+                <Property key="Colour" value="0.690571 0.781226 0.929825"/>
             </Widget>
-            <Widget type="TextBox" skin="TextBox" position="20 30 220 185" name="LocationDescription">
+            <Widget type="EditBox" skin="TextBox" position="20 30 220 185" name="LocationDescription">
                 <Property key="Caption" value="Description"/>
                 <Property key="InheritsAlpha" value="false"/>
+                <Property key="WordWrap" value="true"/>
             </Widget>
             <Widget type="Button" skin="Button" position="20 290 220 50" name="Land">
                 <Property key="Caption" value="LAND ON PLANET"/>
                 <Property key="InheritsAlpha" value="false"/>
-                <Property key="Colour" value="0.4 0.4 0.4"/>
+                <Property key="Colour" value="0.690571 0.781226 0.929825"/>
             </Widget>
             <Widget type="Button" skin="Button" position="20 355 220 50" name="Dock">
                 <Property key="Caption" value="DOCK AT STATION"/>
                 <Property key="InheritsAlpha" value="false"/>
-                <Property key="Colour" value="0.4 0.4 0.4"/>
+                <Property key="Colour" value="0.690571 0.781226 0.929825"/>
             </Widget>
         </Widget>
         <Widget type="Widget" skin="PanelSkin" position="1000 470 280 250" align="Right Bottom" name="Ship">
             <Property key="Alpha" value="0.8"/>
-            <Property key="Colour" value="0.4 0.4 0.4"/>
+            <Property key="Colour" value="0.690571 0.781226 0.929825"/>
             <Widget type="TextBox" skin="TextBox" position="10 185 260 55" name="Stats">
                 <Property key="Caption" value="HULL        |  LEVEL 1  |  100%\nSHIELDS   |  LEVEL 2  |  100%\nWEAPONS |  LEVEL 3  |  100%"/>
                 <Property key="InheritsAlpha" value="false"/>
                 <Property key="TextShadow" value="true"/>
                 <Property key="TextColour" value="0.690058 0.690058 0.690058"/>
             </Widget>
-            <Widget type="ImageBox" skin="ImageBox" position="10 40 260 140" name="HullStatus">
+            <Widget type="ImageBox" skin="ImageBox" position="10 45 256 128" name="HullStatus">
                 <Property key="ImageTexture" value="hullstatus1.png"/>
             </Widget>
             <Widget type="TextBox" skin="TextBox" position="15 10 245 25" name="SalvationStatus">
@@ -45,11 +46,11 @@
         <Widget type="Widget" skin="PanelEmpty" position="0 0 1280 30" layer="Main" name="InGameMenu">
             <Widget type="Button" skin="Button" position="0 0 85 30" name="Quit">
                 <Property key="Caption" value="QUIT"/>
-                <Property key="Colour" value="0.3 0.3 0.3"/>
+                <Property key="Colour" value="0.690571 0.781226 0.929825"/>
             </Widget>
-            <Widget type="Button" skin="Button" position="90 0 110 30" name="Settings">
+            <Widget type="Button" skin="Button" position="190 0 110 30" name="Settings">
                 <Property key="Caption" value="SETTINGS"/>
-                <Property key="Colour" value="0.3 0.3 0.3"/>
+                <Property key="Colour" value="0.690571 0.781226 0.929825"/>
             </Widget>
             <Widget type="TextBox" skin="TextBox" position="435 5 145 20" name="MoneyTextBox">
                 <Property key="Caption" value="Credits: 1000"/>
@@ -62,33 +63,38 @@
             <Widget type="TextBox" skin="TextBox" position="585 5 85 20" name="Fuel">
                 <Property key="Caption" value="Fuel: 10.0"/>
             </Widget>
+            <Widget type="Button" skin="Button" position="90 0 90 30" name="HelpButton">
+                <Property key="Colour" value="0.690571 0.781226 0.929825"/>
+                <Property key="Caption" value="HELP"/>
+            </Widget>
         </Widget>
         <Widget type="Widget" skin="PanelSkin" position="-5 110 260 425" layer="Main" name="Landed">
             <Property key="Alpha" value="0.8"/>
-            <Property key="Colour" value="0.4 0.4 0.4"/>
-            <Widget type="TextBox" skin="TextBox" position="20 30 220 185" name="LandedDescription">
+            <Property key="Colour" value="0.690571 0.781226 0.929825"/>
+            <Widget type="EditBox" skin="TextBox" position="20 30 220 185" name="LandedDescription">
                 <Property key="Caption" value="Description"/>
                 <Property key="InheritsAlpha" value="false"/>
+                <Property key="WordWrap" value="true"/>
             </Widget>
             <Widget type="Button" skin="Button" position="20 290 220 50" name="Depart">
                 <Property key="Caption" value="DEPART"/>
                 <Property key="InheritsAlpha" value="false"/>
-                <Property key="Colour" value="0.4 0.4 0.4"/>
+                <Property key="Colour" value="0.690571 0.781226 0.929825"/>
             </Widget>
             <Widget type="Button" skin="Button" position="20 355 220 50" name="Store">
                 <Property key="Caption" value="STORE"/>
                 <Property key="InheritsAlpha" value="false"/>
-                <Property key="Colour" value="0.4 0.4 0.4"/>
+                <Property key="Colour" value="0.690571 0.781226 0.929825"/>
             </Widget>
             <Widget type="Button" skin="Button" position="20 225 220 50" name="landedNavMap">
                 <Property key="Caption" value="NAV MAP"/>
                 <Property key="InheritsAlpha" value="false"/>
-                <Property key="Colour" value="0.4 0.4 0.4"/>
+                <Property key="Colour" value="0.690571 0.781226 0.929825"/>
             </Widget>
         </Widget>
         <Widget type="Widget" skin="PanelSkin" position="15 565 190 140" name="Contacts">
             <Property key="Alpha" value="0.8"/>
-            <Property key="Colour" value="0.4 0.4 0.4"/>
+            <Property key="Colour" value="0.690571 0.781226 0.929825"/>
             <Widget type="TextBox" skin="TextBox" position="5 5 175 25" name="ContactsTitle">
                 <Property key="Caption" value="CONTACTS"/>
                 <Property key="TextAlign" value="Center"/>
@@ -105,28 +111,28 @@
         </Widget>
         <Widget type="Button" skin="Button" position="15 45 175 50" name="closeNav">
             <Property key="Caption" value="CLOSE NAV"/>
-            <Property key="Colour" value="0.4 0.4 0.4"/>
+            <Property key="Colour" value="0.690571 0.781226 0.929825"/>
         </Widget>
         <Widget type="Widget" skin="PanelSkin" position="0 470 280 250" align="Left Bottom" name="Enemy">
             <Property key="Alpha" value="0.8"/>
-            <Property key="Colour" value="0.4 0.4 0.4"/>
+            <Property key="Colour" value="0.690571 0.781226 0.929825"/>
             <Widget type="TextBox" skin="TextBox" position="15 10 245 25" name="EnemyStatus">
                 <Property key="Caption" value="ENEMY STATUS"/>
                 <Property key="TextAlign" value="Center"/>
             </Widget>
-            <Widget type="ImageBox" skin="ImageBox" position="10 40 260 140" name="EnemyHull"/>
+            <Widget type="ImageBox" skin="ImageBox" position="10 45 256 128" name="EnemyHull"/>
             <Widget type="TextBox" skin="TextBox" position="10 185 260 55" name="EnemyStats">
                 <Property key="Caption" value="HULL        |  LEVEL 1  |  100%\nSHIELDS   |  LEVEL 2  |  100%\nWEAPONS |  LEVEL 3  |  100%"/>
             </Widget>
         </Widget>
         <Widget type="Button" skin="Button" position="515 660 305 45" name="Run">
-            <Property key="Colour" value="0.4 0.4 0.4"/>
+            <Property key="Colour" value="0.690571 0.781226 0.929825"/>
             <Property key="Caption" value="RUN"/>
         </Widget>
     </Widget>
     <Widget type="Window" skin="WindowCX" position="90 35 335 200" layer="Popup" name="SettingsDialog">
         <Property key="Caption" value="SETTINGS"/>
-        <Property key="Colour" value="0.4 0.4 0.4"/>
+        <Property key="Colour" value="0.690571 0.781226 0.929825"/>
         <Widget type="Button" skin="CheckBox" position="30 15 180 30" name="showNavNodes">
             <Property key="Caption" value="Show All Nav Nodes"/>
         </Widget>
@@ -145,12 +151,12 @@
         </Widget>
         <Widget type="Button" skin="Button" position="30 115 270 30" name="ReloadConfig">
             <Property key="Caption" value="Reload Game Config"/>
-            <Property key="Colour" value="0.4 0.4 0.4"/>
+            <Property key="Colour" value="0.690571 0.781226 0.929825"/>
         </Widget>
     </Widget>
-    <Widget type="Window" skin="WindowC" position="435 105 525 315" layer="Info" name="DialogWindow">
+    <Widget type="Window" skin="WindowC" position="430 100 525 315" layer="Info" name="DialogWindow">
         <Property key="Visible" value="true"/>
-        <Property key="Colour" value="0.4 0.4 0.4"/>
+        <Property key="Colour" value="0.690571 0.781226 0.929825"/>
         <Widget type="EditBox" skin="TextBox" position="165 25 330 180" name="Dialog">
             <Property key="Caption" value="DIALOG TEXT"/>
             <Property key="MultiLine" value="true"/>
@@ -159,27 +165,27 @@
         </Widget>
         <Widget type="Button" skin="Button" position="390 225 105 35" name="Ok">
             <Property key="Caption" value="OK"/>
-            <Property key="Colour" value="0.4 0.4 0.4"/>
+            <Property key="Colour" value="0.690571 0.781226 0.929825"/>
         </Widget>
         <Widget type="Button" skin="Button" position="265 225 115 35" name="Action1">
             <Property key="Caption" value="ACTION"/>
-            <Property key="Colour" value="0.4 0.4 0.4"/>
+            <Property key="Colour" value="0.690571 0.781226 0.929825"/>
         </Widget>
         <Widget type="ImageBox" skin="ImageBox" position="15 25 145 180" name="DialogImage"/>
     </Widget>
-    <Widget type="Window" skin="WindowCX" position="415 205 575 355" layer="Info" name="StoreWindow">
+    <Widget type="Window" skin="WindowCX" position="355 85 575 355" layer="Info" name="StoreWindow">
         <Property key="Caption" value="STORE"/>
-        <Property key="Colour" value="0.4 0.4 0.4"/>
+        <Property key="Colour" value="0.690571 0.781226 0.929825"/>
         <Widget type="Button" skin="Button" position="35 255 190 45" name="Repair">
             <Property key="Caption" value="REPAIR"/>
-            <Property key="Colour" value="0.4 0.4 0.4"/>
+            <Property key="Colour" value="0.690571 0.781226 0.929825"/>
         </Widget>
         <Widget type="TextBox" skin="TextBox" position="35 220 185 25" name="RepairCost">
             <Property key="Caption" value="TOTAL: 200"/>
         </Widget>
         <Widget type="Button" skin="Button" position="320 255 190 45" name="Buy">
             <Property key="Caption" value="BUY"/>
-            <Property key="Colour" value="0.4 0.4 0.4"/>
+            <Property key="Colour" value="0.690571 0.781226 0.929825"/>
         </Widget>
         <Widget type="TextBox" skin="TextBox" position="320 220 190 25" name="BuyCost">
             <Property key="Caption" value="TOTAL: 300"/>
@@ -234,6 +240,15 @@
             <Property key="Caption" value=" Weapons Upgrade 1: 250"/>
             <Property key="Colour" value="0.6 0.6 0.6"/>
         </Widget>
+    </Widget>
+    <Widget type="Window" skin="WindowCX" position="270 115 720 465" layer="Info" name="HelpWindow">
+        <Property key="Colour" value="0.690571 0.781226 0.929825"/>
+        <Property key="Visible" value="false"/>
+        <Widget type="EditBox" skin="WordWrapEmpty" position="170 15 520 385">
+            <Property key="Caption" value="Dearest nephew,\n\nI wish that I could be writing you under different circumstances.  YOU MUST LEAVE IMMEDIATELY!  The star in your system is on the brink of collapse and when it goes, it will destroy everything but the outer-most planet.\n\nI would come and get you, but the nav gate is still under repairs, so I will help you in other ways to get out of danger.  Take my ship, SALVATION, and sell everything you must to fund your journey.\n\nThe onboard navigation display has been updated with the projected blast radius of the imploding star.  If you are in the red zone when it collapses, you will not survive.   In the yellow zone your chances are 50/50, so do you best to reach the outer-most planet, which is out of harms way.\n\nWarn everyone you meet about the star&apos;s collapse and help as many others to safety as you can.\n\n\nGod speed,\nyour uncle"/>
+            <Property key="TextColour" value="0.690571 0.781226 0.929825"/>
+        </Widget>
+        <Widget type="ImageBox" skin="ImageBox" position="10 20 150 200" name="HelpImage"/>
     </Widget>
     <CodeGeneratorSettings>
         <Property key="IncludeDirectory" value="C:\Users\alex\Documents\Visual Studio 2010\Projects\PETROCKET_CGDC_2013\salvation-dev\include"/>

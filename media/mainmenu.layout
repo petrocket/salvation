@@ -1,28 +1,40 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <MyGUI type="Layout" version="3.2.0">
-    <Widget type="Widget" skin="PanelEmpty" position="0 0 375 720" layer="Main" name="_Main">
+    <Widget type="Widget" skin="PanelEmpty" position="0 0 1280 720" layer="Main" name="_Main">
         <Widget type="Button" skin="Button" position="25 635 210 60" layer="Main" name="QuitButton">
             <Property key="Caption" value="QUIT"/>
-            <Property key="Colour" value="0.4 0.4 0.4"/>
+            <Property key="Colour" value="0.690571 0.781226 0.929825"/>
+            <Property key="TextColour" value="0.690571 0.781226 0.929825"/>
         </Widget>
         <Widget type="Button" skin="Button" position="25 560 210 60" layer="Main" name="HelpButton">
             <Property key="Caption" value="HELP"/>
-            <Property key="Colour" value="0.4 0.4 0.4"/>
+            <Property key="Colour" value="0.690571 0.781226 0.929825"/>
+            <Property key="TextColour" value="0.690571 0.781226 0.929825"/>
         </Widget>
         <Widget type="Button" skin="Button" position="25 485 210 60" layer="Main" name="PlayButton">
             <Property key="Caption" value="PLAY"/>
-            <Property key="Colour" value="0.4 0.4 0.4"/>
+            <Property key="Colour" value="0.690571 0.781226 0.929825"/>
+            <Property key="TextColour" value="0.690571 0.781226 0.929825"/>
         </Widget>
         <Widget type="TextBox" skin="TextBox" position="20 50 335 25">
             <Property key="Caption" value="Christian Game Dev SpeedGame 2013"/>
             <Property key="TextShadow" value="true"/>
         </Widget>
-        <Widget type="TextBox" skin="TextBox" position="15 15 300 40">
+        <Widget type="TextBox" skin="TextBox" position="15 15 300 30">
             <Property key="Caption" value="SALVATION"/>
             <Property key="FontHeight" value="30"/>
             <Property key="FontName" value="Default"/>
             <Property key="TextShadow" value="true"/>
         </Widget>
+    </Widget>
+    <Widget type="Window" skin="WindowCX" position="355 120 720 465" layer="Info" name="HelpWindow">
+        <Property key="Colour" value="0.690571 0.781226 0.929825"/>
+        <Property key="Visible" value="false"/>
+        <Widget type="EditBox" skin="WordWrapEmpty" position="170 15 520 385">
+            <Property key="Caption" value="Dearest nephew,\n\nI wish that I could be writing you under different circumstances.  YOU MUST LEAVE IMMEDIATELY!  The star in your system is on the brink of collapse and when it goes, it will destroy everything but the outer-most planet.\n\nI would come and get you, but the nav gate is still under repairs, so I will help you in other ways to get out of danger.  Take my ship, SALVATION, and sell everything you must to fund your journey.\n\nThe onboard navigation display has been updated with the projected blast radius of the imploding star.  If you are in the red zone when it collapses, you will not survive.   In the yellow zone your chances are 50/50, so do you best to reach the outer-most planet, which is out of harms way.\n\nWarn everyone you meet about the star&apos;s collapse and help as many others to safety as you can.\n\n\nGod speed,\nyour uncle"/>
+            <Property key="TextColour" value="0.690571 0.781226 0.929825"/>
+        </Widget>
+        <Widget type="ImageBox" skin="ImageBox" position="10 20 150 200" name="HelpImage"/>
     </Widget>
     <CodeGeneratorSettings>
         <Property key="IncludeDirectory" value="C:\Users\alex\Documents\Visual Studio 2010\Projects\PETROCKET_CGDC_2013\salvation-dev\include"/>

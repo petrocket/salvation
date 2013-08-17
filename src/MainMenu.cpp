@@ -19,6 +19,7 @@ namespace Salvation
 	{
 		initialiseByAttributes(this, _parent);
 
+		mHelpButtonButton->eventMouseButtonClick += MyGUI::newDelegate(this, &Salvation::MainMenu::help);
 		mHelpButtonButton->eventMouseSetFocus += MyGUI::newDelegate(playButtonOver);
 		mHelpButtonButton->eventMouseButtonClick += MyGUI::newDelegate(playButtonClick);
 
@@ -29,15 +30,28 @@ namespace Salvation
 		mPlayButtonButton->eventMouseButtonClick += MyGUI::newDelegate(this, &Salvation::MainMenu::play);
 		mPlayButtonButton->eventMouseSetFocus += MyGUI::newDelegate(playButtonOver);
 		mPlayButtonButton->eventMouseButtonClick += MyGUI::newDelegate(playButtonClick);
+
+		mHelpWindow->eventWindowButtonPressed += MyGUI::newDelegate(this, &Salvation::MainMenu::closeHelp);
 	}
 
 	MainMenu::~MainMenu()
 	{
+
+	}
+
+	void MainMenu::closeHelp(MyGUI::Window* _sender, const std::string& _name)
+	{
+		mHelpWindow->setVisibleSmooth(false);
 	}
 
 	void MainMenu::exit(MyGUI::WidgetPtr _sender)
 	{
 		Game::getSingleton().exit();
+	}
+
+	void MainMenu::help(MyGUI::WidgetPtr _sender)
+	{
+		mHelpWindow->setVisibleSmooth(true);
 	}
 
 	void MainMenu::play(MyGUI::WidgetPtr _sender)

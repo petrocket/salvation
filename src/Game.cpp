@@ -501,13 +501,23 @@ void Game::createGameNodes(int numSectors, int nodesPerSector)
 //-------------------------------------------------------------------------------------
 void Game::createScene(void)
 {
+
 	mPlatform = new MyGUI::OgrePlatform();
 	mPlatform->initialise(mRenderWindow,mSceneManager);
+
 	mGUI = new MyGUI::Gui();
 	mGUI->initialise("MyGUI_BlackOrangeCore.xml"); 
 
 	mMainMenu = new Salvation::MainMenu();
 	mInGameMenu = new Salvation::InGameMenu();
+
+	/*
+	const MyGUI::IntSize size(mRenderWindow->getWidth(), mRenderWindow->getHeight());
+	mTestImageBox = MyGUI::Gui::getInstance().createWidget<MyGUI::ImageBox>("ImageBox",MyGUI::IntCoord(0,0, size.width, size.height), MyGUI::Align::Default, "Back");
+	mTestImageBox->setImageTexture
+	*/
+//		mJumpRange = mMainWidget->createWidget<MyGUI::ImageBox>("ImageBox", MyGUI::IntCoord(0,0, size.width, size.height), MyGUI::Align::Default);
+	//mJumpRange->setImageTexture("white-circle.png");
 
 	mSceneManager->setSkyBox(true, "Spacescape1024");
 	
@@ -517,7 +527,7 @@ void Game::createScene(void)
 	n->pitch(Ogre::Radian(Ogre::Math::RangeRandom(0.0,Ogre::Math::TWO_PI)));
 	n->roll(Ogre::Radian(Ogre::Math::RangeRandom(0.0,Ogre::Math::TWO_PI)));
 
-	//playBackgroundMusic("music.ogg");
+	playBackgroundMusic("music.ogg");
 
 
 	mDangerZones = mSceneManager->createBillboardSet();
@@ -593,11 +603,36 @@ void Game::createScene(void)
 	mLensFlare->SetPosition(mSunSceneNode->getPosition());
 
 	mPlayerShip = new Ship();
+	/*
 	mPlayerShip->mSceneNode->setPosition(mCamera->getPosition() +
 		Ogre::Vector3(-20.0,0,0));
+	mPlayerShip->mSceneNode->setScale(0.7f,0.7f,0.7f);
 	mPlayerShip->mSceneNode->yaw(Ogre::Degree(30.f));
 	mPlayerShip->mSceneNode->pitch(Ogre::Degree(30.f));
+	*/
 	setGameState(GameStateMainMenu);
+
+	mBokehOverlay = new Ogre::Rectangle2D(true);
+	mBokehOverlay->setCorners(-1.0f, 1.0f, 1.0f, -1.0f);
+	mBokehOverlay->setMaterial("OverlayBokeh");
+	mBokehOverlay->setRenderQueueGroup(Ogre::RENDER_QUEUE_OVERLAY - 1);
+	mBokehOverlay->setBoundingBox(Ogre::AxisAlignedBox(-100000.0*Ogre::Vector3::UNIT_SCALE, 100000.0*Ogre::Vector3::UNIT_SCALE));
+	Ogre::SceneNode* node =mSceneManager->getRootSceneNode()->createChildSceneNode();
+	node->attachObject(mBokehOverlay);
+
+	mLinesOverlay = new Ogre::Rectangle2D(true);
+	mLinesOverlay->setCorners(-1.0f, 1.0f, 1.0f, -1.0f);
+	mLinesOverlay->setMaterial("OverlayLines");
+	mLinesOverlay->setRenderQueueGroup(Ogre::RENDER_QUEUE_OVERLAY - 1);
+	mLinesOverlay->setBoundingBox(Ogre::AxisAlignedBox(-100000.0*Ogre::Vector3::UNIT_SCALE, 100000.0*Ogre::Vector3::UNIT_SCALE));
+	node->attachObject(mLinesOverlay);
+
+	mShadowOverlay = new Ogre::Rectangle2D(true);
+	mShadowOverlay->setCorners(-1.0f, 1.0f, 1.0f, -1.0f);
+	mShadowOverlay->setMaterial("OverlayShadow");
+	mShadowOverlay->setRenderQueueGroup(Ogre::RENDER_QUEUE_OVERLAY - 1);
+	mShadowOverlay->setBoundingBox(Ogre::AxisAlignedBox(-100000.0*Ogre::Vector3::UNIT_SCALE, 100000.0*Ogre::Vector3::UNIT_SCALE));
+	node->attachObject(mShadowOverlay);
 }
 
 void Game::depart()
@@ -658,7 +693,7 @@ void Game::play()
 	mMissions.clear();
 
 	mPlayerMoney =  Ogre::StringConverter::parseReal(
-		mConfig->getSetting("startFunds","","1000.0"));
+		mConfig->getSetting("startFunds","","250.0"));
 
 	// randomly rotate the skybox
 	Ogre::SceneNode *n = mSceneManager->getSkyBoxNode();
@@ -694,6 +729,8 @@ void Game::play()
 	mBattleDialogOpened = false;
 
 	mGameTimeRemaining = mMaxGameTime;
+
+	mInGameMenu->openHelp(NULL);
 }
 
 void Game::quit()
@@ -730,6 +767,19 @@ void Game::setGameState(GameState state)
 			// no flare in title
 			mLensFlare->SetFlareVisible(false);
 			mSunSceneNode->setScale(0.3f,0.3f,0.3f);
+
+			mPlayerShip->mSceneNode->setVisible(true);
+			mPlayerShip->mSceneNode->getParentSceneNode()->removeChild(
+				mPlayerShip->mSceneNode);
+			mSceneManager->getRootSceneNode()->addChild(
+				mPlayerShip->mSceneNode);
+			mPlayerShip->mSceneNode->setOrientation(Ogre::Quaternion::IDENTITY);
+			mPlayerShip->mSceneNode->setPosition(mSunCamPosition +
+				Ogre::Vector3(-20.0,0,0));
+			mPlayerShip->mSceneNode->setScale(0.7f,0.7f,0.7f);
+			mPlayerShip->mSceneNode->yaw(Ogre::Degree(30.f));
+			mPlayerShip->mSceneNode->pitch(Ogre::Degree(30.f));
+
 			break;
 		case GameStateEnd:
 			{
@@ -838,6 +888,7 @@ void Game::setNavVisible(bool visible)
 		mCamera->setFixedYawAxis(true,-Ogre::Vector3::UNIT_Z);
 		mCamera->setPosition(mNavCamPosition);
 		mCamera->lookAt(Ogre::Vector3(mNavCamPosition.x,0,mNavCamPosition.z));
+		mPlayerShip->mSceneNode->setVisible(false);
 	}
 	else {
 		if(mGameState > GameStateMainMenu) {
@@ -845,13 +896,29 @@ void Game::setNavVisible(bool visible)
 			Ogre::Vector3 dir = mDangerZoneNode->getPosition() - nodePos;
 			dir.normalise();
 
+			mPlayerShip->mSceneNode->setVisible(true);
 			if(mGameNodes[mCurrentNodeIdx]->planet) {
+				mPlayerShip->mSceneNode->getParentSceneNode()->removeChild(mPlayerShip->mSceneNode);
+				mGameNodes[mCurrentNodeIdx]->planet->mSceneNode->addChild(mPlayerShip->mSceneNode);
+				mPlayerShip->mSceneNode->setOrientation(Ogre::Quaternion::IDENTITY);
+				mPlayerShip->mSceneNode->setPosition(-5.0,0.5,2.75);
+				mPlayerShip->mSceneNode->setScale(0.1f,0.1f,0.1f);
+				mPlayerShip->mSceneNode->yaw(Ogre::Degree(90.0));
+
 				mGameNodes[mCurrentNodeIdx]->planet->mSceneNode->attachObject(mCamera);
+
 				mCamera->setPosition(-10.0,0.5,1.0);
 				mCamera->setFixedYawAxis(true, Ogre::Vector3::UNIT_Y);
 				mCamera->lookAt(nodePos);
 			}
 			else {
+				mPlayerShip->mSceneNode->getParentSceneNode()->removeChild(mPlayerShip->mSceneNode);
+				mGameNodes[mCurrentNodeIdx]->scenenode->addChild(mPlayerShip->mSceneNode);
+				mPlayerShip->mSceneNode->setOrientation(Ogre::Quaternion::IDENTITY);
+				mPlayerShip->mSceneNode->setPosition(0.0,0.5,0.0);
+				mPlayerShip->mSceneNode->setScale(0.2f,0.2f,0.2f);
+				mPlayerShip->mSceneNode->yaw(Ogre::Degree(90.0));
+
 				float offset = 10.0f;
 				Ogre::Vector3 camPos = nodePos - dir * offset;
 				Ogre::Vector3 xDir = dir.crossProduct(Ogre::Vector3::UNIT_Y);
@@ -912,7 +979,7 @@ bool Game::travelToNodeWithIndex(unsigned int i, bool force)
 	setGameState(GameStateSpace);
 
 	if(mGameNodes[mCurrentNodeIdx]->hasHostileShip ||
-		Ogre::Math::UnitRandom() > 0.5 || 1) {
+		Ogre::Math::UnitRandom() > 0.4) {
 		mInBattle = true;
 		mBattleDialogOpened = false;
 		mBattleStarted = false;
@@ -931,6 +998,9 @@ void Game::run(MyGUI::WidgetPtr _sender)
 	mInGameMenu->closeDialog(NULL);
 	mInBattle = false;
 	if(mEnemyShip) {
+		mEnemyShip->mSceneNode->removeAndDestroyAllChildren();
+		mEnemyShip->mSceneNode->detachAllObjects();
+
 		delete mEnemyShip;
 		mEnemyShip = 0;
 	}
@@ -980,7 +1050,9 @@ void Game::update(float dt)
 	mGameTimeRemaining -= dt;
 	if(mGameTimeRemaining <= 0.0) {
 		mGameTimeRemaining = 0.0;
-		setGameState(GameStateEnd);
+		if(mGameState != GameStateEnd) {
+			setGameState(GameStateEnd);
+		}
 	}
 
 	mInGameMenu->updateTimeLeft(mGameTimeRemaining);

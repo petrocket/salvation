@@ -23,6 +23,8 @@ namespace Salvation
 		MainMenu(MyGUI::Widget* _parent = nullptr);
 		virtual ~MainMenu();
 
+		void closeHelp(MyGUI::Window* _sender, const std::string& _name);
+		void help(MyGUI::WidgetPtr _sender);
 		void exit(MyGUI::WidgetPtr _sender);
 		void play(MyGUI::WidgetPtr _sender);
 
@@ -36,6 +38,8 @@ namespace Salvation
 		MyGUI::Button* mHelpButtonButton;
 		ATTRIBUTE_FIELD_WIDGET_NAME(MainMenu, mPlayButtonButton, "PlayButton");
 		MyGUI::Button* mPlayButtonButton;
+		ATTRIBUTE_FIELD_WIDGET_NAME(MainMenu, mHelpWindow, "HelpWindow");
+		MyGUI::Window* mHelpWindow;
 	//%LE Widget_Declaration list end
 	};
 

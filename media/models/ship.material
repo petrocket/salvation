@@ -19,12 +19,11 @@ material EngineGlow
 	receive_shadows on
 	technique
 	{
-		lighting off
 		pass
 		{
 			cull_hardware none
 			ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
-			diffuse 1.0 1.0 1.0 1.0
+			diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
 			specular 0.5 0.5 0.5 1.0 12.5
 			emissive 0.0 0.0 0.0 1.0
 			scene_blend one zero
@@ -39,8 +38,8 @@ material PlayerShip
 		pass
 		{
 			cull_hardware none
-			ambient 0.1 0.1 0.1 1.0
-			diffuse 0.2 0.2 0.2 1.0
+			ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+			diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
 			specular 0.5 0.5 0.5 1.0 12.5
 			emissive 0.0 0.0 0.0 1.0
 			scene_blend one zero
@@ -55,8 +54,8 @@ material HatchMaterial
 		pass
 		{
 			cull_hardware none
-			ambient 0.1 0.1 0.1 1.0
-			diffuse 0.2 0.2 0.2 1.0
+			ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+			diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
 			specular 0.5 0.5 0.5 1.0 12.5
 			emissive 0.0 0.0 0.0 1.0
 			scene_blend one zero
@@ -71,8 +70,8 @@ material FrontEngines
 		pass
 		{
 			cull_hardware none
-			ambient 0.1 0.1 0.1 1.0
-			diffuse 0.2 0.2 0.2 1.0
+			ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+			diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
 			specular 0.5 0.5 0.5 1.0 12.5
 			emissive 0.0 0.0 0.0 1.0
 			scene_blend one zero
@@ -87,8 +86,8 @@ material BackEngines
 		pass
 		{
 			cull_hardware none
-			ambient 0.1 0.1 0.1 1.0
-			diffuse 0.2 0.2 0.2 1.0
+			ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+			diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
 			specular 0.5 0.5 0.5 1.0 12.5
 			emissive 0.0 0.0 0.0 1.0
 			scene_blend one zero
@@ -103,8 +102,8 @@ material Cockpit
 		pass
 		{
 			cull_hardware none
-			ambient 0.01 0.01 0.01 1.0
-			diffuse 0.1 0.1 0.1 1.0
+			ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+			diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
 			specular 0.5 0.5 0.5 1.0 12.5
 			emissive 0.0 0.0 0.0 1.0
 			scene_blend one zero
@@ -119,8 +118,8 @@ material BackGlow
 		pass
 		{
 			cull_hardware none
-			ambient 1.0 1.0 1.0 1.0 
-			diffuse 1.0 1.0 1.0 1.0 
+			ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+			diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
 			specular 0.5 0.5 0.5 1.0 12.5
 			emissive 0.0 0.0 0.0 1.0
 			scene_blend one zero

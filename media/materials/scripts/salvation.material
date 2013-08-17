@@ -135,3 +135,66 @@ material LensFlareBurst
    }
 }
 
+material OverlayBokeh 
+{
+   technique
+   {
+      pass
+      {
+        ambient 1 1 1
+        diffuse 1 1 1
+        lighting off
+        scene_blend add 
+        depth_write off
+        depth_check off
+
+        texture_unit
+        {
+         texture overlay-bokeh.png
+        }
+      }
+   }
+}
+
+material OverlayShadow
+{
+   technique
+   {
+      pass
+      {
+        ambient 1 1 1
+        diffuse 1 1 1
+        lighting off
+        scene_blend modulate 
+        depth_write off
+        depth_check off
+
+        texture_unit
+        {
+         texture overlay-shadow.png
+        }
+      }
+   }
+}
+
+material OverlayLines
+{
+   technique
+   {
+      pass
+      {
+        ambient 1 1 1
+        diffuse 1 1 1
+        lighting off
+        scene_blend add 
+        depth_write off
+        depth_check off
+
+        texture_unit
+        {
+         texture overlay-lines2.png
+	  scroll_anim 0 0.05
+        }
+      }
+   }
+}

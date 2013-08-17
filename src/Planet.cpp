@@ -75,7 +75,7 @@ Planet::Planet(Ogre::SceneNode *parent) :
 
 	//mSurface = Game::getSingleton().mSceneManager->createEntity(Ogre::SceneManager::PT_SPHERE);
 	mSurface = Game::getSingleton().mSceneManager->createEntity("planetSphere");
-	int idx = floorf(Ogre::Math::RangeRandom(1.1, 7.9));
+	int idx = floorf(Ogre::Math::RangeRandom(1.1f, 7.9f));
 	mSurface->setMaterialName("PlanetTerrainMaterial" + 
 		Ogre::StringConverter::toString(idx));
 	mSurfaceNode->setScale(0.05f,0.05f,0.05f);

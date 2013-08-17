@@ -211,7 +211,14 @@ public:
 	std::vector<Contact*>mPassengers;
 	std::vector<Mission*>mMissions;
 
+	Ogre::Rectangle2D *mBokehOverlay;
+	Ogre::Rectangle2D *mLinesOverlay;
+	Ogre::Rectangle2D *mShadowOverlay;
+
+
 	Ogre::GameConfig *mConfig;
+
+	MyGUI::ImageBox *mTestImageBox;
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
 	sf::Music mMusic;

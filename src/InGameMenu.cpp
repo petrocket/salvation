@@ -27,6 +27,7 @@ namespace Salvation
 		mSettingsButton->eventMouseSetFocus += MyGUI::newDelegate(playButtonOver);
 		mSettingsButton->eventMouseButtonClick += MyGUI::newDelegate(playButtonClick);
 		mSettingsButton->eventMouseButtonClick += MyGUI::newDelegate(this, &Salvation::InGameMenu::openSettings);
+		mSettingsButton->setVisible(false);
 
 		setVisible(false);
 
@@ -110,10 +111,27 @@ namespace Salvation
 //		mJumpRange = mMainWidget->createWidget<MyGUI::ImageBox>("ImageBox", MyGUI::IntCoord(0,0, size.width, size.height), MyGUI::Align::Default);
 		mJumpRange->setImageTexture("white-circle.png");
 		*/
+
+		mHelpWindow->eventWindowButtonPressed += MyGUI::newDelegate(this, &Salvation::InGameMenu::closeHelp);
+
+		mHelpButton->eventMouseButtonClick += MyGUI::newDelegate(this, &Salvation::InGameMenu::openHelp);
+		mHelpButton->eventMouseButtonClick  += MyGUI::newDelegate(playButtonClick);
+		mHelpButton->eventMouseSetFocus += MyGUI::newDelegate(playButtonOver);
 	}
 
 	InGameMenu::~InGameMenu()
 	{
+	}
+
+	void InGameMenu::closeHelp(MyGUI::Window* _sender, const std::string& _name)
+	{
+		mHelpWindow->setVisibleSmooth(false);
+		playButtonClick(_sender);
+	}
+
+	void InGameMenu::openHelp(MyGUI::WidgetPtr _sender)
+	{
+		mHelpWindow->setVisibleSmooth(true);
 	}
 
 	void InGameMenu::acceptMission(MyGUI::WidgetPtr _sender)
@@ -190,6 +208,7 @@ namespace Salvation
 			playerShip->mWeaponsLevel++;
 		}
 
+		playerShip->updateSpecs();
 		Game::getSingleton().mPlayerMoney -= cost;
 		
 		// sanity check for rounding issues
@@ -212,6 +231,7 @@ namespace Salvation
 	{
 		mDialogWindowWindow->setVisibleSmooth(false);
 		mPopupPanel->setVisible(false);
+		playButtonClick(_sender);
 	}
 
 	void InGameMenu::closeNav(MyGUI::WidgetPtr _sender)
@@ -519,11 +539,19 @@ namespace Salvation
 
 					mNavButtons.clear();
 				}
+				if(mNavButtonLabels.size()) {
+					for(unsigned int i = 0; i < mNavButtonLabels.size(); i++) {
+						Game::getSingleton().mGUI->destroyWidget(mNavButtonLabels[i]);
+					}
+
+					mNavButtonLabels.clear();
+				}
 				mCloseNavButton->setVisible(false);
 				break;
 			case GameStateSpace:
 				mContactsWidget->setVisible(false);
-				mLocationDescriptionTextBox->setCaption(currentNode->title);
+				mLocationDescriptionTextBox->setCaption(currentNode->title + 
+					"\n\nI must-see destination for any visitor to the galaxy, this system offers much in the way of commerce and entertainment.");
 				if(!navOpen && !inBattle) {
 					mNavLocationWidget->setVisible(true);
 					mLandButton->setVisible(currentNode->hasCity);
@@ -532,7 +560,9 @@ namespace Salvation
 				mShipWidget->setVisible(!navOpen);
 				break;
 			case GameStateCity:
-				mLandedDescriptionTextBox->setCaption(currentNode->cityName);
+				mLandedDescriptionTextBox->setCaption(currentNode->cityName + 
+					"\n\nThe capital city of " + currentNode->title + 
+					" has always been the pride of it's residents.  Some say the ship yards here are the finest in the galaxy.");
 				if(!navOpen && !inBattle) {
 					mLandedWidget->setVisible(true);
 				}
@@ -553,7 +583,10 @@ namespace Salvation
 				mShipWidget->setVisible(!navOpen);
 				break;
 			case GameStateStation:
-				mLandedDescriptionTextBox->setCaption(currentNode->stationName);
+				mLandedDescriptionTextBox->setCaption(currentNode->stationName + 
+					"\n\nThe central space station of " + currentNode->title + 
+					" is a hub for commerce in the area.  Many of the wealthiest residents in the galaxy have vacation cabins here.");
+
 				if(!navOpen && !inBattle) {
 					mLandedWidget->setVisible(true);
 				}
@@ -697,9 +730,13 @@ namespace Salvation
 
 				float x = result.x * width;
 				float y = result.y * height;
-				float buttonSize = 26.0;
-				float halfButtonSize = buttonSize * 0.5f;
-				MyGUI::IntCoord coord(x - halfButtonSize,y - halfButtonSize,buttonSize,buttonSize);
+				float buttonWidth = 46.0;
+				float buttonHeight = 50.0;
+				MyGUI::IntCoord coord(
+					x - buttonWidth * 0.35f,
+					y - buttonHeight * 0.3f,
+					buttonWidth,
+					buttonHeight);
 
 				MyGUI::ButtonPtr button = mMainWidget->createWidget<MyGUI::Button>(
 					"ButtonNavSkin", 
@@ -713,6 +750,20 @@ namespace Salvation
 				button->eventMouseButtonClick += MyGUI::newDelegate(this,&InGameMenu::navButtonPressed);
 
 				mNavButtons.push_back(button);
+
+				coord.left = coord.left + coord.width;
+				coord.top = coord.top + coord.height - 10.0f;
+				coord.height = 20.0f;
+				coord.width = 100.0f;
+				MyGUI::TextBox *textBox = mMainWidget->createWidget<MyGUI::TextBox>(
+					"TextBox", 
+					coord, 
+					MyGUI::Align::Left, 
+					node->title + "TextBox");
+				textBox->setNeedMouseFocus(false);
+				textBox->setVisible(node->visible);
+				textBox->setCaption(node->title);
+				mNavButtonLabels.push_back(textBox);
 			}
 		}
 	}
@@ -738,11 +789,20 @@ namespace Salvation
 
 		float fuelNeeded = Game::getSingleton().fuelCostToTravelTo(i);
 
+		Ogre::String info = "";
+		if(node->hasCity) {
+			info += "\nSpaceport: " + node->cityName;
+		}
+		if(node->hasStation) {
+			info += "\nStation: " + node->stationName;
+		}
+
 		if(Game::getSingleton().canTravelToNodeWithIndex(i)) {
 			mDialogWindowWindow->setUserData(i);
 			displayDialog(
 				node->title,
-				"Fuel Needed: " + Ogre::StringConverter::toString(fuelNeeded),"",
+				info + "\nFuel Needed: " + Ogre::StringConverter::toString(fuelNeeded)
+				,"",
 				"CLOSE",
 				MyGUI::newDelegate(this,&InGameMenu::closeDialog),
 				"TRAVEL",
@@ -760,7 +820,7 @@ namespace Salvation
 
 			displayDialog(
 				node->title,
-				"Fuel Needed: " + Ogre::StringConverter::toString(fuelNeeded) +
+				info + "\nFuel Needed: " + Ogre::StringConverter::toString(fuelNeeded) +
 				"\n\n" + err,
 				"",
 				"",
@@ -1033,23 +1093,38 @@ namespace Salvation
 	{
 		for(unsigned int i = 0; i < mNavButtons.size(); i++) {
 			MyGUI::ButtonPtr btn = mNavButtons[i];
+			MyGUI::TextBox *label = mNavButtonLabels[i];
+
 			if(i == Game::getSingleton().mCurrentNodeIdx) {
 				btn->setStateSelected(true);
+				label->setColour(MyGUI::Colour(1.0f,1.0f,1.0f,0.8f));
+				//label->setTextShadow(true);
+				//label->setTextShadowColour(MyGUI::Colour(1.0f,1.0f,1.0f,0.5f));
+
+				label->setTextColour(MyGUI::Colour(1.0f,1.0f,1.0f,0.8f));
 			}
 			else {
 				btn->setStateSelected(false);
+				label->setColour(MyGUI::Colour(0.0f/255.0f,156.0f/255.0f,215.0f/255.0f,0.8f));
+				//label->setTextShadow(true);
+				//label->setTextShadowColour(MyGUI::Colour(0.0f/255.0f,156.0f/255.0f,215.0f/255.0f,0.5f));
+				label->setTextColour(MyGUI::Colour(0.0f/255.0f,156.0f/255.0f,215.0f/255.0f,0.8f));
 			}
+
 			if(!visible) {
 				mNavButtons[i]->setVisible(false);
+				label->setVisible(false);
 			}
 			else {
 				// only show nav buttons whose nodes are visible
 				if(i < Game::getSingleton().mGameNodes.size()) {
 					GameNode *node = Game::getSingleton().mGameNodes[i];
 					mNavButtons[i]->setVisible(node->visible);
+					label->setVisible(node->visible);
 				}
 				else {
 					mNavButtons[i]->setVisible(true);
+					label->setVisible(true);
 				}
 			}
 			//mNavButtons[i]->setVisible(true);
