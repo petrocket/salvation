@@ -16,6 +16,24 @@ material Spacescape1024
    }
 }
 
+material Spacescape2048
+{
+   technique
+   {
+      pass
+      {
+         lighting off
+         depth_write off
+
+         texture_unit
+         {
+            cubic_texture spacescape2048_front5.png spacescape2048_back6.png spacescape2048_left2.png spacescape2048_right1.png spacescape2048_top3.png spacescape2048_bottom4.png separateUV
+            tex_address_mode clamp
+         }
+      }
+   }
+}
+
 material PlanetMaterial1
 {
 	technique

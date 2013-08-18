@@ -23,7 +23,6 @@ namespace Salvation
 		mQuitButton->eventMouseSetFocus += MyGUI::newDelegate(playButtonOver);
 		mQuitButton->eventMouseButtonClick += MyGUI::newDelegate(playButtonClick);
 
-
 		mSettingsButton->eventMouseSetFocus += MyGUI::newDelegate(playButtonOver);
 		mSettingsButton->eventMouseButtonClick += MyGUI::newDelegate(playButtonClick);
 		mSettingsButton->eventMouseButtonClick += MyGUI::newDelegate(this, &Salvation::InGameMenu::openSettings);
@@ -371,7 +370,6 @@ namespace Salvation
 
 	void InGameMenu::quit(MyGUI::WidgetPtr _sender)
 	{
-		playEffect("click4.ogg");
 		Game::getSingleton().quit();
 	}
 
@@ -449,8 +447,8 @@ namespace Salvation
 
 		displayDialog(
 			c->name,
-			msg,
-			c->imageName,
+			"\n" + msg,
+			"transmission-received.png",
 			action1msg,
 			action1,
 			action2msg,
@@ -474,6 +472,7 @@ namespace Salvation
 
 		if(!visible) {
 			// reset
+			mHelpWindow->setVisible(false);
 			mDialogWindowWindow->setVisible(false);
 			mContactsWidget->setVisible(false);
 			mLandedWidget->setVisible(false);
@@ -566,7 +565,7 @@ namespace Salvation
 			case GameStateCity:
 				mLandedDescriptionTextBox->setCaption(currentNode->cityName + 
 					"\n\nThe capital city of " + currentNode->title + 
-					" has always been the pride of it's residents.  Some say the ship yards here are the finest in the galaxy.");
+					" has always been the pride of it's residents.  Some say the ship yards here are the finest in the galaxy.\n\nVisit the central store to repair and upgrade your ship.");
 				if(!navOpen && !inBattle) {
 					mLandedWidget->setVisible(true);
 				}
@@ -589,7 +588,7 @@ namespace Salvation
 			case GameStateStation:
 				mLandedDescriptionTextBox->setCaption(currentNode->stationName + 
 					"\n\nThe central space station of " + currentNode->title + 
-					" is a hub for commerce in the area.  Many of the wealthiest residents in the galaxy have vacation cabins here.");
+					" is a hub for commerce in the area.  Many of the wealthiest residents in the galaxy have vacation cabins here.\n\nVisit the central store to repair and upgrade your ship.");
 
 				if(!navOpen && !inBattle) {
 					mLandedWidget->setVisible(true);
@@ -670,6 +669,16 @@ namespace Salvation
 			"  |  "+ hullAmt + 
 			"%\nSHIELDS   |  LEVEL " + shld +"  |  " +shldAmt +
 			"%\nWEAPONS |  LEVEL " + wpn + "  |  " + wpnAmt +"%");
+
+		if(player->mHullStrength > 99.9) {
+			mHullStatus->setImageTexture("hullstatus1.png");
+		} 
+		else if(player->mHullStrength > 50.0) {
+			mHullStatus->setImageTexture("hullstatus2.png");
+		}
+		else {
+			mHullStatus->setImageTexture("hullstatus3.png");
+		}
 		if(enemy) {
 			hull = Ogre::StringConverter::toString(enemy->mHullLevel);
 			hullAmt = Ogre::StringConverter::toString(enemy->mHullStrength);
@@ -807,7 +816,8 @@ namespace Salvation
 			displayDialog(
 				node->title,
 				info + "\nFuel Needed: " + Ogre::StringConverter::toString(fuelNeeded)
-				,"",
+				,
+				"information.png",
 				"CLOSE",
 				MyGUI::newDelegate(this,&InGameMenu::closeDialog),
 				"TRAVEL",
@@ -827,7 +837,7 @@ namespace Salvation
 				node->title,
 				info + "\nFuel Needed: " + Ogre::StringConverter::toString(fuelNeeded) +
 				"\n\n" + err,
-				"",
+				"information.png",
 				"",
 				NULL,
 				"CLOSE",
@@ -880,6 +890,8 @@ namespace Salvation
 		// credits
 		mMoneyTextBoxTextBox->setCaption("Credits: " + 
 			Ogre::StringConverter::toString(Game::getSingleton().mPlayerMoney));
+
+		updateBattleStats();
 	}
 
 	void InGameMenu::reloadConfig(MyGUI::WidgetPtr _sender)

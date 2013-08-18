@@ -57,6 +57,7 @@ public:
 	double mWeaponCooldownRemaining;
 
 	bool mStatusUpdated;
+	bool mEnemy;
 
 	Laser *mLaser;
 

@@ -14,7 +14,8 @@ Ship::Ship(bool enemy):
 	mRangeBillboardSet(0),
 	mWeaponCooldownRemaining(0),
 	mWeaponVisibleRemaining(0),
-	mLaserLight(0)
+	mLaserLight(0),
+	mEnemy(enemy)
 {
 	reset();
 
@@ -136,18 +137,45 @@ float Ship::fire(double dt)
 	mWeaponCooldownRemaining -= dt;
 	if(mWeaponCooldownRemaining > 0) return 0.0;
 
+	mWeaponCooldownRemaining = std::min<float>(3.0,1.0 / mFireRate);
+	mLaserLight->setVisible(true);
+	mWeaponVisibleRemaining =  std::min<float>(1.0,mWeaponCooldownRemaining * 0.4);
+	mLaser->mSceneNode->setVisible(true);
+
+	if(mEnemy) {
+		if(Ogre::Math::UnitRandom() > 0.5) {
+			playEffect("laser3.ogg",
+				Ogre::Math::RangeRandom(0.9,1.1),
+				-0.75,
+				Ogre::Math::RangeRandom(0.3,0.5));
+		}
+		else {
+			playEffect("laser4.ogg",
+				Ogre::Math::RangeRandom(0.9,1.1),
+				-0.75,
+				Ogre::Math::RangeRandom(0.3,0.5));
+		}
+	}
+	else {
+		if(Ogre::Math::UnitRandom() > 0.5) {
+			playEffect("laser1.ogg",
+				Ogre::Math::RangeRandom(0.9,1.1),
+				0.75,
+				Ogre::Math::RangeRandom(0.3,0.5));
+		}
+		else {
+			playEffect("laser2.ogg",
+				Ogre::Math::RangeRandom(0.9,1.1),
+				0.75,
+				Ogre::Math::RangeRandom(0.3,0.5));
+		}
+	}
+
 	float missChance = missChanceForLevel(mWeaponsLevel);
 	if(Ogre::Math::UnitRandom() < missChance) {
 		// missed!
 		return 0.0;
 	}
-
-
-	mWeaponCooldownRemaining = 1.0 / mFireRate;
-	mLaserLight->setVisible(true);
-
-	mWeaponVisibleRemaining =  mWeaponCooldownRemaining * 0.4;
-	mLaser->mSceneNode->setVisible(true);
 
 	// damage for level
 	return weaponDamageForLevel(mWeaponsLevel);
@@ -156,6 +184,7 @@ float Ship::fire(double dt)
 void Ship::prepForBattle()
 {
 	mWeaponCooldownRemaining = 0;
+	mWeaponVisibleRemaining = 0;
 
 	float maxStrength =  shieldStrengthForLevel(mShieldLevel) -
 		mShieldDamage * Ogre::StringConverter::parseReal(
@@ -170,7 +199,6 @@ void Ship::update(double dt)
 	if(mWeaponVisibleRemaining <= 0) {
 		mLaserLight->setVisible(false);
 		mLaser->mSceneNode->setVisible(false);
-
 	}
 }
 void Ship::rechargeShields(double dt)
@@ -361,7 +389,7 @@ void Ship::updateSpecs()
 			Game::getSingleton().mConfig->getSetting(
 			"shieldRechargeDamageModifier","shields","0.01"));
 
-	if(mRangeBillboardSet) {
+	if(mRangeBillboardSet && !mEnemy) {
 		mRangeBillboardSet->setDefaultDimensions(
 			mMaxJumpRange * 2.0,
 			mMaxJumpRange * 2.0);

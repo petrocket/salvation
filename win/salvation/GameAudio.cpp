@@ -30,7 +30,7 @@ void playBackgroundMusic(std::string filename)
 {
 	if (gMusic.openFromFile( relativePathForFile(filename) )) {
 		gMusic.play();
-		gMusic.setVolume(50);
+		gMusic.setVolume(40);
 		gMusic.setLoop(true);
 	}
 }

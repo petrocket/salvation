@@ -61,6 +61,7 @@ namespace Salvation
 
 	void MainMenu::setVisible(bool visible)
 	{
+		mHelpWindow->setVisible(false);
 		mMainWidget->setVisible(visible);
 	}
 } // Salvation

@@ -249,12 +249,14 @@ bool isWithinMinRadius(Ogre::Vector2 pos, float radius, std::vector<GameNode *> 
 //-------------------------------------------------------------------------------------
 void Game::closeEndGameDialogPressed(MyGUI::WidgetPtr _sender)
 {
+	playButtonClick(NULL);
 	setGameState(GameStateMainMenu);
 }
 
 //-------------------------------------------------------------------------------------
 void Game::closeBattleDialogPressed(MyGUI::WidgetPtr _sender)
 {
+	playButtonClick(NULL);
 	mInGameMenu->closeDialog(NULL);
 
 	mInBattle = false;
@@ -519,7 +521,8 @@ void Game::createScene(void)
 //		mJumpRange = mMainWidget->createWidget<MyGUI::ImageBox>("ImageBox", MyGUI::IntCoord(0,0, size.width, size.height), MyGUI::Align::Default);
 	//mJumpRange->setImageTexture("white-circle.png");
 
-	mSceneManager->setSkyBox(true, "Spacescape1024");
+	//mSceneManager->setSkyBox(true, "Spacescape1024");
+	mSceneManager->setSkyBox(true, "Spacescape2048");
 	
 	// randomly rotate the skybox
 	Ogre::SceneNode *n = mSceneManager->getSkyBoxNode();
@@ -732,6 +735,7 @@ void Game::play()
 
 	mGameTimeRemaining = mMaxGameTime;
 
+	mInGameMenu->updateBattleStats();
 	mInGameMenu->openHelp(NULL);
 }
 
@@ -747,12 +751,12 @@ void Game::setGameState(GameState state)
 
 	mLensFlare->SetFlareVisible(false);
 	mSunSceneNode->setScale(0.05f,0.05f,0.05f);
-
 	switch(mGameState) {
 		case GameStateIntro:
 			break;
 		case GameStateMainMenu:
 			mMainMenu->setVisible(true);
+
 			mInGameMenu->setVisible(false);
 
 			setNavVisible(false);
@@ -790,7 +794,7 @@ void Game::setGameState(GameState state)
 				if(mPlayerShip->mHullStrength <= 0) {
 					mInGameMenu->displayDialog("Game Over",
 						"Your ship was destroyed",
-						"lose.png", 
+						"game-over.png", 
 						"",
 						NULL,
 						"CLOSE",
@@ -807,14 +811,14 @@ void Game::setGameState(GameState state)
 						survive = Ogre::Math::UnitRandom() > 0.5;
 					}
 					if(survive) {
-						mInGameMenu->displayDialog("Game Over","You Survived!","win.png",
+						mInGameMenu->displayDialog("Game Over","You Survived!","victory.png",
 							"",
 							NULL,
 							"CLOSE",
 							MyGUI::newDelegate(this,&Game::closeEndGameDialogPressed));
 					}
 					else {
-						mInGameMenu->displayDialog("Game Over","Your didn't make it","lose.png", 
+						mInGameMenu->displayDialog("Game Over","Your didn't make it","game-over.png", 
 							"",
 							NULL,
 							"CLOSE",
@@ -1094,7 +1098,7 @@ void Game::update(float dt)
 					"\nWeapon Level: " + Ogre::StringConverter::toString(mEnemyShip->mWeaponsLevel) +
 					"\nHull Level: " + Ogre::StringConverter::toString(mEnemyShip->mHullLevel)
 					,
-					"",
+					"warning.png",
 					"RUN",
 					MyGUI::newDelegate(this,&Game::run),
 					"FIGHT",
@@ -1115,6 +1119,7 @@ void Game::update(float dt)
 
 				if(mPlayerShip->mHullStrength <= 0.0) {
 					mBattleStarted = false;
+					playEffect("explosion.ogg");
 					setGameState(GameStateEnd);
 				}
 			}
@@ -1124,7 +1129,7 @@ void Game::update(float dt)
 				GameNode *n = mGameNodes[mCurrentNodeIdx];
 				float reward = 500.0 * ((float)n->sector + 1.0);
 				mPlayerMoney += reward;
-
+				playEffect("explosion.ogg");
 				// did this fulfill a mission?
 				if(n->hasHostileShip) {
 					// does the player have the mission?
@@ -1135,7 +1140,7 @@ void Game::update(float dt)
 						"COMBAT",
 						"The hostile ship has been destroyed.\nYou have been rewarded " +
 						Ogre::StringConverter::toString(reward),
-						"",
+						"victory.png",
 						"",
 						NULL,
 						"CLOSE",
